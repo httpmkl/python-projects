@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../tutorials/.idea/tutorials.iml" filepath="$PROJECT_DIR$/../tutorials/.idea/tutorials.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/unitOneProject.iml" filepath="$PROJECT_DIR$/.idea/unitOneProject.iml" />
     </modules>
   </component>
