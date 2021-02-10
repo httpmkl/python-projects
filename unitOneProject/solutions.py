@@ -1,10 +1,7 @@
 # GO THROUGH AND ADD MORE COMMENTS
 import random
-
-inputReceived = False
+from personClass import Person
 onProblem = False
-answered = False
-
 
 # Question (to be used at the end of every solution)
 def question():
@@ -13,7 +10,8 @@ def question():
 
     while answered:
         if ques > 2 or ques < 1:
-            print('Please send a valid input!')
+            print('\n-> Please enter a valid input!')
+            question()
         elif ques == 1:
             print('\nRedirecting back to menu...\n')
             menu()
@@ -26,14 +24,13 @@ def question():
 # Problem 1: Casting
 # Issues to later consider: Words -> int/float & float -> int are not possible
 def problemOne():
-    onProblem = True
+    print('\nWelcome to the value converter!')
+    userInput = input('\nEnter an input: ')
 
-    print('\nHello! Enter an input: ')
-    userInput = input()
     inputReceived = True
-    print('What would you like to convert this to?')
+    print('\nWhat would you like to convert this to?')
 
-    while inputReceived and onProblem:
+    while inputReceived:
         choice = int(input('1. Float \n2. Int    \n3. String \n'))
 
         # In order to tell the user what they chose
@@ -50,18 +47,18 @@ def problemOne():
         else:
             print(f'\nYou chose: {typeChoice} \nProcessing...')
 
-            if choice == 1:
+            if choice == 1: # Chose float
                 print(f'-> {float(userInput)}')
                 question()
-            if choice == 2:
+            elif choice == 2: # Chose int
                 print(f'-> {int(userInput)}')
                 question()
-            if choice == 3:
+            else: # Chose string
                 print(f"-> '{str(userInput)}'")
                 question()
 
 
-# Problem 2: Grade Calculator
+# Problem 2: Conditional Logic
 def problemTwo():
     onProblem = True
 
@@ -71,8 +68,6 @@ def problemTwo():
     overall = int(input('Now enter the total points: '))
 
     print('\nProcessing grade...    \n')
-    inputReceived = True
-
     percentage = int(100 * score / overall)
 
     if percentage < 0:
@@ -115,11 +110,11 @@ def problemTwo():
 
 # Problem 3: For Loops
 def problemThree():
-    print('\nWelcome to the range generator!  \n')
+    print('\nWelcome to the range generator!    \n')
 
     inputLow = int(input('Enter the lowest integer in the range: '))
     inputHigh = int(input('Now enter the highest integer in the range: '))
-    inputGap = int(input('Finally, what is the gap between the values: '))
+    inputGap = int(input('Finally, enter the gap between the values: '))
 
     print('\nGenerating range...    \n')
 
@@ -146,15 +141,15 @@ def problemFour():
     isCorrect = False
     needHint = False
 
-    print('\nHello! Welcome to the number guessing game')
+    print('\nWelcome to the number guessing game!   \n')
 
     # Picks a random number between 1-100
     num = random.randint(1, 100)
 
     # Conditional loops to figure out where the number is located
     if num <= 25:
-        lessThan50 = True
         lessThan25 = True
+        lessThan50 = True
     elif num <= 50:
         lessThan50 = True
         greaterThan25 = True
@@ -170,14 +165,14 @@ def problemFour():
         guess = int(input('Insert your guess (between 1-100): '))
 
         if guess > 100 or guess < 0:
-            print('\n-> Try again, but this time, between 1-10 \n')
+            print('\n-> Try again, but this time, between 1-100 \n')
         else:
-            if guess == num:    # If guess is correct
+            if guess == num:  # If guess is correct
                 print('\n-> Wow, you guessed correctly! Congrats :)')
                 question()
                 isCorrect = True
                 needHint = False
-            else:   # If guess is incorrect
+            else:  # If guess is incorrect
                 needHint = True
 
         # First hint
@@ -229,22 +224,117 @@ def problemFour():
             needHint = False
 
 
-# Problem 5: Finance Calculator
+# Problem 5: Operators
 def problemFive():
-    print('Under construction')
+    choseOption = False
+    wantsToContinue = True
+
+    print('\nWelcome to the finance calculator!')
+
+    while not choseOption:
+        print('\nWhat service would you like to use?')
+        choice = int(input('1. Calculate cost after tax   \n2. Calculate how many items I can buy   \n'))
+
+        if choice > 2 or choice < 1:
+            print('\n-> Invalid input! Please pick again')
+        else:
+            choseOption = True
+
+        while choseOption and wantsToContinue:
+
+            if choice == 1:
+                ogCost = float(input('\nEnter the cost of the item: '))
+                tax = int(input('Now enter the tax percentage: '))
+
+                cost = (ogCost * tax / 100) + ogCost
+                print(f'\nThe total cost is:')
+                print('-> ${:.2f}'.format(cost))  # Brings the value to 2 decimal spaces
+                wantsToContinue = False
+            else:
+                balance = float(input('\nEnter your current bank balance: '))
+                cost = float(input('Now enter the total cost of the item: '))
+
+                leftOver = balance % cost
+                amount = int((balance - leftOver) / cost)
+                print(f'\nYou can purchase: \n-> {amount} item(s)')
+                print('Money left over:')
+                print('-> ${:.2f}'.format(leftOver))
+                wantsToContinue = False
+
+        while not wantsToContinue:
+            print('\nDo you still need to use the finance calculator?')
+            choiceTwo = int(input('1. Yes, take me to the options   \n2. No, I\'m done here \n'))
+
+            if choiceTwo > 2 or choiceTwo < 1:
+                print('\n-> Invalid input! Please pick again')
+            elif choiceTwo == 1:
+                wantsToContinue = True
+                choseOption = False
+            else:
+                question()
 
 
 # Problem 6: Arrays & Lists
 def problemSix():
-    print('Under construction')
+    finished = False
+    print('\nWelcome to the data organizer!')
+    print("Enter each number one at a time, and type 'end' when finished in order to see the list\'s attributes!   \n")
+
+    data = []
+
+    while not finished:
+        value = input('-> ')
+
+        if value == 'end' or value == "'end'": # The "'end'" is in case they type in 'end' with the quotations
+            finished = True
+            low = min(data)
+            high = max(data)
+            average = int(sum(data) / len(data))
+
+            print(f'\nLowest value: {low}')
+            print(f'Highest value: {high}')
+            print(f'Average value: {average}')
+            question()
+        else:
+            value = int(value)
+            data.append(value)
 
 
 # Problem 7: Classes & Objects
+def problemSeven():
+    print('\nWelcome! Create your profile below')
+    needToEdit = True
+
+    while needToEdit:
+        userName = str(input('\nEnter your name: '))
+        userAge = int(input('Enter your age: '))
+        userQuote = str(input('Enter your favourite quote: '))
+        person = Person(userName, userAge, userQuote)
+        needToEdit = False
+
+        print('\nPROFILE')
+        print(f'Name: {person.getMyName()}')
+        print(f'Age: {person.getMyAge()}')
+        print(f'Favourite quote: "{person.getFavQuote()}"')
+
+        print('\nWould you like to edit your profile?')
+        choice = int(input('1. Yes  \n2. No \n'))
+
+        if choice > 2 or choice < 1:
+            print('\n-> Invalid input! Please pick again')
+        elif choice == 1:
+            needToEdit = True
+        else:
+            print(f'\n-> Profile set for {person.getMyName()}!')
+            question()
 
 
 # Menu
 def menu():
-    userChoice = int(input('Choose an option '))
+    print('OPTIONS')
+    print('1. Value Converter   2. Grade Calculator   3. Range Generator')
+    print('4. Guessing Game   5. Finance Calculator   6. Data Organizer \n7. Profile Creator')
+    userChoice = int(input('\nEnter your selection: '))
 
     if userChoice == 1:
         problemOne()
@@ -258,11 +348,14 @@ def menu():
         problemFive()
     elif userChoice == 6:
         problemSix()
+    elif userChoice == 7:
+        problemSeven()
     else:
-        print('Sorry, that is not an option available!')
+        print('\nSorry, that is not an option available!    \n')
         menu()
 
 
 # Ensures the program runs the menu upon starting
 if not onProblem:
+    print('\nHello user! Welcome to my program  \n')
     menu()
