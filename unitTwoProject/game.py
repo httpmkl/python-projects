@@ -1,12 +1,14 @@
 # Battle Arena RPG game - made by Nora Calif
 startGame = False
-from statistics import UserStats
+from player import Character
 
 
 # ---------- GAME START ----------
 
 def game():
-    print('\nGAME: STARTED')
+    print('\n--------------------')
+    print('GAME: STARTED')
+    print('--------------------')
 
 # ----------- GAME END -----------
 
@@ -14,7 +16,7 @@ def game():
 # Inventory
 def inventory():
     print('\n---------------')
-    print('INVENTORY\n')
+    print('Inventory\n')
 
     print('Under Construction')
 
@@ -23,13 +25,13 @@ def inventory():
 
 # Stats
 def stats():
-    stats = UserStats()
-
     print('\n---------------')
-    print('USER STATS\n')
+    print(f'{player.getName()}\'s Stats\n')
 
-    print(f'-> Health: {stats.getHealth()}') # Prints health
-    print(f'-> Defense: {stats.getShield()}') # Prints shield
+    print(f'-> Health: {player.getHealth()}') # Shows health stat
+    print(f'-> Shield: {player.getShield()}') # Shows shield stat
+    print(f'-> Energy: {player.getEnergy()}%')  # Shows energy stat
+    print(f'\nMONEY AVAILABLE: ${player.getMoney()}')  # Show money available
 
     print('---------------')
     startScreen(True)
@@ -42,9 +44,11 @@ def startScreen(trueOrFalse):
 
     while not hasItStarted: # This part only shows in the beginning of the game
         print('\n~ WELCOME TO THE BATTLE ARENA ~\n')
+        name = input('Enter your name: ')
+        player.setName(name)
 
         # Menu
-        print('MENU:')
+        print('\nMENU:')
         print('1. Open Inventory')
         print('2. Check Stats')
         print('3. START GAME')
@@ -56,9 +60,9 @@ def startScreen(trueOrFalse):
 
             # To tell whether this is the program's first run or not
             if not hasItStarted: # First run
-                choice = int(input('\nWhat would you like to start with, player? \n-> '))
+                choice = int(input(f'\nWhat would you like to start with, {player.getName()}? \n-> '))
             else:  # Not first run
-                choice = int(input('\nWhat would you like to do next, player? \n-> '))
+                choice = int(input(f'\nWhat would you like to do next, {player.getName()}? \n-> '))
 
             # Redirecting based on choices
             if choice > 3 or choice < 0: # Typed an number outside of the options
@@ -80,5 +84,6 @@ def startScreen(trueOrFalse):
 
 # Starts game at the beginning
 if not startGame:
+    player = Character() # Creates the player
     startScreen(False)
     startGame = True
