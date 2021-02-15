@@ -1,15 +1,32 @@
 class Character:
-    # Beginning stats
+    # Stats
     health = 100
     shield = 0
     energy = 100
     money = 50
+    isDead = False
+    didTurn = True
 
     # Profile
     name = 'Placeholder'
 
-    # ---------- SETTERS ----------
+    def __init__(self, name):
+        Character.name = name
 
+    # ---------- MATCHES ----------
+    def doTurn(self):
+        print('--------------------')
+        print('PLAYER, HOW WILL YOU RESPOND?')
+
+        print('1. Check your stats')
+        print('2. Check enemy stats')
+        print('3. Attack!')
+        print('4. Defend!')
+        print('4. Use a special ability/tool')
+
+        print('--------------------')
+
+    # ---------- SETTERS ----------
     def addHealth(self, newHealth):
         if Character.health < 100:
             Character.health += newHealth # Adds specified amount to health
@@ -26,25 +43,5 @@ class Character:
     def addEnergy(self, newEnergy):
         Character.energy += newEnergy
 
-    def setName(self, name):
-        Character.name = name
-
     def spendMoney(self, amount):
         Character.money -= amount
-
-    # ---------- GETTERS ----------
-
-    def getHealth(self):
-        return Character.health
-
-    def getShield(self):
-        return Character.shield
-
-    def getEnergy(self):
-        return Character.energy
-
-    def getName(self):
-        return Character.name
-
-    def getMoney(self):
-        return Character.money
