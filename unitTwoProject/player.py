@@ -10,32 +10,42 @@ class Character:
     # Profile
     name = 'Placeholder'
 
-    def __init__(self, name):
-        Character.name = name
+    def __init__(self):
+        isDead = False
 
     # ---------- MATCHES ----------
     def doTurn(self):
-        print('--------------------')
-        print('PLAYER, HOW WILL YOU RESPOND?')
-
+        print('\n--------------------')
+        print(f'{Character.name}, HOW WILL YOU RESPOND?')
+        # Options
         print('1. Check your stats')
         print('2. Check enemy stats')
         print('3. Attack!')
         print('4. Defend!')
-        print('4. Use a special ability/tool')
+        print('5. Use a special ability/tool')
+        print('--------------------\n')
+        gaveOptions = True
 
-        print('--------------------')
+        # Loop for picking choices until move is made
+        while gaveOptions:
+            try:
+                choice = int(input())
+                if choice == 1:
+                    print(f'{Character.health}')
+                else:
+                    pass
+            except ValueError:
+                print('Invalid input!')
 
     # ---------- SETTERS ----------
-    def addHealth(self, newHealth):
-        if Character.health < 100:
-            Character.health += newHealth # Adds specified amount to health
-            if Character.health > 100: # New health takes it past 100
-                print('MAX HEALTH ACHIEVED')
-            else:
-                pass
-        else: # Health at is already max
-            print('New health cannot be added; you are at your max!')
+    def setHealth(self, newHealth):
+        Character.health += newHealth
+
+        # To ensure health doesn't go above max
+        if Character.health > 100:
+            Character.health = 100
+        else:
+            pass
 
     def addShield(self, newShield):
         Character.shield += newShield # Adds specified amount to shield
@@ -45,3 +55,6 @@ class Character:
 
     def spendMoney(self, amount):
         Character.money -= amount
+
+    def setName(self, name):
+        Character.name = name

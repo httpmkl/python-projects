@@ -1,10 +1,12 @@
+import random
+from player import Character
+
+
 class Enemy:
     didTurn = False
 
     def __init__(self, name):
         self.name = name
-        self.health = 100
-        self.energy = 100
 
     def doTurn(self):
         # Accesses each character's turn through a single method
@@ -47,17 +49,45 @@ class Enemy:
 
 # Warrior class
 class Warrior(Enemy):
+    health = 100
+    energy = 100
     isDead = False
 
     def __init__(self):
         super().__init__('Warrior')
 
     def doTurn(self):
-        print('Warrior time')
+        # Attacks if energy is high enough, dodges if low
+        if Warrior.energy >= 15:
+            Warrior.energy -= 10
+            self.attack()
+        else:   # Energy is below 15
+            Warrior.energy += 5
+            self.dodge()
+
+    def attack(self):
+        # Creates 50% chance of either action playing out
+        chance = random.randint(1, 10)
+        if chance <= 5:
+            print('\n-> The Warrior loaded his fist and delivered a powerful blow!')
+            print('DAMAGE: 15')
+            player = Character()
+            player.setHealth(-15)
+        else:   # chance >= 6
+            print('\n-> With mighty swing, the Warrior gave a strong kick!')
+            print('DAMAGE: 15')
+            player = Character()
+            player.setHealth(-15)
+
+    def dodge(self):
+        print('-> The Warrior stood back in fear')
+        print('DAMAGE: 0')
 
 
 # Trickster class
 class Trickster(Enemy):
+    health = 100
+    energy = 100
     isDead = False
 
     def __init__(self):
@@ -69,6 +99,8 @@ class Trickster(Enemy):
 
 # Wizard class
 class Wizard(Enemy):
+    health = 100
+    energy = 100
     isDead = False
 
     def __init__(self):

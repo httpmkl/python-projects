@@ -4,9 +4,12 @@
     - Created intro game screen w/ enemy description & options
     - Set up enemy -> player -> enemy loop for matches (that checks for death)
     - Figured out how to set the status of enemies (show alive/dead in their character desc)
+    - Created warrior move
+    - Figured out how to make player damage
 
     To-Do:
-    - Create enemy moves
+    - Figure out how to make enemy take damage
+    - Create trickster/wizard moves
     - Create player moves
     - Figure out how to acquire/buy items + the inventory on the menu screen
     - Figure out how to conclude the game once all enemies are dead
@@ -246,7 +249,8 @@ def menuScreen(trueOrFalse):
 if not startGame:
     print('\n~ WELCOME TO THE BATTLE ARENA ~\n')
     name = input('Enter your name: ')
-    player = Character(name)
+    player = Character()
+    player.setName(name)
 
     # Menu
     print('\nMENU:')
