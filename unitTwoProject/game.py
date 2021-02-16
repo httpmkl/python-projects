@@ -6,13 +6,18 @@
     - Figured out how to set the status of enemies (show alive/dead in their character desc)
     - Created warrior move
     - Figured out how to make player damage
+    - Figured out how to die
+    - Created attack/retreat/check stat methods for player
 
     To-Do:
-    - Figure out how to make enemy take damage
+    - Figure out how to access the enemy class in the player class without circular import error
+        - Figure out how to make enemy take damage
+        - Create check enemy stats for player
+    - Create use tool/ability method for player
     - Create trickster/wizard moves
-    - Create player moves
     - Figure out how to acquire/buy items + the inventory on the menu screen
     - Figure out how to conclude the game once all enemies are dead
+    - Create instruction screen
 
 '''
 
@@ -168,15 +173,18 @@ def game(enemyName):
         enemy.doTurn()
 
         # Checks to see if player is dead after enemy's move
-        if player.isDead:
+        if player.checkIsDead():
+            print('\n---------------')
             print(f'[ {player.name} died ] \nGAME OVER')
-            gameIntro(True)
+            print('--------------')
+            print('\nThank\'s for playing!')
+            exit()  # End game when player dies
         else:
             enemy.didTurn = True
             player.didTurn = False
 
         while enemy.didTurn and not player.didTurn: # Enemy just went
-            player.doTurn()
+            player.doTurn(False)
 
             # Checks to see if enemy is dead after player's move
             if enemy.checkIsDead():
@@ -212,6 +220,11 @@ def stats():
     menuScreen(True)
 
 
+# Instructions
+def instructions():
+    print('Under construction')
+
+
 # Menu screen
 def menuScreen(trueOrFalse):
     hasItStarted = trueOrFalse
@@ -228,7 +241,7 @@ def menuScreen(trueOrFalse):
                 choice = int(input(f'\nWhat would you like to do next, {player.name}? \n-> '))
 
             # Redirecting based on choices
-            if choice > 3 or choice < 0:  # Typed an number outside of the options
+            if choice > 4 or choice < 0:  # Typed an number outside of the options
                 print('\nPlease enter a valid input!')
                 goodInput = False
             elif choice == 1:  # Chose inventory
@@ -237,6 +250,9 @@ def menuScreen(trueOrFalse):
             elif choice == 2:  # Chose stats
                 hasItStarted = True
                 stats()
+            elif choice == 3:
+                hasItStarted = True
+                instructions()
             else:  # Chose gameIntro
                 hasItStarted = True
                 gameIntro(False)
@@ -256,7 +272,8 @@ if not startGame:
     print('\nMENU:')
     print('1. Open Inventory')
     print('2. Check Stats')
-    print('3. START GAME')
+    print('3. Instructions')
+    print('4. START GAME')
 
     startGame = True
     menuScreen(False)

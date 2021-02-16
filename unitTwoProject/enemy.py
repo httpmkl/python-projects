@@ -1,9 +1,9 @@
 import random
 from player import Character
 
-
 class Enemy:
     didTurn = False
+    name = 'Placeholder'
 
     def __init__(self, name):
         self.name = name
@@ -26,13 +26,39 @@ class Enemy:
         # Checks if enemy is dead
         if self.name == 'Warrior':
             war = Warrior()
-            return war.isDead
+            if war.health <= 0:
+                war.isDead = True
+                return war.isDead
+            else:
+                war.isDead = False
+                return war.isDead
         elif self.name == 'Trickster':
             trick = Trickster()
-            return trick.isDead
+            if trick.health <= 0:
+                trick.isDead = True
+                return trick.isDead
+            else:
+                trick.isDead = False
         elif self.name == 'Wizard':
             wiz = Wizard()
-            return wiz.isDead
+            if wiz.health <= 0:
+                wiz.isDead = True
+                return wiz.isDead
+            else:
+                wiz.isDead = False
+        else:
+            pass
+
+    def setHealth(self, num):
+        if self.name == 'Warrior':
+            war = Warrior()
+            war.health += num
+        elif self.name == 'Trickster':
+            trick = Trickster()
+            trick.health += num
+        elif self.name == 'Wizard':
+            wiz = Wizard()
+            wiz.health += num
         else:
             pass
 
@@ -51,36 +77,53 @@ class Enemy:
 class Warrior(Enemy):
     health = 100
     energy = 100
+    damage = 15
     isDead = False
+    energyLow = False
 
     def __init__(self):
         super().__init__('Warrior')
 
     def doTurn(self):
+        # So the player damage degrades as the warrior loses energy
+        Warrior.damage = int(2 + (8 * Warrior.energy / 100))
+
         # Attacks if energy is high enough, dodges if low
-        if Warrior.energy >= 15:
-            Warrior.energy -= 10
+        if Warrior.energy >= 15 and not Warrior.energyLow:
+            print('\nENEMY TURN...')
             self.attack()
-        else:   # Energy is below 15
-            Warrior.energy += 5
-            self.dodge()
+            Warrior.energy -= 7
+        elif Warrior.energy < 15 and not Warrior.energyLow:   # Energy is below 15
+            Warrior.energyLow = True
+
+        # Makes it so that the warrior dodges until energy is back completely
+        if Warrior.energyLow:
+            if Warrior.energy <= 100:
+                print('\nENEMY TURN...')
+                self.dodge()
+                Warrior.energy += 25
+            else:
+                Warrior.energy = 100 # To ensure it's not above max
+                Warrior.energyLow = False
+                self.doTurn()
+
 
     def attack(self):
         # Creates 50% chance of either action playing out
         chance = random.randint(1, 10)
         if chance <= 5:
             print('\n-> The Warrior loaded his fist and delivered a powerful blow!')
-            print('DAMAGE: 15')
+            print(f'DAMAGE: {Warrior.damage}')
             player = Character()
-            player.setHealth(-15)
+            player.setHealth(Warrior.damage*-1)
         else:   # chance >= 6
             print('\n-> With mighty swing, the Warrior gave a strong kick!')
-            print('DAMAGE: 15')
+            print(f'DAMAGE: {Warrior.damage}')
             player = Character()
-            player.setHealth(-15)
+            player.setHealth(Warrior.damage*-1)
 
     def dodge(self):
-        print('-> The Warrior stood back in fear')
+        print('\n-> The Warrior stood back in fear')
         print('DAMAGE: 0')
 
 
