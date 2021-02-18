@@ -1,12 +1,13 @@
 import random
-from character import Character
 
-class Player(Character):
+
+class Player:
     # Stats
     health = 100
-    shield = 50
+    shield = 0
     energy = 100
     money = 50
+    damage = 7
     didTurn = True
 
     # To be accessed by enemies
@@ -21,18 +22,12 @@ class Player(Character):
 
 
     # ---------- MATCHES ----------
-    def doTurn(self, skipIntro):
+    def doTurn(self, skipIntro, enemy):
         gaveOptions = skipIntro
+        Player.damage = int(5 + (2 * Player.energy / 100))
 
         while not gaveOptions:
-            print('\nPLAYER TURN...')
-            print(f'\n{Player.name}, HOW WILL YOU RESPOND?')
-            # Options
-            print('1. Check your stats')
-            print('2. Check enemy stats')
-            print('3. Attack!')
-            print('4. Retreat!')
-            print('5. Use a special ability/tool')
+            self.showOptions()
             gaveOptions = True
 
         # Loop for picking choices until move is made
@@ -40,53 +35,82 @@ class Player(Character):
             try:
                 choice = int(input(''))
                 gaveOptions = False
-                # Redirects player to cho9ce
+                # Redirects player to choice
                 if choice > 5 or choice < 1:
                     print(f'Invalid input!')
                     gaveOptions = True
-                elif choice == 1:
-                    # Access stats
-                    print('\n--------------------')
-                    print(f'{Player.name}\'s Stats:\n')
-                    print(f'- Health: {Player.health}')
-                    print(f'- Shield: {Player.shield}')
-                    print(f'- Energy: {Player.energy}%')
-                    print('--------------------')
+                elif choice == 1:   # Chose user stats
+                    self.userStats()
                     gaveOptions = True
-                elif choice == 2:
-                    # Access enemy stats
-                    print()
+                elif choice == 2:  # Chose enemy stats
+                    self.enemyStats(enemy)
                     gaveOptions = True
-                elif choice == 3:
-                    # Physical attack
-                    if Player.energy > 0:
-                        self.attack()
-                        Player.energy -= 10
-                    else:  # Player has no energy
-                        print('\n[ You can\'t attack if you have no energy! ]\n')
-                        gaveOptions = True
+                elif choice == 3:  # Chose attack
+                    self.controlAttack(enemy)
                 elif choice == 4:
-                    # Cower away to regain energy
-                    self.retreat()
-                    Player.energy += 25
+                    self.controlRetreat()
                 else:  # choice == 5
-                    # Access inventory
-                    print()
+                    self.inventory()
             except ValueError:
                 print('Invalid input!')
 
+    def showOptions(self):
+        print('\n[ PLAYER TURN... ]')
+        print(f'\n{Player.name}, HOW WILL YOU RESPOND?')
+        # Options
+        print('1. Check your stats')
+        print('2. Check enemy stats')
+        print('3. Attack!')
+        print('4. Retreat!')
+        print('5. Use a special ability/tool')
 
+    def userStats(self):
+        print('\n--------------------')
+        print(f'{Player.name}\'s Stats:\n')
+        print(f'- Health: {Player.health}')
+        print(f'- Shield: {Player.shield}')
+        print(f'- Energy: {Player.energy}%')
+        print('--------------------')
 
-    def attack(self):
+    def enemyStats(self, enemy):
+        print('\n--------------------')
+        print(f'{enemy.name}\'s Stats:\n')
+        print(f'- Health: {enemy.getHealth()}')
+        print(f'- Energy: {enemy.getEnergy()}%')
+        print('--------------------')
+
+    def controlAttack(self, enemy):
+        # Physical attack
+        if Player.energy > 0:
+            self.attack(enemy)
+            Player.energy -= 10
+        else:  # Player has no energy
+            print('\n[ You can\'t attack if you have no energy! ]\n')
+            self.doTurn(True, enemy)
+
+    def controlRetreat(self):
+        # Cower away to regain energy
+        self.retreat()
+        if Player.energy < 100:
+            Player.energy += 20
+            if Player.energy > 100:
+                Player.energy = 100
+
+    def inventory(self):
+        print()
+
+    def attack(self, enemy):
         chance = random.randint(1, 10)
         if chance <= 5:
             print(f'\n-> {Player.name} threw a ferocious punch!')
-            print('DAMAGE: 10')
-            Player.didPunch = True
+            print(f'DAMAGE: {Player.damage}\n')
+            enemy.setHealth(Player.damage)
+            self.didPunch = True
         else:  # chance >= 6
             print(f'\n-> {Player.name} delivered a fierce kick!')
-            print('DAMAGE: 10')
-            Player.didKick = True
+            print(f'DAMAGE: {Player.damage}\n')
+            enemy.setHealth(Player.damage)
+            self.didKick = True
 
     def retreat(self):
         print(f'\n-> {Player.name} backed away')
