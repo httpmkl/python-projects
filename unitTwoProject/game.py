@@ -8,13 +8,15 @@
     - Figured out how to make player damage
     - Figured out how to die
     - Created attack/retreat/check stat methods for player
+    - Created trickster moves
+    - Figured out how to access the enemy class in the player class without circular import error
 
     To-Do:
-    - Figure out how to access the enemy class in the player class without circular import error
-        - Figure out how to make enemy take damage
-        - Create check enemy stats for player
+    - Have health/energy stats be accessed by character parent class
+    - Figure out how to make enemy take damage
+    - Create check enemy stats for player
     - Create use tool/ability method for player
-    - Create trickster/wizard moves
+    - Create wizard moves
     - Figure out how to acquire/buy items + the inventory on the menu screen
     - Figure out how to conclude the game once all enemies are dead
     - Create instruction screen
@@ -24,7 +26,7 @@
 
 # Battle Arena RPG gameIntro - made by Nora Calif
 startGame = False
-from player import Character
+from player import Player
 from enemy import Enemy
 
 
@@ -37,21 +39,22 @@ def gameIntro(trueOrFalse):
     while not hasItStarted:
         print('\n--------------------\n')
         print('NEW GAME STARTED')
+        print('\n--------------------')
 
         # Dialogue
-        print(f'\nWelcome to the Battle Arena, {player.name}!')
-        print('Here, you face off against enemies to see who can come out victorious')
-        print('Do you think you can survive until the end?')
+        print(f'\n\n-> Welcome to the Battle Arena, {player.name}!')
+        print('-> Here, you face off against enemies to see who can come out victorious')
+        print('-> Do you think you can survive until the end?')
         hasItStarted = True
 
     # Loop for showing enemy options
     while introDone:
-        print('\nENEMIES: the Warrior, the Trickster, the Wizard')
-        choice = input('-> Type in the opponent\'s name for a brief description \n')
+        print('\n\nENEMIES: the Warrior, the Trickster, the Wizard')
+        choice = input('[ Type in the opponent\'s name for a brief description ]\n')
 
         if choice == 'Warrior' or choice == 'warrior':  # Chose warrior
             # Warrior desc
-            print('\n----------')
+            print('\n\n--------------------')
             print('\nTHE WARRIOR')
             print('\nThis one is a formidable opponent! Powerful attacks, though reluctant \n'
                   'to dodge; you\'ll hardly be able to make it out alive with the Warrior!')
@@ -65,11 +68,11 @@ def gameIntro(trueOrFalse):
             else: # Warrior is dead
                 print('Status: DEAD')
 
-            print('\n----------')
+            print('\n--------------------\n')
 
             # Choice to attack or go back
             print('\nWould you like to go back or start a match with the Warrior?')
-            print('1. Go back \n2. Start match')
+            print('1. BACK TO OPTIONS \n2. START MATCH')
             introDone = False
 
             while not introDone:  # So the content below gets looped if invalid
@@ -88,7 +91,7 @@ def gameIntro(trueOrFalse):
                     print('Invalid input!')
         elif choice == 'Trickster' or choice == 'trickster':  # Chose trickster
             # Trickster desc
-            print('\n----------')
+            print('\n\n--------------------')
             print('\nTHE TRICKSTER')
             print('\nA sneaky opponent they are! You\'ll hardly be able to get an attack\n'
                   'in with their sly dodges. They\'ll evade you before you can even blink!')
@@ -102,11 +105,11 @@ def gameIntro(trueOrFalse):
             else:  # Trickster is dead
                 print('Status: DEAD')
 
-            print('\n----------')
+            print('\n--------------------\n')
 
             # Choice to attack or go back
             print('\nWould you like to go back or start a match with the Trickster?')
-            print('1. Go back \n2. Start match')
+            print('1. BACK TO OPTIONS \n2. START MATCH')
             introDone = False
 
             while not introDone:  # Looped if invalid
@@ -125,7 +128,7 @@ def gameIntro(trueOrFalse):
                     print('Invalid input!')
         elif choice == 'Wizard' or choice == 'wizard':  # Chose wizard
             # Wizard desc
-            print('\n----------')
+            print('\n\n--------------------')
             print('\nTHE WIZARD')
             print('\nThis one is certainly challenging! They watch your move, then calculates \n'
                   'the best course of action from there. How can you possibly defeat them?')
@@ -139,11 +142,11 @@ def gameIntro(trueOrFalse):
             else:  # Wizard is dead
                 print('Status: DEAD')
 
-            print('\n----------')
+            print('\n--------------------\n')
 
             # Choice to attack or go back
             print('\nWould you like to go back or start a match with the Wizard?')
-            print('1. Go back \n2. Start match')
+            print('1. BACK TO OPTIONS \n2. START MATCH')
             introDone = False
 
             while not introDone:  # Looped if invalid
@@ -161,7 +164,7 @@ def gameIntro(trueOrFalse):
                 except ValueError:
                     print('Invalid input!')
         else:  # They didn't type the name
-            print('\nInvalid input!')
+            print('\n-> Invalid input!')
 
 
 # Gameplay
@@ -174,10 +177,10 @@ def game(enemyName):
 
         # Checks to see if player is dead after enemy's move
         if player.checkIsDead():
-            print('\n---------------')
-            print(f'[ {player.name} died ] \nGAME OVER')
-            print('--------------')
-            print('\nThank\'s for playing!')
+            print('\n--------------------')
+            print(f'[ {player.name} died ] \n{enemy.name} WINS')
+            print('--------------------')
+            print('\nGame over. Thank\'s for playing!')
             exit()  # End game when player dies
         else:
             enemy.didTurn = True
@@ -188,7 +191,7 @@ def game(enemyName):
 
             # Checks to see if enemy is dead after player's move
             if enemy.checkIsDead():
-                print(f'[ {enemy.name} died ] \nGAME OVER')
+                print(f'[ {enemy.name} died ] \n{player.name} WINS')
                 gameIntro(True)
             else:
                 player.didTurn = True
@@ -197,18 +200,18 @@ def game(enemyName):
 
 # Inventory
 def inventory():
-    print('\n---------------')
+    print('\n--------------------')
     print('Inventory\n')
 
     print('Under Construction')
 
-    print('---------------')
-    menuScreen(True)  # Loops back to ask what they want to do
+    print('--------------------')
+    menuScreen()  # Loops back to ask what they want to do
 
 
 # Stats
 def stats():
-    print('\n---------------')
+    print('\n--------------------')
     print(f'{player.name}\'s Stats\n')
 
     print(f'-> Health: {player.health}')  # Shows health stat
@@ -216,8 +219,8 @@ def stats():
     print(f'-> Energy: {player.energy}%')  # Shows energy stat
     print(f'\nMONEY AVAILABLE: ${player.money}')  # Show money available
 
-    print('---------------')
-    menuScreen(True)
+    print('--------------------')
+    menuScreen()
 
 
 # Instructions
@@ -226,35 +229,25 @@ def instructions():
 
 
 # Menu screen
-def menuScreen(trueOrFalse):
-    hasItStarted = trueOrFalse
+def menuScreen():
     goodInput = False
 
     while not goodInput:
         try:
             goodInput = True
-
-            # To tell whether this is the program's first run or not
-            if not hasItStarted:  # First run
-                choice = int(input(f'\nWhat would you like to start with, {player.name}? \n-> '))
-            else:  # Not first run
-                choice = int(input(f'\nWhat would you like to do next, {player.name}? \n-> '))
+            choice = int(input(f'\nENTER YOUR CHOICE \n-> '))
 
             # Redirecting based on choices
             if choice > 4 or choice < 0:  # Typed an number outside of the options
                 print('\nPlease enter a valid input!')
                 goodInput = False
             elif choice == 1:  # Chose inventory
-                hasItStarted = True
                 inventory()
             elif choice == 2:  # Chose stats
-                hasItStarted = True
                 stats()
             elif choice == 3:
-                hasItStarted = True
                 instructions()
             else:  # Chose gameIntro
-                hasItStarted = True
                 gameIntro(False)
         except ValueError:  # Typed in non-integers
             print('\nPlease enter a valid input!')
@@ -265,7 +258,7 @@ def menuScreen(trueOrFalse):
 if not startGame:
     print('\n~ WELCOME TO THE BATTLE ARENA ~\n')
     name = input('Enter your name: ')
-    player = Character()
+    player = Player()
     player.setName(name)
 
     # Menu
@@ -276,4 +269,4 @@ if not startGame:
     print('4. START GAME')
 
     startGame = True
-    menuScreen(False)
+    menuScreen()
