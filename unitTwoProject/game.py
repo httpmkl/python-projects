@@ -23,6 +23,7 @@
     - Figure out how to conclude the game once all enemies are dead
     - Create instructions screen
     - (if time available) Implement some additional features for the gameplay & design a better UI
+        - Add more descriptions and vividness during the battles
 
 '''
 

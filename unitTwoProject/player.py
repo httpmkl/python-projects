@@ -114,7 +114,7 @@ class Player:
 
     def retreat(self):
         print(f'\n-> {Player.name} backed away')
-        print('DAMAGE: 0')
+        print('DAMAGE: 0\n')
 
     def checkIsDead(self):
         if Player.health > 0:
@@ -148,3 +148,10 @@ class Player:
             # If shield goes in the negatives, it gets taken away from health
             Player.health -= (Player.shield * -1)
             Player.shield = 0
+
+    def setEnergy(self, num):
+        Player.energy += num
+
+        # Conditional logic to maintain energy between 1-100
+        if Player.energy > 100:
+            Player.energy = 100
