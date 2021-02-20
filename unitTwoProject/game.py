@@ -12,16 +12,17 @@
     - Figured out how to access the enemy class in the player class without circular import error
     - Figure out how to make enemy take damage
     - Create check enemy stats method for player
+    - Created wizard moves
 
     To-Do:
-    - Make gameIntro controlled by only introDone (not hasItStarted)
-        - Look at player class for how to do it (doTurn)
-    - Make enemy class more modular
-    - Create wizard moves
     - Figure out how to acquire/buy items
         - Create the inventory class to be accessed by the menu screen & player
     - Figure out how to conclude the game once all enemies are dead
     - Create instructions screen
+    - Give hints about the enemy throughout the battle
+    - Make gameIntro controlled by only introDone (not hasItStarted)
+        - Look at player class for how to do it (doTurn)
+    - Make everything (esp. enemy class) more modular
     - (if time available) Implement some additional features for the gameplay & design a better UI
         - Add more descriptions and vividness during the battles
 
@@ -106,7 +107,7 @@ def warriorDesc():
 def tricksterDesc():
     print('\n\n--------------------')
     print('\nTHE TRICKSTER')
-    print('\nA sneaky opponent they are! You\'ll hardly be able to get an attack\n'
+    print('\nA sneaky opponent, they are! You\'ll hardly be able to get an attack\n'
           'in with their sly dodges. They\'ll evade you before you can even blink!')
     print('\nType: Defense-oriented')
     print('Strongest aspect: Speed')
@@ -144,8 +145,8 @@ def tricksterDesc():
 def wizardDesc():
     print('\n\n--------------------')
     print('\nTHE WIZARD')
-    print('\nThis one is certainly challenging! They watch your move, then calculates \n'
-          'the best course of action from there. How can you possibly defeat them?')
+    print('\nThis enemy is certainly challenging! They watch your move, then calculates \n'
+          'the best course of action from there. Better pull out your magic for this one!')
     print('\nType: Offense-oriented & defense-oriented')
     print('Strongest aspect: Intelligence')
     print('Difficulty rating: Hard')

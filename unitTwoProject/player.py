@@ -20,7 +20,6 @@ class Player:
     def __init__(self):
         Player.isDead = False
 
-
     # ---------- MATCHES ----------
     def doTurn(self, skipIntro, enemy):
         gaveOptions = skipIntro
@@ -39,7 +38,7 @@ class Player:
                 if choice > 5 or choice < 1:
                     print(f'Invalid input!')
                     gaveOptions = True
-                elif choice == 1:   # Chose user stats
+                elif choice == 1:  # Chose user stats
                     self.userStats()
                     gaveOptions = True
                 elif choice == 2:  # Chose enemy stats
@@ -67,9 +66,9 @@ class Player:
     def userStats(self):
         print('\n--------------------')
         print(f'{Player.name}\'s Stats:\n')
-        print(f'- Health: {Player.health}')
+        print(f'- Health: {self.getHealth()}')
         print(f'- Shield: {Player.shield}')
-        print(f'- Energy: {Player.energy}%')
+        print(f'- Energy: {self.getEnergy()}%')
         print('--------------------')
 
     def enemyStats(self, enemy):
@@ -83,7 +82,10 @@ class Player:
         # Physical attack
         if Player.energy > 0:
             self.attack(enemy)
-            Player.energy -= 10
+            if not enemy.getEnergySabotage():
+                Player.energy -= 10
+            else:  # Wizard sabotaged enemy
+                Player.energy -= 15
         else:  # Player has no energy
             print('\n[ You can\'t attack if you have no energy! ]\n')
             self.doTurn(True, enemy)
@@ -93,8 +95,6 @@ class Player:
         self.retreat()
         if Player.energy < 100:
             Player.energy += 20
-            if Player.energy > 100:
-                Player.energy = 100
 
     def inventory(self):
         print()
@@ -124,7 +124,6 @@ class Player:
             Player.isDead = True
             return Player.isDead
 
-
     # ---------- SETTERS ----------
     def setHealth(self, num):
         Player.health += num
@@ -152,6 +151,21 @@ class Player:
     def setEnergy(self, num):
         Player.energy += num
 
-        # Conditional logic to maintain energy between 1-100
+    # ---------- GETTERS ----------
+    def getEnergy(self):
+        # Conditional logic to ensure energy stays between 1-100
         if Player.energy > 100:
             Player.energy = 100
+            return Player.energy
+        elif Player.energy < 0:
+            Player.energy = 0
+            return Player.energy
+        else:  # Energy is within 1-100
+            return Player.energy
+
+    def getHealth(self):
+        # Conditional logic to maintain health between 1-100
+        if Player.health > 100:
+            # To ensure health doesn't go above max
+            Player.health = 100
+            return Player.health

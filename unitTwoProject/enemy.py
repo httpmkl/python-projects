@@ -1,5 +1,4 @@
 import random
-import time
 
 
 class Enemy:
@@ -84,6 +83,18 @@ class Enemy:
             return Wizard.energy
         else:
             pass
+
+    def getEnergySabotage(self):
+        if self.name == 'Wizard':
+            return Wizard.gaveSpell
+        else:
+            return False
+
+    def getHealthSabotage(self):
+        if self.name == 'Wizard':
+            return Wizard.gavePoison
+        else:
+            return False
 
 
 # Warrior class
@@ -218,19 +229,28 @@ class Wizard(Enemy):
     energyLow = False
     gavePoison = False
     gaveSpell = False
+    firstMove = True
+    hasShield = False
+    hasShieldTwo = False
 
     def __init__(self):
         super().__init__('Wizard')
 
     def doTurn(self, player):
+        Wizard.damage = int(5 + (2 * Wizard.energy / 100))
+        # To make sure sabotages are regulated throughout the match
+        self.controlDamage(player)
+
         if Wizard.energy >= 15 and not Wizard.energyLow:
             print('\n[ ENEMY TURN... ]')
 
-            if player.didKick or player.didPunch: # They did an offensive move
+            if player.didKick or player.didPunch:  # They did an offensive move
                 # Later change this criteria and do a didOffense move when special abilities are implemented
                 self.defense(player)
-            else: # Didn't physically attack
+                Wizard.energy -= 7
+            else:  # Didn't physically attack
                 self.offense(player)
+                Wizard.energy -= 7
 
         elif Wizard.energy < 15 and not Wizard.energyLow:  # Energy is below 15
             Wizard.energyLow = True
@@ -247,24 +267,16 @@ class Wizard(Enemy):
                 Wizard.energyLow = False
                 self.doTurn(player)
 
-    '''
-                Check health & energy stats: if either is low, they'll land a harsher and more immediate attack
-                    However, more energy will be spent
-                    Options:
-                        - Summons a spear to pierce through your body (-15 damage)
-                        - A large gust of wind blasts you to the ground (-15 damage)
-                If health & energy are both relatively high, they'll do a more gradual attack
-                    Less energy spent to avoid tiring out early
-                    Options:
-                        - Poison that quickly degrades your health
-                        - A spell that weakens your damage (makes energy spent quickly)
-                        - A simple -7 attack (after the above two are implemented)
-
-            '''
-
+    # Offense
     def offense(self, player):
-        # Offense
-        if player.health < 20 or player.energy < 20:
+        # Conditional logic for damage
+        if Wizard.gavePoison:
+            Wizard.damage = 12
+        else:
+            Wizard.damage = 7
+
+        # Conditional logic for moves
+        if player.health < 20:
             # Sets up a harsh but immediate attack
             self.strongAttack(player)
         else:
@@ -285,28 +297,11 @@ class Wizard(Enemy):
 
     def weakAttack(self, player):
         chance = random.randint(1, 10)
-        if Wizard.gavePoison or Wizard.gaveSpell:  # For after the first move
-            if chance <= 2:  # 20% chance
-                self.magicAttack(player)
-            else:  # 80% chance
-                self.normalAttack(player)
-        else:  # During the first move, the Wizard will start with a gradual attack (using magic)
+        if Wizard.firstMove:  # For the first move, the Wizard will always start with a magic attack
+            Wizard.firstMove = False
             self.magicAttack(player)
-
-    def magicAttack(self, player):
-        # 50% chance of either move
-        chance = random.randint(1, 10)
-        if chance <= 5:
-            # Poison
-            print('\n-> The Wizard poured a special potion over your head!')
-            # Takes an extra 5 damage whenever they try a physical attack
-            print('DAMAGE: ?\n')
-            Wizard.gavePoison = True
-        else:
-            # Spell
-            print('\n-> The Wizard muttered a peculiar incantation!')
-            print('DAMAGE: ?\n')
-            Wizard.gaveSpell = True
+        else:  # For all subsequent moves
+            self.normalAttack(player)
 
     def normalAttack(self, player):
         # 50% chance of either move
@@ -322,24 +317,87 @@ class Wizard(Enemy):
             print(f'DAMAGE: {Wizard.damage}\n')
             player.setHealth(Wizard.damage * -1)
 
+    def magicAttack(self, player):
+        # 50% chance of either move
+        chance = random.randint(1, 10)
+        if chance <= 5:
+            # Poison
+            print('\n-> The Wizard poured a special potion over your head!')
+            # Takes an extra 5 damage whenever the wizard attacks
+            print('DAMAGE: ?\n')
+            Wizard.gavePoison = True
+        else:
+            # Spell
+            print('\n-> The Wizard muttered a peculiar incantation!')
+            # Takes an extra -5 energy whenever the player attacks
+            print('DAMAGE: ?\n')
+            Wizard.gaveSpell = True
+
+    # Defense
     def defense(self, player):
-        # Defense
-        print('counteract')
+        chance = random.randint(1, 10)
+
+        if player.health < 20:
+            # Regardless of the player's move, the wizard attacks if they are vulnerable
+            self.strongAttack(player)
+        elif Wizard.hasShield:  # The wizard set up a barrier
+            self.hasShieldUp(player)
+        elif chance <= 3:  # 70% chance
+            # Gives player the chance to land some hits
+            self.weakAttack(player)
+        else:  # 70% chance
+            self.dodgeAttack(player)
+
+    def dodgeAttack(self, player):
+        chance = random.randint(1, 10)
+
+        if chance <= 8:  # 80% chance
+            self.normalDefense(player)
+        else:  # 20% chance
+            self.magicDefense(player)
+
+    def normalDefense(self, player):
+        # Dodges attack using one of 2 moves
+        if player.didKick:
+            print('\n-> Too slow! The Wizard dodged your attack using the power of flight.')
+            print(f'DAMAGE: 0')
+            print('[ Your attack gave no damage! ]\n')
+            Wizard.health += player.damage  # Restores health
+            player.didKick = False
+        elif player.didPunch:
+            print('\n-> So close! The Wizard blocked your hit with a magical barrier.')
+            print(f'DAMAGE: 0')
+            print('[ Your attack gave no damage! ]\n')
+            Wizard.health += player.damage  # Restores health
+            player.didPunch = False
+
+    def magicDefense(self, player):
+        # Sets up a defense that'll protect them for two moves
+        print('\n-> The Wizard set up a protective shield.')
+        print(f'DAMAGE: 0')
+        print('[ Your attack gave no damage! ]\n')
+        Wizard.health += player.damage  # Restores health
         player.didKick = False
         player.didPunch = False
+        Wizard.hasShield = True
 
-    # Figure out how to make this run in the background and have the delay not effect the entire program
+    def hasShieldUp(self, player):
+        if not Wizard.hasShieldTwo:  # Only used it for one turn so far
+            print('\n-> Nice try! The Wizard has put up a protective shield during your previous attack')
+            print(f'DAMAGE: 0')
+            print('[ Your attack gave no damage! ]\n')
+            Wizard.health += player.damage  # Restores health
+            player.didKick = False
+            player.didPunch = False
+            Wizard.hasShieldTwo = True
+        else:
+            # So the barrier only lasts for two turns
+            Wizard.hasShield = False
+            Wizard.hasShieldTwo = False
+            self.normalDefense(player)
+
     def controlDamage(self, player):
-        while Wizard.gavePoison:
-            if player.health > 30:
-                player.setHealth(-1)
-                time.sleep(2)
-            else:  # health <= 30
-                Wizard.gavePoison = False
-
-        while Wizard.gaveSpell:
-            while player.energy > 30:
-                player.setEnergy(-1)
-                time.sleep(2)
-            else:  # energy <= 30
-                Wizard.gaveSpell = False
+        if Wizard.gavePoison and player.health < 30:
+            Wizard.gavePoison = False
+        elif Wizard.gaveSpell and player.energy < 30:
+            Wizard.gaveSpell = False
