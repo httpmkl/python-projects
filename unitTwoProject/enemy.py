@@ -1,4 +1,5 @@
 import random
+from inventory import Inventory
 
 
 class Enemy:
@@ -114,7 +115,7 @@ class Warrior(Enemy):
 
         # Attacks if energy is high enough, dodges if low
         if Warrior.energy >= 15 and not Warrior.energyLow:
-            print('\n[ ENEMY TURN... ]')
+            print('\n\n[ ENEMY TURN... ]')
             self.attack(player)
             Warrior.energy -= 7
         elif Warrior.energy < 15 and not Warrior.energyLow:  # Energy is below 15
@@ -140,14 +141,14 @@ class Warrior(Enemy):
             print(f'DAMAGE: {Warrior.damage}\n')
             # So damage gets taken on shield before health
             if player.shield > 0:
-                player.setShield(Warrior.damage * -1)
+                player.addShield(Warrior.damage * -1)
             else:
                 player.setHealth(Warrior.damage * -1)
         else:  # chance >= 6
             print('\n-> With mighty swing, the Warrior gave a strong kick!')
             print(f'DAMAGE: {Warrior.damage}\n')
             if player.shield > 0:
-                player.setShield(Warrior.damage * -1)
+                player.addShield(Warrior.damage * -1)
             else:
                 player.setHealth(Warrior.damage * -1)
 
@@ -186,7 +187,7 @@ class Trickster(Enemy):
         # Makes it so that the enemy retreats until energy is back completely
         if Trickster.energyLow:
             if Trickster.energy < 100:
-                print('\n[ ENEMY TURN... ]')
+                print('\n\n[ ENEMY TURN... ]')
                 Enemy.retreat(self)
                 Trickster.energy += 34
                 player.didKick = False
@@ -258,7 +259,7 @@ class Wizard(Enemy):
         # Makes it so that the enemy dodges until energy is back completely
         if Wizard.energyLow:
             if Wizard.energy < 100:
-                print('\n[ ENEMY TURN... ]')
+                print('\n\n[ ENEMY TURN... ]')
                 Enemy.retreat(self)
                 Wizard.energy += 50
                 if Wizard.energy > 100:

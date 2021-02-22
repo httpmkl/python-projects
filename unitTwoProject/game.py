@@ -13,10 +13,11 @@
     - Figure out how to make enemy take damage
     - Create check enemy stats method for player
     - Created wizard moves
+    - Set up tools & special abilities
+    - Created functionality for the protein drink
 
     To-Do:
-    - Figure out how to acquire/buy items
-        - Create the inventory class to be accessed by the menu screen & player
+    - Create functionality for other tools
     - Figure out how to conclude the game once all enemies are dead
     - Create instructions screen
     - Give hints about the enemy throughout the battle
@@ -211,17 +212,6 @@ def game(enemyName):
                 enemy.didTurn = False
 
 
-# Inventory
-def inventory():
-    print('\n--------------------')
-    print('Inventory\n')
-
-    print('Under Construction')
-
-    print('--------------------')
-    menuScreen()  # Loops back to ask what they want to do
-
-
 # Stats
 def stats():
     print('\n--------------------')
@@ -251,16 +241,14 @@ def menuScreen():
             choice = int(input(f'\nENTER YOUR CHOICE \n-> '))
 
             # Redirecting based on choices
-            if choice > 4 or choice < 0:  # Typed an number outside of the options
+            if choice > 3 or choice < 0:  # Typed an number outside of the options
                 print('\nPlease enter a valid input!')
                 goodInput = False
-            elif choice == 1:  # Chose inventory
-                inventory()
-            elif choice == 2:  # Chose stats
+            elif choice == 1:  # Chose stats
                 stats()
-            elif choice == 3:
+            elif choice == 2:
                 instructions()
-            else:  # Chose gameIntro
+            else:  # choice = 3
                 gameIntro(False)
         except ValueError:  # Typed in non-integers
             print('\nPlease enter a valid input!')
@@ -276,10 +264,9 @@ if not startGame:
 
     # Menu
     print('\nMENU:')
-    print('1. Open Inventory')
-    print('2. Check Stats')
-    print('3. Instructions')
-    print('4. START GAME')
+    print('1. Check Stats')
+    print('2. Instructions')
+    print('3. START GAME')
 
     startGame = True
     menuScreen()

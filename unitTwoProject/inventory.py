@@ -1,10 +1,9 @@
 class Inventory:
-
     '''
         Types of items:
 
         1. Specialized weapons: Items that can only be accessed when playing against certain enemies
-        [Work for 5 enemy turns and can be purchased 2 times]
+        [Work for 5 enemy turns and can be purchased 1 time]
             Spiked armour: Makes the Warrior take 10 damage when they throw a physical attack
                 - You won't receive damage from the hits; only the Warrior will
             Ninja mist: Hides your movement from the Trickster
@@ -21,10 +20,72 @@ class Inventory:
                 - Applicable for 3 turns; 2 available
             Force field: Increases shield by 50
                 - One-time occurrence; 2 available
-            Bandages: Increases health by 20
+            Medical kit: Increases health by 20
                 - One-time occurrence; 2 available
 
     '''
+    hasSkArmour = False
+    hasNjMist = False
+    hasCsSabotage = False
+    hasProDrink = False
+    hasProDrinkTwo = False
+    hasEnSword = False
+    hasEnSwordTwo = False
+    hasFrField = False
+    hasFrFieldTwo = False
+    hasMedKit = False
+    hasMedKitTwo = False
 
     def __init__(self):
-        print()
+        pass
+
+    # ---------- GETTERS ----------
+    def skArmourNum(self):
+        if not Inventory.hasSkArmour:
+            return 0
+        else:
+            return 1
+
+    def njMistNum(self):
+        if not Inventory.hasNjMist:
+            return 0
+        else:
+            return 1
+
+    def csSabotageNum(self):
+        if not Inventory.hasCsSabotage:
+            return 0
+        else:
+            return 1
+
+    def proDrinkNum(self):
+        if not Inventory.hasProDrink:
+            return 0
+        elif not Inventory.hasProDrinkTwo:
+            return 1
+        else:
+            return 2
+
+    def enSwordNum(self):
+        if not Inventory.hasEnSword:
+            return 0
+        elif not Inventory.hasEnSwordTwo:
+            return 1
+        else:
+            return 2
+
+    def frFieldNum(self):
+        if not Inventory.hasFrField:
+            return 0
+        elif not Inventory.hasFrFieldTwo:
+            return 1
+        else:
+            return 2
+
+    def medKitNum(self):
+        if not Inventory.hasMedKit:
+            return 0
+        elif not Inventory.hasMedKitTwo:
+            return 1
+        else:
+            return 2
