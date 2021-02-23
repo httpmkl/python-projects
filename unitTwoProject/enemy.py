@@ -1,26 +1,24 @@
 import random
-from inventory import Inventory
 
 
 class Enemy:
-    didTurn = False
     name = 'Placeholder'
 
     def __init__(self, name):
-        self.name = name
+        Enemy.name = name
 
     def returnName(self):
-        return self.name
+        return Enemy.name
 
     def doTurn(self, player):
         # Accesses each character's turn through a single method
-        if self.name == 'Warrior':
+        if Enemy.name == 'Warrior':
             war = Warrior()
             war.doTurn(player)
-        elif self.name == 'Trickster':
+        elif Enemy.name == 'Trickster':
             trick = Trickster()
             trick.doTurn(player)
-        elif self.name == 'Wizard':
+        elif Enemy.name == 'Wizard':
             wiz = Wizard()
             wiz.doTurn(player)
         else:
@@ -28,20 +26,20 @@ class Enemy:
 
     def checkIsDead(self):
         # Checks if enemy is dead
-        if self.name == 'Warrior':
+        if Enemy.name == 'Warrior':
             if Warrior.health <= 0:
                 Warrior.isDead = True
                 return Warrior.isDead
             else:
                 Warrior.isDead = False
                 return Warrior.isDead
-        elif self.name == 'Trickster':
+        elif Enemy.name == 'Trickster':
             if Trickster.health <= 0:
                 Trickster.isDead = True
                 return Trickster.isDead
             else:
                 Trickster.isDead = False
-        elif self.name == 'Wizard':
+        elif Enemy.name == 'Wizard':
             if Wizard.health <= 0:
                 Wizard.isDead = True
                 return Wizard.isDead
@@ -51,11 +49,11 @@ class Enemy:
             pass
 
     def setHealth(self, num):
-        if self.name == 'Warrior':
+        if Enemy.name == 'Warrior':
             Warrior.health -= num
-        elif self.name == 'Trickster':
+        elif Enemy.name == 'Trickster':
             Trickster.health -= num
-        elif self.name == 'Wizard':
+        elif Enemy.name == 'Wizard':
             Wizard.health -= num
         else:
             pass
@@ -66,33 +64,33 @@ class Enemy:
 
     # ---------- GETTERS ----------
     def getHealth(self):
-        if self.name == 'Warrior':
+        if Enemy.name == 'Warrior':
             return Warrior.health
-        elif self.name == 'Trickster':
+        elif Enemy.name == 'Trickster':
             return Trickster.health
-        elif self.name == 'Wizard':
+        elif Enemy.name == 'Wizard':
             return Wizard.health
         else:
             pass
 
     def getEnergy(self):
-        if self.name == 'Warrior':
+        if Enemy.name == 'Warrior':
             return Warrior.energy
-        elif self.name == 'Trickster':
+        elif Enemy.name == 'Trickster':
             return Trickster.energy
-        elif self.name == 'Wizard':
+        elif Enemy.name == 'Wizard':
             return Wizard.energy
         else:
             pass
 
     def getEnergySabotage(self):
-        if self.name == 'Wizard':
+        if Enemy.name == 'Wizard':
             return Wizard.gaveSpell
         else:
             return False
 
     def getHealthSabotage(self):
-        if self.name == 'Wizard':
+        if Enemy.name == 'Wizard':
             return Wizard.gavePoison
         else:
             return False
@@ -115,12 +113,15 @@ class Warrior(Enemy):
 
         # Attacks if energy is high enough, dodges if low
         if Warrior.energy >= 15 and not Warrior.energyLow:
-            print('\n\n[ ENEMY TURN... ]')
+            print('\n[ ENEMY TURN... ]')
             self.attack(player)
             Warrior.energy -= 7
         elif Warrior.energy < 15 and not Warrior.energyLow:  # Energy is below 15
             Warrior.energyLow = True
 
+        self.checkEnergyLow(player)
+
+    def checkEnergyLow(self, player):
         # Makes it so that the enemy retreats until energy is back completely
         if Warrior.energyLow:
             if Warrior.energy < 100:
@@ -141,14 +142,14 @@ class Warrior(Enemy):
             print(f'DAMAGE: {Warrior.damage}\n')
             # So damage gets taken on shield before health
             if player.shield > 0:
-                player.addShield(Warrior.damage * -1)
+                player.setShield(Warrior.damage * -1)
             else:
                 player.setHealth(Warrior.damage * -1)
         else:  # chance >= 6
             print('\n-> With mighty swing, the Warrior gave a strong kick!')
             print(f'DAMAGE: {Warrior.damage}\n')
             if player.shield > 0:
-                player.addShield(Warrior.damage * -1)
+                player.setShield(Warrior.damage * -1)
             else:
                 player.setHealth(Warrior.damage * -1)
 
@@ -184,10 +185,13 @@ class Trickster(Enemy):
         elif Trickster.energy < 15 and not Trickster.energyLow:  # Energy is below 15
             Trickster.energyLow = True
 
+        self.checkEnergyLow(player)
+
+    def checkEnergyLow(self, player):
         # Makes it so that the enemy retreats until energy is back completely
         if Trickster.energyLow:
             if Trickster.energy < 100:
-                print('\n\n[ ENEMY TURN... ]')
+                print('\n[ ENEMY TURN... ]')
                 Enemy.retreat(self)
                 Trickster.energy += 34
                 player.didKick = False
@@ -202,7 +206,10 @@ class Trickster(Enemy):
     def attack(self, player):
         print('\n-> The Trickster speedily approached you and sent a harsh jab!')
         print(f'DAMAGE: {Trickster.damage}\n')
-        player.setHealth(Trickster.damage * -1)
+        if player.shield > 0:
+            player.setShield(Trickster.damage * -1)
+        else:
+            player.setHealth(Trickster.damage * -1)
 
     def dodge(self, player):
         if player.didKick:
@@ -246,7 +253,6 @@ class Wizard(Enemy):
             print('\n[ ENEMY TURN... ]')
 
             if player.didKick or player.didPunch:  # They did an offensive move
-                # Later change this criteria and do a didOffense move when special abilities are implemented
                 self.defense(player)
                 Wizard.energy -= 7
             else:  # Didn't physically attack
@@ -256,10 +262,13 @@ class Wizard(Enemy):
         elif Wizard.energy < 15 and not Wizard.energyLow:  # Energy is below 15
             Wizard.energyLow = True
 
+        self.checkEnergyLow(player)
+
+    def checkEnergyLow(self, player):
         # Makes it so that the enemy dodges until energy is back completely
         if Wizard.energyLow:
             if Wizard.energy < 100:
-                print('\n\n[ ENEMY TURN... ]')
+                print('\n[ ENEMY TURN... ]')
                 Enemy.retreat(self)
                 Wizard.energy += 50
                 if Wizard.energy > 100:
@@ -290,11 +299,17 @@ class Wizard(Enemy):
         if chance <= 5:
             print('\n-> The Wizard summoned a grand spear and pierced it through your body!')
             print(f'DAMAGE: {Wizard.damage * 2}\n')
-            player.setHealth(Wizard.damage * -2)
+            if player.shield > 0:
+                player.setShield(Wizard.damage * -2)
+            else:
+                player.setHealth(Wizard.damage * -2)
         else:  # chance >= 6
             print('\n-> The Wizard mustered a large gust of wind and blasted you to the ground!')
             print(f'DAMAGE: {Wizard.damage * 2}\n')
-            player.setHealth(Wizard.damage * -2)
+            if player.shield > 0:
+                player.setShield(Wizard.damage * -2)
+            else:
+                player.setHealth(Wizard.damage * -2)
 
     def weakAttack(self, player):
         chance = random.randint(1, 10)
@@ -311,12 +326,18 @@ class Wizard(Enemy):
             # Normal
             print('\n-> The Wizard struck you with bow & arrow!')
             print(f'DAMAGE: {Wizard.damage}\n')
-            player.setHealth(Wizard.damage * -1)
+            if player.shield > 0:
+                player.setShield(Wizard.damage * -1)
+            else:
+                player.setHealth(Wizard.damage * -1)
         else:
             # Normal
             print('\n-> The Wizard knocked you down with his staff!')
             print(f'DAMAGE: {Wizard.damage}\n')
-            player.setHealth(Wizard.damage * -1)
+            if player.shield > 0:
+                player.setShield(Wizard.damage * -1)
+            else:
+                player.setHealth(Wizard.damage * -1)
 
     def magicAttack(self, player):
         # 50% chance of either move
@@ -343,10 +364,7 @@ class Wizard(Enemy):
             self.strongAttack(player)
         elif Wizard.hasShield:  # The wizard set up a barrier
             self.hasShieldUp(player)
-        elif chance <= 3:  # 70% chance
-            # Gives player the chance to land some hits
-            self.weakAttack(player)
-        else:  # 70% chance
+        else:
             self.dodgeAttack(player)
 
     def dodgeAttack(self, player):

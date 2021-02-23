@@ -12,24 +12,36 @@
     - Figured out how to access the enemy class in the player class without circular import error
     - Figure out how to make enemy take damage
     - Create check enemy stats method for player
+    - Made code more modular
     - Created wizard moves
     - Set up tools & special abilities
-    - Created functionality for the protein drink
+    - Created functionality for some special tools
+        - Protein drink
+        - Medical kit
+        - Force field
+        - Enemy hints
+    - Set up game conclusion
 
     To-Do:
-    - Create functionality for other tools
-    - Figure out how to conclude the game once all enemies are dead
-    - Create instructions screen
-    - Give hints about the enemy throughout the battle
-    - Make gameIntro controlled by only introDone (not hasItStarted)
-        - Look at player class for how to do it (doTurn)
-    - Make everything (esp. enemy class) more modular
-    - (if time available) Implement some additional features for the gameplay & design a better UI
-        - Add more descriptions and vividness during the battles
+    - Create functionality for other special tools
+        - Spiked armour
+        - Ninja mist
+        - Cursed sabotage
+        - Enchanted sword
+        (NEED TO KNOW HOW TO KEEP COUNT OF TURNS)
+    - Improve the user experience for the game
+        - Create a concise and clear instructions screen
+        - Write creative end screens for both player death and enemy death
+        - Add more descriptions during the battles for a more immersive experience
+        - Make sure the line spacing is good so everything isn't condensed
 
 '''
 
-# Battle Arena RPG gameIntro - made by Nora Calif
+''' 
+    Battle Arena RPG game
+    -> Made by Nora Calif
+'''
+
 startGame = False
 from player import Player
 from enemy import Enemy
@@ -38,7 +50,6 @@ from enemy import Enemy
 # Starting screen for battle
 def gameIntro(trueOrFalse):
     hasItStarted = trueOrFalse
-    introDone = True
 
     # Only shows when the game first starts
     while not hasItStarted:
@@ -53,16 +64,19 @@ def gameIntro(trueOrFalse):
         hasItStarted = True
 
     # Loop for showing enemy options
-    while introDone:
+    while hasItStarted:
         print('\n\nENEMIES: the Warrior, the Trickster, the Wizard')
         choice = input('[ Type in the opponent\'s name for a brief description ]\n')
 
         if choice == 'Warrior' or choice == 'warrior':  # Chose warrior
             warriorDesc()
+            break
         elif choice == 'Trickster' or choice == 'trickster':  # Chose trickster
             tricksterDesc()
+            break
         elif choice == 'Wizard' or choice == 'wizard':  # Chose wizard
             wizardDesc()
+            break
         else:  # They didn't type the name
             print('\n-> Invalid input!')
 
@@ -81,9 +95,16 @@ def warriorDesc():
         print('Status: ALIVE')
     else:  # Warrior is dead
         print('Status: DEAD')
-
     print('\n--------------------\n')
 
+    if not war.checkIsDead():
+        startWarriorGame()
+    else:
+        print('\n[ You have already defeated this enemy!]')
+        gameIntro(True)
+
+
+def startWarriorGame():
     # Choice to attack or go back
     print('\nWould you like to go back or start a match with the Warrior?')
     print('1. BACK TO OPTIONS \n2. START MATCH')
@@ -98,8 +119,8 @@ def warriorDesc():
                 introDone = True
             else:
                 print(f'\n\n[ {player.name} vs. Warrior: START ]\n')
+                introDone = True
                 game('Warrior')
-                break
                 # Takes us to game function
         except ValueError:
             print('Invalid input!')
@@ -119,9 +140,15 @@ def tricksterDesc():
         print('Status: ALIVE')
     else:  # Trickster is dead
         print('Status: DEAD')
-
     print('\n--------------------\n')
 
+    if not trick.checkIsDead():
+        startTricksterGame()
+    else:
+        print('[ You have already defeated this enemy!]')
+        gameIntro(True)
+
+def startTricksterGame():
     # Choice to attack or go back
     print('\nWould you like to go back or start a match with the Trickster?')
     print('1. BACK TO OPTIONS \n2. START MATCH')
@@ -134,11 +161,10 @@ def tricksterDesc():
                 print('Invalid input!')
             elif choice2 == 1:
                 introDone = True
-            else:
+            else:  # choice2 = 2
                 print(f'\n\n[ {player.name} vs. Trickster: START ]\n')
+                introDone = True
                 game('Trickster')
-                break
-                # Takes us to game function
         except ValueError:
             print('Invalid input!')
 
@@ -184,6 +210,9 @@ def wizardDesc():
 # Gameplay
 def game(enemyName):
     enemy = Enemy(enemyName)
+    player.resetStats()  # To make sure the player starts with max stats
+    player.didTurn = True
+    enemy.didTurn = False
 
     # Creates an enemy -> player -> enemy loop for the turns
     while player.didTurn and not enemy.didTurn:  # Player just went
@@ -194,8 +223,7 @@ def game(enemyName):
             print('\n--------------------')
             print(f'[ {player.name} died ] \n{enemy.name} WINS')
             print('--------------------\n')
-            print('\nGAME OVER \nThank\'s for playing! \n')
-            exit()  # End game when player dies
+            endScreen()  # End game when player dies
         else:
             enemy.didTurn = True
             player.didTurn = False
@@ -205,7 +233,10 @@ def game(enemyName):
 
             # Checks to see if enemy is dead after player's move
             if enemy.checkIsDead():
+                print('\n\n--------------------')
                 print(f'[ {enemy.name} died ] \n{player.name} WINS')
+                print('--------------------\n')
+                checkIfGameOver()
                 gameIntro(True)
             else:
                 player.didTurn = True
@@ -230,6 +261,25 @@ def stats():
 def instructions():
     print('Under construction')
 
+
+# Ending screen
+def checkIfGameOver():
+    war = Enemy('Warrior')
+    trick = Enemy('Trickster')
+    wiz = Enemy('Wizard')
+
+    if war.checkIsDead() and trick.checkIsDead() and wiz.checkIsDead():
+        # All enemies are dead
+        endScreen()
+
+def endScreen():
+    # RE-DESIGN END SCREEN TO BE STORYTELLING N COOL N EPIC
+    if player.checkIsDead():
+        print('\nGAME OVER \nThank\'s for playing! \n')
+        exit()
+    else:  # Enemy is dead
+        print('\nYou won! Thank\'s for playing! \n')
+        exit()
 
 # Menu screen
 def menuScreen():

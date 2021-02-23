@@ -35,11 +35,13 @@ class Inventory:
     hasFrFieldTwo = False
     hasMedKit = False
     hasMedKitTwo = False
+    hasHint = False
+    hasHintTwo = False
+    hasHintThree = False
 
     def __init__(self):
         pass
 
-    # ---------- GETTERS ----------
     def skArmourNum(self):
         if not Inventory.hasSkArmour:
             return 0
@@ -89,3 +91,13 @@ class Inventory:
             return 1
         else:
             return 2
+
+    def hintNum(self):
+        if not Inventory.hasHint:
+            return 0
+        elif not Inventory.hasHintTwo:
+            return 1
+        elif not Inventory.hasHintThree:
+            return 2
+        else:
+            return 3
