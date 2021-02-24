@@ -173,6 +173,8 @@ class Player:
     # ---------- INVENTORY ----------
 
     def inventory(self, enemy):
+        self.didKick = False
+        self.didPunch = False
         inven = Inventory()
 
         print('\n--------------------\n')
@@ -591,7 +593,7 @@ class Player:
         print('\n-> Provides a clue about the playing style of the enemy')
         print('\nType: General')
         print(f'Unlocked: YES')
-        print('Cost: $5')
+        print('Cost: $3')
         print('\n----------\n')
         gaveDesc = True
 
@@ -644,7 +646,7 @@ class Player:
             self.inventoryOptions(enemy)
 
     def warHint(self):
-        self.spendMoney(5)
+        self.spendMoney(3)
         print('\nEnemy hint:')
         print("-> [ The Warrior will always attack until they're low on energy; then, they retreat,"
               "\nand they might find themselves vulnerable to receiving physical attacks... ]\n")
@@ -670,7 +672,7 @@ class Player:
             self.inventoryOptions(enemy)
 
     def trickHint(self):
-        self.spendMoney(5)
+        self.spendMoney(3)
         print('\nEnemy hint:')
         print("-> [ There's a high, but not total, chance of the trickster dodging you, so perhaps"
               "\nit would be wise to save your powerful attacks for when they can't detect it... ]\n")
@@ -696,7 +698,7 @@ class Player:
             self.inventory(enemy)
 
     def wizHint(self):
-        self.spendMoney(5)
+        self.spendMoney(3)
         print('\nEnemy hint:')
         print("-> [ The Wizard is extremely intelligent and calculative in formulating attacks,"
               "\nso by getting them disoriented, you might be able to inflict some damage ]\n")
