@@ -8,10 +8,8 @@ class Inventory:
                 - You won't receive damage from the hits; only the Warrior will
             Ninja mist: Hides your movement from the Trickster
                 - They'll perceive your movement as a retreat so they'll attack (w/ less damage than you)
-            Cursed sabotage: Makes it so that the Wizard takes 20 damage for using magic
-                - This includes; magic attacks (potions & spells), magic defense (shield), normal defense,
-                  and strong attacks (everything but normal 7 damage attacks)
-                - They can still use magic, but it'll be detrimental for them
+            Cursed sabotage: Makes it so that the Wizard loses half of his intelligence
+                - Accuracy depleted
 
         2. General tools: Items that can be accessed during any battle
             Protein drink: Increases energy to 100%

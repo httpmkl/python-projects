@@ -114,7 +114,7 @@ class Warrior(Enemy):
         # Attacks if energy is high enough, dodges if low
         if Warrior.energy >= 15 and not Warrior.energyLow:
             print('\n[ ENEMY TURN... ]')
-            self.attack(player)
+            self.controlAttack(player)
             Warrior.energy -= 7
         elif Warrior.energy < 15 and not Warrior.energyLow:  # Energy is below 15
             Warrior.energyLow = True
@@ -134,6 +134,12 @@ class Warrior(Enemy):
                 Warrior.energyLow = False
                 self.doTurn(player)
 
+    def controlAttack(self, player):
+        if player.skTrackingTurns:
+            self.failAttack(player)
+        else:
+            self.attack(player)
+
     def attack(self, player):
         # Creates 50% chance of either action playing out
         chance = random.randint(1, 10)
@@ -152,6 +158,35 @@ class Warrior(Enemy):
                 player.setShield(Warrior.damage * -1)
             else:
                 player.setHealth(Warrior.damage * -1)
+
+    def failAttack(self, player):
+        num = Warrior.damage - 10
+        # Takes away health for attacking
+        chance = random.randint(1, 10)
+        if chance <= 5:
+            print('\n-> The Warrior loaded his fist and delivered a powerful blow!')
+            print(f'DAMAGE: {num}')
+            print('[ The Warrior took 10 damage for attacking you! ]\n')
+            if num < 0:  # If damage - 10 is negative, enemy takes damage
+                player.skTrackTurns(self)
+                Enemy.setHealth(self, num * -1)
+            else:  # If damage - 10 is positive, player takes damage
+                if player.shield > 0:
+                    player.setShield(num)
+                else:
+                    player.setHealth(num)
+        else:  # chance >= 6
+            print('\n-> With mighty swing, the Warrior gave a strong kick!')
+            print(f'DAMAGE: {num}')
+            print('[ The Warrior took 10 damage for attacking you! ]\n')
+            if num < 0:  # If damage - 10 is negative, enemy takes damage
+                player.skTrackTurns(self)
+                Enemy.setHealth(self, num * -1)
+            else:  # If damage - 10 is positive, player takes damage
+                if player.shield > 0:
+                    player.setShield(num)
+                else:
+                    player.setHealth(num)
 
 
 # Trickster class
@@ -233,6 +268,7 @@ class Wizard(Enemy):
     health = 100
     energy = 100
     damage = 7
+    chanceNum = 0
     isDead = False
     energyLow = False
     gavePoison = False
@@ -248,21 +284,33 @@ class Wizard(Enemy):
         Wizard.damage = int(5 + (2 * Wizard.energy / 100))
         # To make sure sabotages are regulated throughout the match
         self.controlDamage(player)
-
         if Wizard.energy >= 15 and not Wizard.energyLow:
             print('\n[ ENEMY TURN... ]')
+            # How the wizard attacks/defense
+            self.pickAttack(player)
+        elif Wizard.energy < 15 and not Wizard.energyLow:  # Energy is below 15
+            Wizard.energyLow = True
 
+        self.checkEnergyLow(player)
+
+    def pickAttack(self, player):
+        # To deteriorate the accuracy with Cursed Sabotage
+        player.csTrackTurns(self)
+        if player.csTrackingTurns:
+            Wizard.chanceNum = 7  # 30% chance of calculating an appropriate attack/defense
+        else:
+            Wizard.chanceNum = 0  # 100% chance of calculating an appropriate attack/defense
+
+        chance = random.randint(1, 10)
+        if chance > Wizard.chanceNum:
             if player.didKick or player.didPunch:  # They did an offensive move
                 self.defense(player)
                 Wizard.energy -= 7
             else:  # Didn't physically attack
                 self.offense(player)
                 Wizard.energy -= 7
-
-        elif Wizard.energy < 15 and not Wizard.energyLow:  # Energy is below 15
-            Wizard.energyLow = True
-
-        self.checkEnergyLow(player)
+        else:  # This will only be accessed if Cursed Sabotage is enabled
+            self.disoriented(player)
 
     def checkEnergyLow(self, player):
         # Makes it so that the enemy dodges until energy is back completely
@@ -316,6 +364,7 @@ class Wizard(Enemy):
         if Wizard.firstMove:  # For the first move, the Wizard will always start with a magic attack
             Wizard.firstMove = False
             self.magicAttack(player)
+            Wizard.usedMagic = True
         else:  # For all subsequent moves
             self.normalAttack(player)
 
@@ -377,18 +426,33 @@ class Wizard(Enemy):
 
     def normalDefense(self, player):
         # Dodges attack using one of 2 moves
-        if player.didKick:
+        chance = random.randint(1, 2)
+        if chance == 1:
             print('\n-> Too slow! The Wizard dodged your attack using the power of flight.')
             print(f'DAMAGE: 0')
             print('[ Your attack gave no damage! ]\n')
             Wizard.health += player.damage  # Restores health
             player.didKick = False
-        elif player.didPunch:
-            print('\n-> So close! The Wizard blocked your hit with a magical barrier.')
-            print(f'DAMAGE: 0')
-            print('[ Your attack gave no damage! ]\n')
-            Wizard.health += player.damage  # Restores health
-            player.didPunch = False
+        else:  # chance = 2; 50% likelihood
+            # Sort of an attack, gives the player a chance to land hits
+            if player.didKick:
+                print('\n-> The Wizard held up his blade and slashed your foot!')
+                print(f'DAMAGE: {Wizard.damage}')
+                print('[ Your attack damage was cut in half! ]\n')
+                Wizard.health += int(player.damage/2)  # Restores half health
+                if player.shield > 0:
+                    player.setShield(Wizard.damage * -1)
+                else:
+                    player.setHealth(Wizard.damage * -1)
+            elif player.didPunch:
+                print('\n-> The Wizard blocked your punch with his blade!')
+                print(f'DAMAGE: {Wizard.damage}')
+                print('[ Your attack damage was cut in half! ]\n')
+                Wizard.health += int(player.damage / 2)
+                if player.shield > 0:
+                    player.setShield(Wizard.damage * -1)
+                else:
+                    player.setHealth(Wizard.damage * -1)
 
     def magicDefense(self, player):
         # Sets up a defense that'll protect them for two moves
@@ -414,6 +478,11 @@ class Wizard(Enemy):
             Wizard.hasShield = False
             Wizard.hasShieldTwo = False
             self.normalDefense(player)
+
+    # Disoriented attack (nothing happens)
+    def disoriented(self, player):
+        print('\n-> The Wizard turned in circles. They seem a bit confused.')
+        print(f'DAMAGE: 0\n')
 
     def controlDamage(self, player):
         if Wizard.gavePoison and player.health < 30:

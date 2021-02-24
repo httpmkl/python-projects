@@ -9,7 +9,16 @@ class Player:
     energy = 100
     money = 75
     damage = 7
+    skTurn = 0
+    njTurn = 0
+    csTurn = 0
+    enTurn = 0
     didTurn = True
+    skTrackingTurns = False
+    njTrackingTurns = False
+    csTrackingTurns = False
+    enTrackingTurns = False
+
 
     # To be accessed by enemies
     didKick = False
@@ -88,27 +97,49 @@ class Player:
     def controlAttack(self, enemy):
         # Physical attack
         if Player.energy > 0:
-            self.attack(enemy)
+            # Checks if player has enchanted sword
+            if Player.enTrackingTurns:
+                self.enSwordAttack(enemy)
+            else:
+                self.attack(enemy)
+            # Checks if the wizard sabotaged the player
             if not enemy.getEnergySabotage():
-                Player.energy -= 10
-            else:  # Wizard sabotaged enemy
-                Player.energy -= 15
+                if not Player.enTrackingTurns:
+                    Player.energy -= 10
+            else:  # Takes an extra 5 energy if they did
+                if not Player.enTrackingTurns:
+                    Player.energy -= 15
+
         else:  # Player has no energy
             print('\n[ You can\'t attack if you have no energy! ]\n')
             self.doTurn(True, enemy)
 
     def attack(self, enemy):
+        self.njTrackTurns(enemy)
         chance = random.randint(1, 10)
         if chance <= 5:
             print(f'\n-> {Player.name} threw a ferocious punch!')
             print(f'DAMAGE: {Player.damage}\n')
             enemy.setHealth(Player.damage)
-            self.didPunch = True
+            self.njTrackTurns(enemy)
+            if not Player.njTrackingTurns:
+                self.didPunch = True
         else:  # chance >= 6
             print(f'\n-> {Player.name} delivered a fierce kick!')
             print(f'DAMAGE: {Player.damage}\n')
             enemy.setHealth(Player.damage)
-            self.didKick = True
+            self.njTrackTurns(enemy)
+            if not Player.njTrackingTurns:
+                self.didKick = True
+
+    def enSwordAttack(self, enemy):
+        print(f'\n-> {Player.name} plunged an enchanted sword into the enemy!')
+        print(f'DAMAGE: {Player.damage * 2}\n')
+        enemy.setHealth(Player.damage * 2)
+        self.enTrackTurns(enemy)
+        self.njTrackTurns(enemy)
+        if not Player.njTrackingTurns:
+            self.didPunch = True
 
     def controlRetreat(self):
         # Cower away to regain energy
@@ -131,6 +162,7 @@ class Player:
             return Player.isDead
 
     def resetStats(self):
+        # Og stats
         Player.health = 100
         Player.energy = 100
         Player.shield = 0
@@ -229,14 +261,32 @@ class Player:
         else:
             return 'NO'
 
+    def skTrackTurns(self, enemy):
+        # Tracks 5 player turns
+        if Player.skTrackingTurns:
+            if Player.skTurn >= 4:
+                Player.skTurn = 0
+                Player.skTrackingTurns = False
+            elif enemy.doTurn:
+                Player.skTurn += 1
+            elif Player.doTurn:
+                Player.skTurn += 1
+
     def useSkArmour(self, enemy):
-        print()
+        if not Inventory.hasSkArmour:
+            self.spendMoney(10)
+            Player.skTrackingTurns = True
+            print('')
+            Inventory.hasSkArmour = True
+        else:
+            print('\n[ Cannot purchase item; max amount already bought! ]\n')
+            self.inventory(enemy)
 
     # Ninja Mist
     def njMistDesc(self, enemy):
         print('\n\n----------')
         print('\nNINJA MIST')
-        print('\n-> Gives the enemy 10 damage for attacking Player')
+        print('\n-> Hides your movement from the enemy')
         print('\nType: SPECIALIZED - Trickster')
         print(f'Unlocked: {self.njMistStatus(enemy)}')
         print('Cost: $10')
@@ -270,8 +320,27 @@ class Player:
         else:
             return 'NO'
 
+    def njTrackTurns(self, enemy):
+        # Tracks 5 player turns
+        if Player.njTrackingTurns:
+            if Player.njTurn >= 5:
+                # >= 5 instead of 4 cause the first turn doesnt count
+                Player.njTurn = 0
+                Player.njTrackingTurns = False
+            elif enemy.doTurn:
+                Player.njTurn += 1
+            elif Player.doTurn:
+                Player.njTurn += 1
+
     def useNjMist(self, enemy):
-        print()
+        if not Inventory.hasNjMist:
+            self.spendMoney(10)
+            Player.njTrackingTurns = True
+            print('')
+            Inventory.hasNjMist = True
+        else:
+            print('\n[ Cannot purchase item; max amount already bought! ]\n')
+            self.inventory(enemy)
 
     # Cursed Sabotage
     def csSabotageDesc(self, enemy):
@@ -311,8 +380,26 @@ class Player:
         else:
             return 'NO'
 
+    def csTrackTurns(self, enemy):
+        # Tracks 5 player turns
+        if Player.csTrackingTurns:
+            if Player.csTurn >= 4:
+                Player.csTurn = 0
+                Player.csTrackingTurns = False
+            elif enemy.doTurn:
+                Player.csTurn += 1
+            elif Player.doTurn:
+                Player.csTurn += 1
+
     def useCsSabotage(self, enemy):
-        print()
+        if not Inventory.hasCsSabotage:
+            self.spendMoney(10)
+            Player.csTrackingTurns = True
+            print('')
+            Inventory.hasCsSabotage = True
+        else:
+            print('\n[ Cannot purchase item; max amount already bought! ]\n')
+            self.inventory(enemy)
 
     # Protein Drink
     def proDrinkDesc(self, enemy):
@@ -385,9 +472,32 @@ class Player:
             except ValueError:
                 print('Invalid input!')
 
+    def enTrackTurns(self, enemy):
+        # Tracks 3 player turns
+        if Player.enTrackingTurns:
+            if Player.enTurn >= 2:
+                Player.enTurn = 0
+                Player.enTrackingTurns = False
+            elif enemy.doTurn:
+                Player.enTurn += 1
+            elif Player.doTurn:
+                Player.enTurn += 1
+
     def useEnSword(self, enemy):
         # Gives enchanted sword to player
-        print()
+        if not Inventory.hasEnSword:
+            self.spendMoney(5)
+            Player.enTrackingTurns = True
+            print('')
+            Inventory.hasEnSword = True
+        elif not Inventory.hasEnSwordTwo:
+            self.spendMoney(5)
+            Player.enTrackingTurns = True
+            print('')
+            Inventory.hasEnSwordTwo = True
+        else:
+            print('\n[ Cannot purchase item; max amount already bought! ]\n')
+            self.inventory(enemy)
 
     # Force Field
     def frFieldDesc(self, enemy):
@@ -588,8 +698,8 @@ class Player:
     def wizHint(self):
         self.spendMoney(5)
         print('\nEnemy hint:')
-        print("-> [ The Wizard largely relies on their magic to evade and attack; consider using"
-              "\nthat against them, and you might find yourself victorious at the end... ]\n")
+        print("-> [ The Wizard is extremely intelligent and calculative in formulating attacks,"
+              "\nso by getting them disoriented, you might be able to inflict some damage ]\n")
         Player.gaveWizHint = True
 
     # ---------- SETTERS ----------

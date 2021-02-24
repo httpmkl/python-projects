@@ -20,15 +20,13 @@
         - Medical kit
         - Force field
         - Enemy hints
-    - Set up game conclusion
-
-    To-Do:
-    - Create functionality for other special tools
+        - Enchanted sword
         - Spiked armour
         - Ninja mist
         - Cursed sabotage
-        - Enchanted sword
-        (NEED TO KNOW HOW TO KEEP COUNT OF TURNS)
+    - Set up game conclusion
+
+    To-Do:
     - Improve the user experience for the game
         - Create a concise and clear instructions screen
         - Write creative end screens for both player death and enemy death
