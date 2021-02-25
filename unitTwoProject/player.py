@@ -13,12 +13,12 @@ class Player:
     njTurn = 0
     csTurn = 0
     enTurn = 0
+    turnText = "...PLAYER TURN..."
     didTurn = True
     skTrackingTurns = False
     njTrackingTurns = False
     csTrackingTurns = False
     enTrackingTurns = False
-
 
     # To be accessed by enemies
     didKick = False
@@ -41,7 +41,7 @@ class Player:
         Player.damage = int(5 + (2 * Player.energy / 100))
 
         while not gaveIntro:
-            print('\n[ PLAYER TURN... ]')
+            print(f'\n{Player.turnText}')
             gaveIntro = True
 
         # Loop for picking choices until move is made
@@ -508,7 +508,7 @@ class Player:
         print('\n-> Adds 50 to shield')
         print('\nType: General')
         print(f'Unlocked: YES')
-        print('Cost: $5')
+        print('Cost: $7')
         print('\n----------\n')
         gaveDesc = True
 
@@ -531,12 +531,12 @@ class Player:
     def useFrField(self, enemy):
         # Adds 50 shield to player
         if not Inventory.hasFrField:
-            self.spendMoney(5)
+            self.spendMoney(7)
             self.setShield(50)
             print('')
             Inventory.hasFrField = True
         elif not Inventory.hasFrFieldTwo:
-            self.spendMoney(5)
+            self.spendMoney(7)
             self.setShield(50)
             print('')
             Inventory.hasFrFieldTwo = True

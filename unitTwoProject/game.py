@@ -1,46 +1,11 @@
 '''
-    Completed:
-    - Created menu screen
-    - Created intro game screen w/ enemy description & options
-    - Set up enemy -> player -> enemy loop for matches (that checks for death)
-    - Figured out how to track the status of enemies (show alive/dead in their character desc)
-    - Created warrior moves
-    - Figured out how to make player take damage
-    - Figured out how to track and set the status of player (alive/dead)
-    - Created attack/retreat/check stat methods for player
-    - Created trickster moves
-    - Figured out how to access the enemy class in the player class without circular import error
-    - Figure out how to make enemy take damage
-    - Create check enemy stats method for player
-    - Made code more modular
-    - Created wizard moves
-    - Set up tools & special abilities
-    - Created functionality for some special tools
-        - Protein drink
-        - Medical kit
-        - Force field
-        - Enemy hints
-        - Enchanted sword
-        - Spiked armour
-        - Ninja mist
-        - Cursed sabotage
-    - Set up game conclusion
-
-    To-Do:
-    - Improve the user experience for the game
-        - Create a concise and clear instructions screen
-        - Write creative end screens for both player death and enemy death
-        - Add more descriptions during the battles for a more immersive experience
-        - Make sure the line spacing is good so everything isn't condensed
-
-'''
-
-''' 
     Battle Arena RPG game
     -> Made by Nora Calif
+
 '''
 
 startGame = False
+import time
 from player import Player
 from enemy import Enemy
 
@@ -51,20 +16,13 @@ def gameIntro(trueOrFalse):
 
     # Only shows when the game first starts
     while not hasItStarted:
-        print('\n--------------------\n')
-        print('NEW GAME STARTED')
-        print('\n--------------------')
-
-        # Dialogue
-        print(f'\n\n-> Welcome to the Battle Arena, {player.name}!')
-        print('-> Here, you face off against enemies to see who can come out victorious')
-        print('-> Do you think you can survive until the end?')
+        introText()
         hasItStarted = True
 
     # Loop for showing enemy options
     while hasItStarted:
         print('\n\nENEMIES: the Warrior, the Trickster, the Wizard')
-        choice = input('[ Type in the opponent\'s name for a brief description ]\n')
+        choice = input('[ Type in the opponent\'s name for a brief description ] \n-> ')
 
         if choice == 'Warrior' or choice == 'warrior':  # Chose warrior
             warriorDesc()
@@ -76,9 +34,22 @@ def gameIntro(trueOrFalse):
             wizardDesc()
             break
         else:  # They didn't type the name
-            print('\n-> Invalid input!')
+            print('\nInvalid input!')
 
+def introText():
+    print('\n\n--------------------\n')
+    print('NEW GAME STARTED')
+    print('\n--------------------')
 
+    # Dialogue
+    print(f'\n\nWelcome to the Battle Arena, {player.name}!')
+    time.sleep(1)
+    print('Here, you face off against enemies to see who can come out victorious')
+    time.sleep(1)
+    print('Do you think you can survive until the end?')
+    time.sleep(1)
+
+# Warrior
 def warriorDesc():
     print('\n\n--------------------')
     print('\nTHE WARRIOR')
@@ -115,15 +86,27 @@ def startWarriorGame():
                 print('Invalid input!')
             elif choice2 == 1:
                 introDone = True
+                gameIntro(True)
             else:
-                print(f'\n\n[ {player.name} vs. Warrior: START ]\n')
+                warriorGameIntro()
+                print('\n\n--------------------')
+                print(f'\n| {player.name} vs. Warrior: START |')
+                print('\n--------------------\n')
+                gameTip()
+                time.sleep(2)
                 introDone = True
                 game('Warrior')
                 # Takes us to game function
         except ValueError:
             print('Invalid input!')
 
+def warriorGameIntro():
+    print('\n\nWith a nervous gulp, you pointed at the Warrior...')
+    time.sleep(1)
+    print('While the crowd gasped at your decision, your opponent let out a mighty roar...')
+    time.sleep(2)
 
+# Trickster
 def tricksterDesc():
     print('\n\n--------------------')
     print('\nTHE TRICKSTER')
@@ -159,14 +142,26 @@ def startTricksterGame():
                 print('Invalid input!')
             elif choice2 == 1:
                 introDone = True
+                gameIntro(True)
             else:  # choice2 = 2
-                print(f'\n\n[ {player.name} vs. Trickster: START ]\n')
+                tricksterGameIntro()
+                print('\n\n--------------------')
+                print(f'\n| {player.name} vs. Trickster: START |')
+                print('\n--------------------\n')
+                gameTip()
+                time.sleep(2)
                 introDone = True
                 game('Trickster')
         except ValueError:
             print('Invalid input!')
 
+def tricksterGameIntro():
+    print('\n\nYou hesitantly looked towards the Trickster...')
+    time.sleep(1)
+    print('But before the crowd can even react, the opponent vanished from your sight...')
+    time.sleep(2)
 
+# Wizard
 def wizardDesc():
     print('\n\n--------------------')
     print('\nTHE WIZARD')
@@ -181,9 +176,15 @@ def wizardDesc():
         print('Status: ALIVE')
     else:  # Wizard is dead
         print('Status: DEAD')
-
     print('\n--------------------\n')
 
+    if not wiz.checkIsDead():
+        startWizardGame()
+    else:
+        print('[ You have already defeated this enemy!]')
+        gameIntro(True)
+
+def startWizardGame():
     # Choice to attack or go back
     print('\nWould you like to go back or start a match with the Wizard?')
     print('1. BACK TO OPTIONS \n2. START MATCH')
@@ -196,14 +197,33 @@ def wizardDesc():
                 print('Invalid input!')
             elif choice2 == 1:
                 introDone = True
+                gameIntro(True)
             else:
-                print(f'\n\n[ {player.name} vs. Wizard: START ]\n')
+                wizardGameIntro()
+                print('\n\n--------------------')
+                print(f'\n| {player.name} vs. Wizard: START |')
+                print('\n--------------------\n')
+                gameTip()
+                time.sleep(2)
+                introDone = True
                 game('Wizard')
                 break
                 # Takes us to game function
         except ValueError:
             print('Invalid input!')
 
+def wizardGameIntro():
+    print('\n\nAs a bead of sweat trails down your face, you muttered the Wizard\'s name...')
+    time.sleep(1)
+    print('But the crowd couldn\'t help but show worried glances at the sound of the opponent...')
+    time.sleep(2)
+
+def gameTip():
+    # Just a piece of advice for the player on their first match
+    if not game.gaveHint:
+        print('\nTIP: Be careful with what you purchase! Try to save most of your special \n'
+              'tools for when you\'re playing against harder enemies; you\'ll need it! \n')
+        game.gaveHint = True
 
 # Gameplay
 def game(enemyName):
@@ -235,30 +255,32 @@ def game(enemyName):
                 print(f'[ {enemy.name} died ] \n{player.name} WINS')
                 print('--------------------\n')
                 checkIfGameOver()
+                matchFinished()
                 gameIntro(True)
             else:
                 player.didTurn = True
                 enemy.didTurn = False
 
+def matchFinished():
+    print('\nThe crowd erupted with praise and compliments...')
+    time.sleep(1)
+    print(f'Congratulations on your victory, {player.name}!')
+    time.sleep(1)
+    print('\n\nSETTING UP NEXT BATTLE...')
+    time.sleep(2)
 
 # Stats
 def stats():
-    print('\n--------------------')
+    print('\n\n--------------------')
     print(f'{player.name}\'s Stats\n')
 
     print(f'-> Health: {player.health}')  # Shows health stat
     print(f'-> Shield: {player.shield}')  # Shows shield stat
     print(f'-> Energy: {player.energy}%')  # Shows energy stat
-    print(f'\nMONEY AVAILABLE: ${player.money}')  # Show money available
+    print(f'\nMoney Available: ${player.money}')  # Show money available
 
-    print('--------------------')
+    print('--------------------\n')
     menuScreen()
-
-
-# Instructions
-def instructions():
-    print('Under construction')
-
 
 # Ending screen
 def checkIfGameOver():
@@ -271,13 +293,36 @@ def checkIfGameOver():
         endScreen()
 
 def endScreen():
-    # RE-DESIGN END SCREEN TO BE STORYTELLING N COOL N EPIC
-    if player.checkIsDead():
-        print('\nGAME OVER \nThank\'s for playing! \n')
-        exit()
-    else:  # Enemy is dead
-        print('\nYou won! Thank\'s for playing! \n')
-        exit()
+    if player.checkIsDead():  # Player is dead
+        enemyWinOutro()
+    else:  # Enemies are dead
+        playerWinOutro()
+
+def enemyWinOutro():
+    time.sleep(2)
+    print('\nThe stadium fell silent at the sight of your limp body falling over...')
+    time.sleep(2)
+    print('You were the competitor they had the most hope for...')
+    time.sleep(2)
+    print('But as the paramedics removed your body from the field...')
+    time.sleep(2)
+    print('The crowd couldn\'t help but clap at your relentless efforts')
+    time.sleep(2)
+    print('\n\nThank\'s for playing!\n')
+    exit()
+
+def playerWinOutro():
+    time.sleep(2)
+    print('\nThe stadium erupted in cheers...')
+    time.sleep(2)
+    print('With a sigh of relief, you threw your fist into the air...')
+    time.sleep(2)
+    print('At last, you have defeated all of the opponents...')
+    time.sleep(2)
+    print('And finally, victory was all yours!')
+    time.sleep(2)
+    print('\n\nThank\'s for playing!\n')
+    exit()
 
 # Menu screen
 def menuScreen():
@@ -286,35 +331,56 @@ def menuScreen():
     while not goodInput:
         try:
             goodInput = True
-            choice = int(input(f'\nENTER YOUR CHOICE \n-> '))
+            choice = int(input('\nEnter your choice:\n-> '))
 
             # Redirecting based on choices
-            if choice > 3 or choice < 0:  # Typed an number outside of the options
+            if choice > 2 or choice < 1:  # Typed an number outside of the options
                 print('\nPlease enter a valid input!')
                 goodInput = False
             elif choice == 1:  # Chose stats
                 stats()
-            elif choice == 2:
-                instructions()
-            else:  # choice = 3
+            else:  # choice = 2
                 gameIntro(False)
         except ValueError:  # Typed in non-integers
             print('\nPlease enter a valid input!')
             goodInput = False
 
-
 # Beginning screen
+def storyIntroPt1():
+    print('\n\nThe sounds of the crowd cheering flooded your ears...')
+    time.sleep(2)
+    print('The harsh stream of sunlight shined down upon your frame...')
+    time.sleep(2)
+    print('As you stepped into the field, you noticed the sensation of sand coating your feet...')
+    time.sleep(2)
+    print('And through a careful inspection, a certain sign caught your attention...')
+    time.sleep(2)
+    print('\nThe sign read,')
+    time.sleep(1)
+    print('~ WELCOME TO THE BATTLE ARENA ~\n')
+    time.sleep(2)
+
+def storyIntroPt2():
+    nme = player.name
+    print(f'\n\nThe crowd chanted with glee, "{nme}! {nme}! {nme}!"')
+    time.sleep(1)
+    print('Everyone in the bleachers were excited to see what\'s to come...')
+    time.sleep(2)
+
 if not startGame:
-    print('\n~ WELCOME TO THE BATTLE ARENA ~\n')
-    name = input('Enter your name: ')
+    storyIntroPt1()
+
+    name = input('\n[ Player, what is your name? ]\n-> ')
     player = Player()
     player.setName(name)
 
+    storyIntroPt2()
+
     # Menu
-    print('\nMENU:')
+    print('\n\nMENU:')
     print('1. Check Stats')
-    print('2. Instructions')
-    print('3. START GAME')
+    print('2. START GAME')
 
     startGame = True
+    game.gaveHint = False
     menuScreen()

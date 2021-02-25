@@ -3,6 +3,7 @@ import random
 
 class Enemy:
     name = 'Placeholder'
+    turnText = '...ENEMY TURN...'
 
     def __init__(self, name):
         Enemy.name = name
@@ -113,7 +114,7 @@ class Warrior(Enemy):
 
         # Attacks if energy is high enough, dodges if low
         if Warrior.energy >= 15 and not Warrior.energyLow:
-            print('\n[ ENEMY TURN... ]')
+            print(f'\n{Enemy.turnText}')
             self.controlAttack(player)
             Warrior.energy -= 7
         elif Warrior.energy < 15 and not Warrior.energyLow:  # Energy is below 15
@@ -125,7 +126,7 @@ class Warrior(Enemy):
         # Makes it so that the enemy retreats until energy is back completely
         if Warrior.energyLow:
             if Warrior.energy < 100:
-                print('\n[ ENEMY TURN... ]')
+                print(f'\n{Enemy.turnText}')
                 Enemy.retreat(self)
                 Warrior.energy += 25
                 if Warrior.energy > 100:
@@ -208,7 +209,7 @@ class Trickster(Enemy):
 
         # Re-used code from Warrior section
         if Trickster.energy >= 15 and not Trickster.energyLow:
-            print('\n[ ENEMY TURN... ]')
+            print(f'\n{Enemy.turnText}')
 
             if chance > 7:  # 30% chance of attack
                 self.attack(player)
@@ -226,7 +227,7 @@ class Trickster(Enemy):
         # Makes it so that the enemy retreats until energy is back completely
         if Trickster.energyLow:
             if Trickster.energy < 100:
-                print('\n[ ENEMY TURN... ]')
+                print(f'\n{Enemy.turnText}')
                 Enemy.retreat(self)
                 Trickster.energy += 34
                 player.didKick = False
@@ -285,7 +286,7 @@ class Wizard(Enemy):
         # To make sure sabotages are regulated throughout the match
         self.controlDamage(player)
         if Wizard.energy >= 15 and not Wizard.energyLow:
-            print('\n[ ENEMY TURN... ]')
+            print(f'\n{Enemy.turnText}')
             # How the wizard attacks/defense
             self.pickAttack(player)
         elif Wizard.energy < 15 and not Wizard.energyLow:  # Energy is below 15
@@ -316,7 +317,7 @@ class Wizard(Enemy):
         # Makes it so that the enemy dodges until energy is back completely
         if Wizard.energyLow:
             if Wizard.energy < 100:
-                print('\n[ ENEMY TURN... ]')
+                print(f'\n{Enemy.turnText}')
                 Enemy.retreat(self)
                 Wizard.energy += 50
                 if Wizard.energy > 100:
