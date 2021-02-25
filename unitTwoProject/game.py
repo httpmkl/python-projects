@@ -10,11 +10,24 @@ from player import Player
 from enemy import Enemy
 
 
+def introText():
+    print('\n\n--------------------\n')
+    print('NEW GAME STARTED')
+    print('\n--------------------')
+
+    # Dialogue
+    print(f'\n\nWelcome to the Battle Arena, {player.name}!')
+    time.sleep(1)
+    print('Here, you face off against enemies to see who can come out victorious')
+    time.sleep(1)
+    print('Do you think you can survive until the end?')
+    time.sleep(1)
+
 # Starting screen for battle
 def gameIntro(trueOrFalse):
     hasItStarted = trueOrFalse
 
-    # Only shows when the game first starts
+    # So the intro text only shows before the game first starts
     while not hasItStarted:
         introText()
         hasItStarted = True
@@ -33,21 +46,8 @@ def gameIntro(trueOrFalse):
         elif choice == 'Wizard' or choice == 'wizard':  # Chose wizard
             wizardDesc()
             break
-        else:  # They didn't type the name
+        else:  # They didn't type a proper name
             print('\nInvalid input!')
-
-def introText():
-    print('\n\n--------------------\n')
-    print('NEW GAME STARTED')
-    print('\n--------------------')
-
-    # Dialogue
-    print(f'\n\nWelcome to the Battle Arena, {player.name}!')
-    time.sleep(1)
-    print('Here, you face off against enemies to see who can come out victorious')
-    time.sleep(1)
-    print('Do you think you can survive until the end?')
-    time.sleep(1)
 
 # Warrior
 def warriorDesc():
@@ -59,13 +59,16 @@ def warriorDesc():
     print('Strongest aspect: Strength')
     print('Difficulty rating: Easy')
 
+    # The status will update based on whether it has been defeated
     war = Enemy('Warrior')
     if not war.checkIsDead():
         print('Status: ALIVE')
     else:  # Warrior is dead
         print('Status: DEAD')
+
     print('\n--------------------\n')
 
+    # Only lets a match start if it hasn't been defeated already
     if not war.checkIsDead():
         startWarriorGame()
     else:
@@ -74,7 +77,7 @@ def warriorDesc():
 
 
 def startWarriorGame():
-    # Choice to attack or go back
+    # Gives the choice to attack or go back
     print('\nWould you like to go back or start a match with the Warrior?')
     print('1. BACK TO OPTIONS \n2. START MATCH')
     introDone = False
@@ -95,18 +98,18 @@ def startWarriorGame():
                 gameTip()
                 time.sleep(2)
                 introDone = True
-                game('Warrior')
-                # Takes us to game function
+                game('Warrior')  # Takes us to game function
         except ValueError:
             print('Invalid input!')
 
 def warriorGameIntro():
+    # Short text before starting game with Warrior
     print('\n\nWith a nervous gulp, you pointed at the Warrior...')
     time.sleep(1)
     print('While the crowd gasped at your decision, your opponent let out a mighty roar...')
     time.sleep(2)
 
-# Trickster
+# Trickster; follows the same logic as above
 def tricksterDesc():
     print('\n\n--------------------')
     print('\nTHE TRICKSTER')
@@ -130,7 +133,7 @@ def tricksterDesc():
         gameIntro(True)
 
 def startTricksterGame():
-    # Choice to attack or go back
+    # Gives choice to attack or go back
     print('\nWould you like to go back or start a match with the Trickster?')
     print('1. BACK TO OPTIONS \n2. START MATCH')
     introDone = False
@@ -161,7 +164,7 @@ def tricksterGameIntro():
     print('But before the crowd can even react, the opponent vanished from your sight...')
     time.sleep(2)
 
-# Wizard
+# Wizard; same logic as above
 def wizardDesc():
     print('\n\n--------------------')
     print('\nTHE WIZARD')
@@ -185,7 +188,7 @@ def wizardDesc():
         gameIntro(True)
 
 def startWizardGame():
-    # Choice to attack or go back
+    # Gives the choice to attack or go back
     print('\nWould you like to go back or start a match with the Wizard?')
     print('1. BACK TO OPTIONS \n2. START MATCH')
     introDone = False
@@ -218,8 +221,8 @@ def wizardGameIntro():
     print('But the crowd couldn\'t help but show worried glances at the sound of the opponent...')
     time.sleep(2)
 
+# Just a piece of advice for the player on their first match
 def gameTip():
-    # Just a piece of advice for the player on their first match
     if not game.gaveHint:
         print('\nTIP: Be careful with what you purchase! Try to save most of your special \n'
               'tools for when you\'re playing against harder enemies; you\'ll need it! \n')
@@ -234,33 +237,38 @@ def game(enemyName):
 
     # Creates an enemy -> player -> enemy loop for the turns
     while player.didTurn and not enemy.didTurn:  # Player just went
-        enemy.doTurn(player)
-
-        # Checks to see if player is dead after enemy's move
-        if player.checkIsDead():
-            print('\n--------------------')
-            print(f'[ {player.name} died ] \n{enemy.name} WINS')
-            print('--------------------\n')
-            endScreen()  # End game when player dies
-        else:
-            enemy.didTurn = True
-            player.didTurn = False
+        enemyTurn(enemy)
 
         while enemy.didTurn and not player.didTurn:  # Enemy just went
-            player.doTurn(False, enemy)
+            playerTurn(enemy)
 
-            # Checks to see if enemy is dead after player's move
-            if enemy.checkIsDead():
-                print('\n\n--------------------')
-                print(f'[ {enemy.name} died ] \n{player.name} WINS')
-                print('--------------------\n')
-                checkIfGameOver()
-                matchFinished()
-                gameIntro(True)
-            else:
-                player.didTurn = True
-                enemy.didTurn = False
+def enemyTurn(enemy):
+    enemy.doTurn(player)
+    # Checks to see if player is dead after enemy's move
+    if player.checkIsDead():
+        print('\n--------------------')
+        print(f'[ {player.name} died ] \n{enemy.name} WINS')
+        print('--------------------\n')
+        endScreen()  # End game when player dies
+    else:
+        enemy.didTurn = True
+        player.didTurn = False
 
+def playerTurn(enemy):
+    player.doTurn(False, enemy)
+    # Checks to see if enemy is dead after player's move
+    if enemy.checkIsDead():
+        print('\n\n--------------------')
+        print(f'[ {enemy.name} died ] \n{player.name} WINS')
+        print('--------------------\n')
+        checkIfGameOver()
+        matchFinished()
+        gameIntro(True)
+    else:
+        player.didTurn = True
+        enemy.didTurn = False
+
+# Shows when the player wins a match
 def matchFinished():
     print('\nThe crowd erupted with praise and compliments...')
     time.sleep(1)
@@ -269,7 +277,7 @@ def matchFinished():
     print('\n\nSETTING UP NEXT BATTLE...')
     time.sleep(2)
 
-# Stats
+# Player stats
 def stats():
     print('\n\n--------------------')
     print(f'{player.name}\'s Stats\n')
@@ -278,7 +286,6 @@ def stats():
     print(f'-> Shield: {player.shield}')  # Shows shield stat
     print(f'-> Energy: {player.energy}%')  # Shows energy stat
     print(f'\nMoney Available: ${player.money}')  # Show money available
-
     print('--------------------\n')
     menuScreen()
 
@@ -288,8 +295,8 @@ def checkIfGameOver():
     trick = Enemy('Trickster')
     wiz = Enemy('Wizard')
 
+    # If all of the enemies are dead
     if war.checkIsDead() and trick.checkIsDead() and wiz.checkIsDead():
-        # All enemies are dead
         endScreen()
 
 def endScreen():
@@ -367,6 +374,7 @@ def storyIntroPt2():
     print('Everyone in the bleachers were excited to see what\'s to come...')
     time.sleep(2)
 
+# Occurs first in the program
 if not startGame:
     storyIntroPt1()
 

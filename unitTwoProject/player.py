@@ -3,24 +3,28 @@ from inventory import Inventory
 
 
 class Player:
-    # Stats
-    health = 100
-    shield = 0
-    energy = 100
-    money = 75
-    damage = 7
+    turnText = "...PLAYER TURN..."
+    didTurn = True
+
+    # For tracking certain special tools
     skTurn = 0
     njTurn = 0
     csTurn = 0
     enTurn = 0
-    turnText = "...PLAYER TURN..."
-    didTurn = True
     skTrackingTurns = False
     njTrackingTurns = False
     csTrackingTurns = False
     enTrackingTurns = False
 
-    # To be accessed by enemies
+    # Stats
+    name = 'Placeholder'
+    health = 100
+    shield = 0
+    energy = 100
+    money = 75
+    damage = 7
+
+    # So certain enemies can react appropriately
     didKick = False
     didPunch = False
 
@@ -29,16 +33,14 @@ class Player:
     gaveTrickHint = False
     gaveWizHint = False
 
-    # Profile
-    name = 'Placeholder'
-
     def __init__(self):
         Player.isDead = False
+
 
     # ---------- MATCHES ----------
     def doTurn(self, skipIntro, enemy):
         gaveIntro = skipIntro
-        Player.damage = int(5 + (2 * Player.energy / 100))
+        Player.damage = int(5 + (2 * Player.energy / 100))  # Damage degrades with energy
 
         while not gaveIntro:
             print(f'\n{Player.turnText}')
@@ -50,6 +52,7 @@ class Player:
                 self.showOptions()
                 choice = int(input(''))
                 gaveIntro = False
+
                 # Redirects player to choice
                 if choice > 5 or choice < 1:
                     print(f'Invalid input!')
@@ -62,15 +65,14 @@ class Player:
                     gaveIntro = True
                 elif choice == 3:  # Chose attack
                     self.controlAttack(enemy)
-                elif choice == 4:
+                elif choice == 4:  # Chose retreat
                     self.controlRetreat()
-                else:  # choice == 5
+                else:  # Chose inventory
                     self.inventory(enemy)
             except ValueError:
                 print('Invalid input!')
 
     def showOptions(self):
-        # Options
         print(f'\n{Player.name}, HOW WILL YOU RESPOND?')
         print('1. Check your stats')
         print('2. Check enemy stats')
@@ -95,13 +97,13 @@ class Player:
         print('--------------------')
 
     def controlAttack(self, enemy):
-        # Physical attack
         if Player.energy > 0:
-            # Checks if player has enchanted sword
+            # First checks if player has Enchanted Sword
             if Player.enTrackingTurns:
                 self.enSwordAttack(enemy)
             else:
                 self.attack(enemy)
+
             # Checks if the wizard sabotaged the player
             if not enemy.getEnergySabotage():
                 if not Player.enTrackingTurns:
@@ -112,16 +114,18 @@ class Player:
 
         else:  # Player has no energy
             print('\n[ You can\'t attack if you have no energy! ]\n')
-            self.doTurn(True, enemy)
+            self.doTurn(True, enemy)  # Back to options
 
     def attack(self, enemy):
         self.njTrackTurns(enemy)
-        chance = random.randint(1, 10)
+        chance = random.randint(1, 10)  # To set up a 50% chance of either attack
+
         if chance <= 5:
             print(f'\n-> {Player.name} threw a ferocious punch!')
             print(f'DAMAGE: {Player.damage}\n')
             enemy.setHealth(Player.damage)
             self.njTrackTurns(enemy)
+            # If ninja mist is NOT enabled:
             if not Player.njTrackingTurns:
                 self.didPunch = True
         else:  # chance >= 6
@@ -129,6 +133,7 @@ class Player:
             print(f'DAMAGE: {Player.damage}\n')
             enemy.setHealth(Player.damage)
             self.njTrackTurns(enemy)
+            # If Ninja Mist is NOT enabled:
             if not Player.njTrackingTurns:
                 self.didKick = True
 
@@ -136,8 +141,11 @@ class Player:
         print(f'\n-> {Player.name} plunged an enchanted sword into the enemy!')
         print(f'DAMAGE: {Player.damage * 2}\n')
         enemy.setHealth(Player.damage * 2)
+
         self.enTrackTurns(enemy)
         self.njTrackTurns(enemy)
+
+        # Only reports attack if Ninja Mist isn't enabled
         if not Player.njTrackingTurns:
             self.didPunch = True
 
@@ -153,7 +161,9 @@ class Player:
         self.didKick = False
         self.didPunch = False
 
+    # To report back to the game file
     def checkIsDead(self):
+        # Returns true if dead, and false if alive
         if Player.health > 0:
             Player.isDead = False
             return Player.isDead
@@ -162,7 +172,7 @@ class Player:
             return Player.isDead
 
     def resetStats(self):
-        # Og stats
+        # Original stats (for the start of every round)
         Player.health = 100
         Player.energy = 100
         Player.shield = 0
@@ -170,8 +180,8 @@ class Player:
         self.didKick = False
         self.didPunch = False
 
-    # ---------- INVENTORY ----------
 
+    # ---------- INVENTORY ----------
     def inventory(self, enemy):
         self.didKick = False
         self.didPunch = False
@@ -191,9 +201,9 @@ class Player:
         print(f'8. ENEMY HINT -> {inven.hintNum()}/3 used')
         print('\n--------------------')
 
-        self.inventoryOptions(enemy)
+        self.inventoryRedirect(enemy)
 
-    def inventoryOptions(self, enemy):
+    def inventoryRedirect(self, enemy):
         try:
             choice = input("\n-> Enter in a number to learn about the tool "
                            "or type 'BACK' to be sent to the options: ")
@@ -204,7 +214,7 @@ class Player:
                 choice = int(choice)
                 if choice > 8 or choice < 1:
                     print('Invalid input!')
-                    self.inventoryOptions(enemy)
+                    self.inventoryRedirect(enemy)
                 elif choice == 1:
                     self.skArmourDesc(enemy)
                 elif choice == 2:
@@ -253,11 +263,12 @@ class Player:
                         self.inventory(enemy)
                 except ValueError:
                     print('Invalid input!')
-            else:
+            else:  # Not playing against the Warrior
                 gaveDesc = False
-                self.inventoryOptions(enemy)
+                self.inventoryRedirect(enemy)
 
     def skArmourStatus(self, enemy):
+        # Returns YES if playing against the Warrior, and NO if not
         if enemy.name == 'Warrior':
             return 'YES'
         else:
@@ -278,13 +289,13 @@ class Player:
         if not Inventory.hasSkArmour:
             self.spendMoney(10)
             Player.skTrackingTurns = True
-            print('')
+            print('')  # Empty space for layout
             Inventory.hasSkArmour = True
-        else:
+        else:  # Already bought it before
             print('\n[ Cannot purchase item; max amount already bought! ]\n')
             self.inventory(enemy)
 
-    # Ninja Mist
+    # Ninja Mist; same logic as above (as well as every other item below)
     def njMistDesc(self, enemy):
         print('\n\n----------')
         print('\nNINJA MIST')
@@ -314,7 +325,7 @@ class Player:
                     print('Invalid input!')
             else:
                 gaveDesc = False
-                self.inventoryOptions(enemy)
+                self.inventoryRedirect(enemy)
 
     def njMistStatus(self, enemy):
         if enemy.name == 'Trickster':
@@ -374,7 +385,7 @@ class Player:
                     print('Invalid input!')
             else:
                 gaveDesc = False
-                self.inventoryOptions(enemy)
+                self.inventoryRedirect(enemy)
 
     def csSabotageStatus(self, enemy):
         if enemy.name == 'Wizard':
@@ -587,6 +598,7 @@ class Player:
             print('\n[ Cannot purchase item; max amount already bought! ]\n')
             self.inventory(enemy)
 
+    # Enemy Hint
     def hintDesc(self, enemy):
         print('\n\n----------')
         print('\nENEMY HINT')
@@ -629,6 +641,7 @@ class Player:
 
     def checkWarHint(self, enemy):
         if not Player.gaveWarHint:  # To make sure only one hint is given for this enemy
+            # To make sure max hints (3) hasn't be achieved
             if not Inventory.hasHint:
                 self.warHint()
                 Inventory.hasHint = True
@@ -638,12 +651,12 @@ class Player:
             elif not Inventory.hasHintThree:
                 self.warHint()
                 Inventory.hasHintThree = True
-            else:  # To make sure 3+ hints haven't been given (this state can't really be reached in the program)
+            else:  # This state can't really be reached in the program (as 1 hint per enemy = 3 hints)
                 print('\n[ Cannot purchase item; hint has already been given for this enemy! ]\n')
-                self.inventoryOptions(enemy)  # Redirects back to inventory)
-        else:
+                self.inventory(enemy)  # Redirects back to inventory)
+        else:  # Already gave a Warrior hint
             print('\n[ Cannot purchase item; hint has already been given for this enemy! ]\n')
-            self.inventoryOptions(enemy)
+            self.inventory(enemy)
 
     def warHint(self):
         self.spendMoney(3)
@@ -666,10 +679,10 @@ class Player:
                 Inventory.hasHintThree = True
             else:
                 print('\n[ Cannot purchase item; hint has already been given for this enemy! ]\n')
-                self.inventoryOptions(enemy)
+                self.inventory(enemy)
         else:
             print('\n[ Cannot purchase item; hint has already been given for this enemy! ]\n')
-            self.inventoryOptions(enemy)
+            self.inventory(enemy)
 
     def trickHint(self):
         self.spendMoney(3)
@@ -704,8 +717,8 @@ class Player:
               "\nso by getting them disoriented, you might be able to inflict some damage ]\n")
         Player.gaveWizHint = True
 
-    # ---------- SETTERS ----------
 
+    # ---------- SETTERS ----------
     def setHealth(self, num):
         Player.health += num
 
@@ -733,8 +746,8 @@ class Player:
         else:
             print('\n[ Cannot purchase item; not enough money! ]\n')
 
-    # ---------- GETTERS ----------
 
+    # ---------- GETTERS ----------
     def getEnergy(self):
         # Conditional logic to ensure energy stays between 1-100
         if Player.energy > 100:
