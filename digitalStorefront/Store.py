@@ -2,8 +2,6 @@ from StoreInventory import StoreInventory
 from BankAccount import BankAccount
 from Buyable import Buyable, BuyableGame, BuyableFood, BuyableClothing
 
-storeInventory = StoreInventory()
-
 # Initialize inventories
 storeInventory = StoreInventory()
 myStuff = list()
@@ -28,7 +26,7 @@ def buyItem():
     itemToPurchase = None
 
     # Look through the full inventory to see if the item is present
-    # Convert both item name and user input to lower case to preven case issues!
+    # Convert both item name and user input to lower case to prevent case issues!
     for item in storeInventory.getFullInventory():
         if (item.name.lower() == itemName.lower()):
             itemToPurchase = item
@@ -134,7 +132,16 @@ print('Welcome to my storefront!')
 
 # setup bank account
 print('To begin, please set up a bank account.')
-deposit = input('How much do you want to deposit into your account?')
+gaveDeposit = False
+
+# I made the float conversion occur here so the user can be stopped immediately if the input isn't a number
+while not gaveDeposit:
+    try:
+        deposit = float(input('How much do you want to deposit into your account?'))
+        gaveDeposit = True
+    except ValueError:
+        print('Please enter an actual amount')
+
 myBankAccount = BankAccount(deposit)
 
 #Begin shopping

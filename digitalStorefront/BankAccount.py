@@ -1,7 +1,9 @@
 class BankAccount:
 
     def __init__(self, initialDeposit, password = None):
-        self.balance = float(initialDeposit)
+        # The initial deposit was converted to a float in the Store file before getting sent here
+        self.balance = initialDeposit
+
         if password is None:
             self.setPassword()
 
