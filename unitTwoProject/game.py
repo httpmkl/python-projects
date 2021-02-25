@@ -35,7 +35,7 @@ def gameIntro(trueOrFalse):
     # Loop for showing enemy options
     while hasItStarted:
         print('\n\nENEMIES: the Warrior, the Trickster, the Wizard')
-        choice = input('[ Type in the opponent\'s name for a brief description ] \n-> ')
+        choice = input('[ Type in an enemy name listed above for a brief description ] \n-> ')
 
         if choice == 'Warrior' or choice == 'warrior':  # Chose warrior
             warriorDesc()
@@ -84,7 +84,7 @@ def startWarriorGame():
 
     while not introDone:  # So the content below gets looped if invalid
         try:
-            choice2 = int(input())
+            choice2 = int(input('-> '))
             if choice2 > 2 or choice2 < 1:
                 print('Invalid input!')
             elif choice2 == 1:
@@ -96,7 +96,7 @@ def startWarriorGame():
                 print(f'\n| {player.name} vs. Warrior: START |')
                 print('\n--------------------\n')
                 gameTip()
-                time.sleep(2)
+                time.sleep(3)
                 introDone = True
                 game('Warrior')  # Takes us to game function
         except ValueError:
@@ -140,7 +140,7 @@ def startTricksterGame():
 
     while not introDone:  # Looped if invalid
         try:
-            choice2 = int(input())
+            choice2 = int(input('-> '))
             if choice2 > 2 or choice2 < 1:
                 print('Invalid input!')
             elif choice2 == 1:
@@ -152,7 +152,7 @@ def startTricksterGame():
                 print(f'\n| {player.name} vs. Trickster: START |')
                 print('\n--------------------\n')
                 gameTip()
-                time.sleep(2)
+                time.sleep(3)
                 introDone = True
                 game('Trickster')
         except ValueError:
@@ -195,7 +195,7 @@ def startWizardGame():
 
     while not introDone:  # Looped if invalid
         try:
-            choice2 = int(input())
+            choice2 = int(input('-> '))
             if choice2 > 2 or choice2 < 1:
                 print('Invalid input!')
             elif choice2 == 1:
@@ -207,7 +207,7 @@ def startWizardGame():
                 print(f'\n| {player.name} vs. Wizard: START |')
                 print('\n--------------------\n')
                 gameTip()
-                time.sleep(2)
+                time.sleep(3)
                 introDone = True
                 game('Wizard')
                 break
@@ -280,12 +280,34 @@ def matchFinished():
 # Player stats
 def stats():
     print('\n\n--------------------')
-    print(f'{player.name}\'s Stats\n')
+    print(f'{player.name}\'s STATS\n')
 
     print(f'-> Health: {player.health}')  # Shows health stat
     print(f'-> Shield: {player.shield}')  # Shows shield stat
     print(f'-> Energy: {player.energy}%')  # Shows energy stat
     print(f'\nMoney Available: ${player.money}')  # Show money available
+    print('--------------------\n')
+    menuScreen()
+
+def instructions():
+    print('\n\n--------------------')
+    print(f'OVERVIEW\n')
+
+    print('Welcome, player! In this game, you\'ll be able to fight several opponents in an intense battle')
+    print('\nDuring a battle, you will have three options (besides checking player & enemy stats): ')
+    print('To attack, retreat, and use a special tool in your inventory')
+    print('\nATTACK: Used to deliver a physical attack on the enemy')
+    print('RETREAT: Used to replenish energy to a certain degree')
+    print('CHECK INVENTORY: Used to purchase specialized and general tools')
+    print('-> Specialized tools are ones that can only be used against certain enemies')
+    print('-> General tools are ones that can be used during any match throughout the game')
+    print('\nGenerally speaking, you\'ll need these inventory tools to defeat any enemy, so take advantage of them!')
+    print('However, keep in mind that these resources are to be spread throughout the ENTIRE GAME')
+    print('(as in, the limit you can buy does not reset with every match!)')
+    print('\nSo, make sure to spend wisely throughout the game, and think critically about your moves '
+          'in order to ensure success!')
+    print('And who knows? You might just be able to win!')
+
     print('--------------------\n')
     menuScreen()
 
@@ -341,12 +363,14 @@ def menuScreen():
             choice = int(input('\nEnter your choice:\n-> '))
 
             # Redirecting based on choices
-            if choice > 2 or choice < 1:  # Typed an number outside of the options
+            if choice > 3 or choice < 1:  # Typed an number outside of the options
                 print('\nPlease enter a valid input!')
                 goodInput = False
             elif choice == 1:  # Chose stats
                 stats()
-            else:  # choice = 2
+            elif choice == 2:  # Chose game mechanics
+                instructions()
+            else:  # Chose to start the game
                 gameIntro(False)
         except ValueError:  # Typed in non-integers
             print('\nPlease enter a valid input!')
@@ -387,7 +411,8 @@ if not startGame:
     # Menu
     print('\n\nMENU:')
     print('1. Check Stats')
-    print('2. START GAME')
+    print('2. Game Overview')
+    print('3. START GAME')
 
     startGame = True
     game.gaveHint = False

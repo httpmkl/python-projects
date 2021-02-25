@@ -21,7 +21,7 @@ class Player:
     health = 100
     shield = 0
     energy = 100
-    money = 75
+    money = 70
     damage = 7
 
     # So certain enemies can react appropriately
@@ -233,13 +233,13 @@ class Player:
                     self.hintDesc(enemy)
         except ValueError:
             print('Invalid input!')
-            self.inventoryOptions(enemy)
+            self.inventoryRedirect(enemy)
 
     # Spiked Armour
     def skArmourDesc(self, enemy):
         print('\n\n----------')
         print('\nSPIKED ARMOUR')
-        print('\n-> Gives the enemy 10 damage for attacking Player')
+        print('\n-> Deducts 10 damage from the Warrior\'s attack')
         print('\nType: SPECIALIZED - Warrior')
         print(f'Unlocked: {self.skArmourStatus(enemy)}')
         print('Cost: $10')
@@ -299,7 +299,7 @@ class Player:
     def njMistDesc(self, enemy):
         print('\n\n----------')
         print('\nNINJA MIST')
-        print('\n-> Hides your movement from the enemy')
+        print('\n-> Hides your movement from the Trickster')
         print('\nType: SPECIALIZED - Trickster')
         print(f'Unlocked: {self.njMistStatus(enemy)}')
         print('Cost: $10')
@@ -359,7 +359,7 @@ class Player:
     def csSabotageDesc(self, enemy):
         print('\n\n----------')
         print('\nCURSED SABOTAGE')
-        print('\n-> Gives the enemy 10 damage for using magical attacks or defense')
+        print('\n-> Decreases the Wizard\'s accuracy and intelligence')
         print('\nType: SPECIALIZED - Wizard')
         print(f'Unlocked: {self.csSabotageStatus(enemy)}')
         print('Cost: $10')

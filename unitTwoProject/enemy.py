@@ -168,7 +168,7 @@ class Warrior(Enemy):
         if chance <= 5:
             print('\n-> The Warrior loaded his fist and delivered a powerful blow!')
             print(f'DAMAGE: {num}')
-            print('[ The Warrior took 10 damage for attacking you! ]\n')
+            print('[ 10 damage was deducted from this attack! ]\n')
             if num < 0:  # If damage - 10 is negative, enemy takes damage
                 player.skTrackTurns(self)
                 Enemy.setHealth(self, num * -1)
@@ -180,7 +180,7 @@ class Warrior(Enemy):
         else:  # chance >= 6
             print('\n-> With mighty swing, the Warrior gave a strong kick!')
             print(f'DAMAGE: {num}')
-            print('[ The Warrior took 10 damage for attacking you! ]\n')
+            print('[ 10 damage was deducted from this attack! ]\n')
             if num < 0:  # If damage - 10 is negative, enemy takes damage
                 player.skTrackTurns(self)
                 Enemy.setHealth(self, num * -1)
@@ -314,7 +314,7 @@ class Wizard(Enemy):
         player.csTrackTurns(self)
         if player.csTrackingTurns:
             Wizard.chanceNum = 7  # 30% chance of calculating an appropriate attack/defense
-        else:  # Cursed Sabotage is NOT enable
+        else:
             Wizard.chanceNum = 0  # 100% chance of calculating an appropriate attack/defense
 
         chance = random.randint(1, 10)
@@ -431,31 +431,40 @@ class Wizard(Enemy):
         # Dodges attack using one of 2 moves
         chance = random.randint(1, 2)
         if chance == 1:
-            print('\n-> Too slow! The Wizard dodged your attack using the power of flight.')
-            print(f'DAMAGE: 0')
-            print('[ Your attack gave no damage! ]\n')
-            Wizard.health += player.damage  # Restores health
-            player.didKick = False
+            self.flight(player)
         else:  # chance = 2; 50% likelihood
-            # Sort of an attack, gives the player a chance to land hits
-            if player.didKick:
-                print('\n-> The Wizard held up his blade and slashed your foot!')
-                print(f'DAMAGE: {Wizard.damage}')
-                print('[ Your attack damage was cut in half! ]\n')
-                Wizard.health += int(player.damage/2)  # Restores half health
-                if player.shield > 0:
-                    player.setShield(Wizard.damage * -1)
-                else:
-                    player.setHealth(Wizard.damage * -1)
-            elif player.didPunch:
-                print('\n-> The Wizard blocked your punch with his blade!')
-                print(f'DAMAGE: {Wizard.damage}')
-                print('[ Your attack damage was cut in half! ]\n')
-                Wizard.health += int(player.damage / 2)
-                if player.shield > 0:
-                    player.setShield(Wizard.damage * -1)
-                else:
-                    player.setHealth(Wizard.damage * -1)
+            self.blade(player)
+
+    def flight(self, player):
+        print('\n-> Too slow! The Wizard dodged your attack using the power of flight.')
+        print(f'DAMAGE: 0')
+        print('[ Your attack gave no damage! ]\n')
+        Wizard.health += player.damage  # Restores health
+        player.didKick = False
+        player.didPunch = False
+
+    def blade(self, player):
+        # Sort of an attack, gives the player a chance to land hits
+        if player.didKick:
+            print('\n-> The Wizard held up his blade and slashed your foot!')
+            print(f'DAMAGE: {Wizard.damage}')
+            print('[ Your attack damage was cut in half! ]\n')
+            Wizard.health += int(player.damage / 2)  # Restores half health
+            player.didKick = False
+            if player.shield > 0:
+                player.setShield(Wizard.damage * -1)
+            else:
+                player.setHealth(Wizard.damage * -1)
+        elif player.didPunch:
+            print('\n-> The Wizard blocked your punch with his blade!')
+            print(f'DAMAGE: {Wizard.damage}')
+            print('[ Your attack damage was cut in half! ]\n')
+            Wizard.health += int(player.damage / 2)
+            player.didPunch = False
+            if player.shield > 0:
+                player.setShield(Wizard.damage * -1)
+            else:
+                player.setHealth(Wizard.damage * -1)
 
     def magicDefense(self, player):
         # Sets up a defense that'll protect them for two moves
