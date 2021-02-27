@@ -1,6 +1,6 @@
 from StoreInventory import StoreInventory
 from BankAccount import BankAccount
-from Buyable import Buyable, BuyableGame, BuyableFood, BuyableClothing
+from Buyable import Buyable, BuyableGame, BuyableFood, BuyableClothing, BuyableFurniture
 
 # Initialize inventories
 storeInventory = StoreInventory()
@@ -11,7 +11,7 @@ myShoppingCart = list()
 myBankAccount = BankAccount(1, 'placeholder')
 
 
-# FUNCTIONS TO MANAGE MENUING SYSTEM IN MAIN SHOPPING PROGRAM
+# FUNCTIONS TO MANAGE MENU SYSTEM IN MAIN SHOPPING PROGRAM
 
 def viewCatalog():
     print('Here is a list of all of the items currently for sale!')
@@ -35,15 +35,23 @@ def buyItem():
     # If a suitable item was found, give them the option to buy it!
     if itemToPurchase is not None:
         print(f'We have {itemToPurchase.name} in stock!')
-        userChoice = int(input('Type 1 to BUY NOW, 2 to place in your shopping cart, or any other key to cancel purchase.'))
 
-        if userChoice == 1:
-            makePurchaseFromStore(itemToPurchase)
-        elif userChoice == 2:
-            print('We will hold onto this item for you. Adding to shopping cart ... ')
-            moveItemToShoppingCart(itemToPurchase)
-        else:
+        # I changed the logic below
+        # This way, it'll check for whether its a random integer OR character typed before cancelling the purchase
+        userChoice = input('Type 1 to BUY NOW, 2 to place in your shopping cart, or any other key to cancel purchase.')
+
+        try:
+            userChoice = int(userChoice)
+            if userChoice == 1:
+                makePurchaseFromStore(itemToPurchase)
+            elif userChoice == 2:
+                print('We will hold onto this item for you. Adding to shopping cart ... ')
+                moveItemToShoppingCart(itemToPurchase)
+            else:  # Random number typed (not 1 or 2)
+                print('Purchase cancelled! Sending you back to the storefront ... ')
+        except ValueError:  # Random characters typed
             print('Purchase cancelled! Sending you back to the storefront ... ')
+
     else:  # If user-entered item is not found in the store inventory
         print('The item you are looking for is sold out or does not exist. Sorry!')
 
@@ -63,11 +71,17 @@ def reviewMyShoppingCart():
             print(item.name)
 
         # Check to see if the user wants to purchase anything currently in their shopping cart
-        userChoice = int(input('Would you like to purchase any held items now? 1 for YES or any other key for NO'))
 
-        if userChoice == 1:
-            buyItemInShoppingCart()
-        else:
+        # I changed the code similarly to buyItem()
+        userChoice = input('Would you like to purchase any held items now? 1 for YES or any other key for NO')
+
+        try:
+            userChoice = int(userChoice)
+            if userChoice == 1:
+                buyItemInShoppingCart()
+            else:  # Random number typed
+                print('Leaving shopping cart as is and returning to the storefront ... ')
+        except ValueError:  # Random character type
             print('Leaving shopping cart as is and returning to the storefront ... ')
 
     else: # If cart is empty
@@ -126,11 +140,58 @@ def makePurchaseFromShoppingCart(item):
 
 
 
+def redirectToChoice():
+    stillShopping = True
+    while stillShopping:
+        options()  # To shorten this function
+
+        # I added a try-except + while loop to avoid value errors
+        showedOptions = True
+
+        while showedOptions:
+            try:
+                userChoice = int(input())
+                showedOptions = False
+                # Redirects user to option
+                if userChoice == 1:
+                    viewCatalog()
+                elif userChoice == 2:
+                    buyItem()
+                elif userChoice == 3:
+                    reviewMyShoppingCart()
+                elif userChoice == 4:
+                    reviewMyInventory()
+                elif userChoice == 5:
+                    reviewFinancials()
+                elif userChoice == 6:
+                    print("YOUR CONTENT HERE!")
+                elif userChoice == 7:
+                    print('Thanks for shopping! Now exiting program ... ')
+                    stillShopping = False
+                else:
+                    print('Incorrect input! Please choose again.')
+                    showedOptions = True
+            except ValueError:
+                print('Please enter a valid input!')
+                showedOptions = True
+
+def options():
+    print("\n****************************************************** ")
+    print("Please choose from one of the following menu options: ")
+    print("1. View catalog of items to buy")
+    print("2. Buy an item")
+    print("3. View your cart of held items")
+    print("4. Review the items you already own")
+    print("5. View the status of your financials")
+    print("6. YOUR CUSTOM IDEA HERE??")
+    print("7. Exit program")
+
+
 
 # PROGRAM BEGINS HERE
 print('Welcome to my storefront!')
 
-# setup bank account
+# Setup bank account
 print('To begin, please set up a bank account.')
 gaveDeposit = False
 
@@ -144,36 +205,5 @@ while not gaveDeposit:
 
 myBankAccount = BankAccount(deposit)
 
-#Begin shopping
-stillShopping = True
-
-while(stillShopping):
-    print("\n****************************************************** ")
-    print("Please choose from one of the following menu options: ")
-    print("1. View catalog of items to buy")
-    print("2. Buy an item")
-    print("3. View your cart of held items")
-    print("4. Review the items you already own")
-    print("5. View the status of your financials")
-    print("6. YOUR CUSTOM IDEA HERE??")
-    print("7. Exit program")
-
-    userChoice = int(input())
-
-    if userChoice == 1:
-        viewCatalog()
-    elif userChoice == 2:
-        buyItem()
-    elif userChoice == 3:
-        reviewMyShoppingCart()
-    elif userChoice == 4:
-        reviewMyInventory()
-    elif userChoice == 5:
-        reviewFinancials()
-    elif userChoice == 6:
-        print("YOUR CONTENT HERE!")
-    elif userChoice == 7:
-        print('Thanks for shopping! Now exiting program ... ')
-        stillShopping = False
-    else:
-        print('Incorrect input! Please choose again.')
+# Begin shopping
+redirectToChoice()

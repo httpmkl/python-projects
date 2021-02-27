@@ -1,4 +1,4 @@
-from Buyable import Buyable, BuyableClothing, BuyableFood, BuyableGame
+from Buyable import Buyable, BuyableClothing, BuyableFood, BuyableGame, BuyableFurniture
 
 class StoreInventory:
 
@@ -6,10 +6,11 @@ class StoreInventory:
         self.clothesForSale = []
         self.foodForSale = []
         self.gamesForSale = []
+        self.furnitureForSale = []
         self.initializeInventoryLists()
 
     def getFullInventory(self):
-        return self.clothesForSale + self.foodForSale + self.gamesForSale
+        return self.clothesForSale + self.foodForSale + self.gamesForSale + self.furnitureForSale
 
     def removeItemFromInventory(self, item):
         if type(item) is BuyableClothing:
@@ -18,6 +19,8 @@ class StoreInventory:
             self.foodForSale.remove(item)
         elif type(item) is BuyableGame:
             self.gamesForSale.remove(item)
+        elif type(item) is BuyableFurniture:
+            self.furnitureForSale.remove(item)
 
     def restockItemToInventory(self, item):
         if type(item) is BuyableClothing:
@@ -26,6 +29,8 @@ class StoreInventory:
             self.foodForSale.append(item)
         elif type(item) is BuyableGame:
             self.gamesForSale.append(item)
+        elif type(item) is BuyableFurniture:
+            self.furnitureForSale.append(item)
 
     def addMultiple(self, item, num):
         if type(item) is BuyableClothing:
@@ -37,6 +42,9 @@ class StoreInventory:
         elif type(item) is BuyableGame:
             for x in range(num):
                 self.gamesForSale.append(item)
+        elif type(item) is BuyableFurniture:
+            for x in range(num):
+                self.furnitureForSale.append(item)
 
     def initializeInventoryLists(self):
         #Populate initial clothes list
@@ -76,3 +84,15 @@ class StoreInventory:
         #Computer Games
         self.gamesForSale.append(BuyableGame(79.99, 'Breath of the Wild', 2, 'Video Game'))
         self.gamesForSale.append(BuyableGame(59.99, 'Forza', 2, 'Video Game'))
+
+
+        #Populate initial furniture list
+        #Living room
+        self.furnitureForSale.append(BuyableFurniture(149.99, 'Couch', 'Orange'))
+        self.furnitureForSale.append(BuyableFurniture(149.99, 'Couch', 'White'))
+        self.furnitureForSale.append(BuyableFurniture(59.99, 'Bookshelf', 'Brown'))
+
+        #Bedroom
+        self.furnitureForSale.append(BuyableFurniture(199.99, 'Mattress', 'White'))
+        self.furnitureForSale.append(BuyableFurniture(229.99, 'Dresser', 'Silver'))
+        self.furnitureForSale.append(BuyableFurniture(39.99, 'Vase', 'Beige'))
