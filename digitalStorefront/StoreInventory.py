@@ -8,9 +8,22 @@ class StoreInventory:
         self.gamesForSale = []
         self.furnitureForSale = []
         self.initializeInventoryLists()
+        self.boughtItems = []
 
     def getFullInventory(self):
         return self.clothesForSale + self.foodForSale + self.gamesForSale + self.furnitureForSale
+
+    def getClothes(self):
+        return self.clothesForSale
+
+    def getFood(self):
+        return self.foodForSale
+
+    def getGames(self):
+        return self.gamesForSale
+
+    def getFurniture(self):
+        return self.furnitureForSale
 
     def removeItemFromInventory(self, item):
         if type(item) is BuyableClothing:
