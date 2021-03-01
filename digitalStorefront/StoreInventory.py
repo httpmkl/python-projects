@@ -62,10 +62,9 @@ class StoreInventory:
     def initializeInventoryLists(self):
         #Populate initial clothes list
         #Hoodies
-        smallHoodie = BuyableClothing(59.99, 'Hoodie', 'small')
-        self.clothesForSale.append(smallHoodie)  #You can add this way, but it is more efficient to do as below ...
-        self.clothesForSale.append(BuyableClothing(59.99, 'Hoodie', 'medium'))
-        self.clothesForSale.append(BuyableClothing(59.99, 'Hoodie', 'large'))
+        self.clothesForSale.append(BuyableClothing(59.99, 'Hoodie', 'Small'))
+        self.clothesForSale.append(BuyableClothing(59.99, 'Hoodie', 'Medium'))
+        self.clothesForSale.append(BuyableClothing(59.99, 'Hoodie', 'Large'))
 
         #Shoes
         self.clothesForSale.append(BuyableClothing(99.99, 'Dress Shoes', '8'))
