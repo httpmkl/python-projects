@@ -13,7 +13,7 @@ class BankAccount:
         password = input('Password: ')
         confirmPassword = input('Confirm password: ')
         if password != confirmPassword:
-            print('\nSorry, password doesn\'t match! \n')
+            print('\n-> Sorry, password doesn\'t match! \n')
             self.setPassword()
         else:
             print('\n-> Password set! Your account is now ready for use')
@@ -23,18 +23,17 @@ class BankAccount:
 
     # Returns true if you have more balance than cost, false if you don't
     def canAfford(self, amount):
-        if(float(amount) <= self.balance):
+        if float(amount) <= self.balance:
             return True
         else:
             return False
 
     def makePurchase(self, amount):
-        if amount <= self.balance:
-            self.balance -= amount
-            print(f'{amount} spent from your account.')
-            print(f'You now have ${self.balance} remaining.')
-        else:
-            print('You do not have enough funds left to afford this item.')
+        # NOTE: Removed the conditional logic for checking if user can afford it
+        # Affordability was already checked through the function above before accessing this
+        self.balance -= amount
+        print(f'\n{amount} spent from your account.')
+        print(f'You now have ${self.balance} remaining.')
 
     def balanceReport(self):
         print(f'You have $ {self.balance} left in your account.')
