@@ -24,7 +24,7 @@ class BuyableGame(Buyable):
         self.genre = genre
 
 
-# Added a new class of furniture
+# NOTE: I added a new class of furniture
 class BuyableFurniture(Buyable):
     def __init__(self, price, name, colour):
         super().__init__(price, name, "Furniture")

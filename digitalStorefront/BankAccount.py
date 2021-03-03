@@ -32,11 +32,11 @@ class BankAccount:
         # NOTE: Removed the conditional logic for checking if user can afford it
         # Affordability was already checked through the function above before accessing this
         self.balance -= amount
-        print(f'\n{amount} spent from your account.')
+        print(f'\n{amount:.2f} spent from your account.')
         print(f'You now have ${self.balance:.2f} remaining.')
 
     def balanceReport(self):
-        print(f'You have $ {self.balance:.2f} left in your account.')
+        print(f'You have ${self.balance:.2f} left in your account.')
 
     # NOTE: Created for the purpose of refunds (after user returns an item)
     def addMoney(self, num):

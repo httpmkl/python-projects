@@ -13,6 +13,7 @@ class StoreInventory:
     def getFullInventory(self):
         return self.clothesForSale + self.foodForSale + self.gamesForSale + self.furnitureForSale
 
+    # NOTE: These methods below are to display more specific results
     def getClothes(self):
         return self.clothesForSale
 
@@ -97,6 +98,8 @@ class StoreInventory:
         self.gamesForSale.append(BuyableGame(79.99, 'Breath of the Wild', 2, 'Video Game'))
         self.gamesForSale.append(BuyableGame(59.99, 'Forza', 2, 'Video Game'))
 
+
+        # NOTE: Here is where I added the furniture items
 
         #Populate initial furniture list
         #Living room

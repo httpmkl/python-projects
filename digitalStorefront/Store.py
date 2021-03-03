@@ -1,4 +1,8 @@
 '''
+    To-do:
+        - Add comments
+        - Improve UI & logic
+        - Delete shortcut()
 
     CURRENT LEVEL: 8
     (four tier 2 problems fully solved, three tier 3 problem fully solved)
@@ -16,8 +20,9 @@
     Besides those changes, I also made some general improvements on the layout/design
     of the program and fixed up the logic for some existing functions and methods.
 
-    One major change to an existing function would be buyItem() and how I updated it to
-    display more details about each item and allow for more choice in the selection.
+    Major changes I made to the existing code:
+        - Updated buyItem() to display more details about each item (allow for more choice in the selection)
+        - Changed how the shopping cart works and added buyEverythingInShoppingCart() for user convenience
 
 '''
 
@@ -34,12 +39,34 @@ myShoppingCart = list()
 # Placeholder bank account
 myBankAccount = BankAccount(1, 'placeholder')
 
+def shortcut():
+    item = storeInventory.clothesForSale[1]
+    moveItemToShoppingCart(item)
+
+    item2 = storeInventory.furnitureForSale[1]
+    moveItemToShoppingCart(item2)
+
+    item3 = storeInventory.furnitureForSale[1]
+    moveItemToShoppingCart(item3)
+
+    item4 = storeInventory.gamesForSale[1]
+    moveItemToShoppingCart(item4)
+
+    item5 = storeInventory.foodForSale[1]
+    moveItemToShoppingCart(item5)
+
+    item6 = storeInventory.foodForSale[1]
+    moveItemToShoppingCart(item6)
+
+    item7 = storeInventory.clothesForSale[1]
+    moveItemToShoppingCart(item7)
 
 # FUNCTIONS TO MANAGE MENU SYSTEM IN MAIN SHOPPING PROGRAM
 
 def viewCatalog():
     print('\n[ What would you like to view? ]')
     showChoiceOfItems()
+    continueShopping()
 
 # NOTE: Here is where I implemented the sub-catalog
 def showChoiceOfItems():
@@ -73,6 +100,17 @@ def showChoiceOfItems():
         except ValueError:
             print('\n-> Please choose between the options! \n')
 
+def continueShopping():
+    # NOTE: So users can browse each section without having to go to the menu and back each time
+    try:
+        choice = int(input("\n[ Type '1' to continue browsing the inventory, and a random key to exit ] \n"))
+        if choice == 1:
+            viewCatalog()
+        else:
+            print('\n-> Exiting inventory...')
+    except ValueError:
+        print('\n-> Exiting inventory...')
+
 def buyItem():
     itemName = input('\n[ Enter the name of the item you wish to buy ] \n')
 
@@ -92,6 +130,24 @@ def buyItem():
 
     else:  # If user-entered item is not found in the store inventory
         print('\n-> The item you are looking for is sold out or does not exist. Sorry!')
+
+# NOTE: I added this function so the user can choose to view the selection before purchasing (if they havent already)
+def offerToSeeInventory():
+    print('\n[ Have you already viewed our selection of items? ]')
+    loop = True
+    while loop:
+        try:
+            choice = int(input('\n1. Yes, I know what to purchase \n2. No, I would like to see it \n'))
+            if choice == 1:  # Redirects to buyItem()
+                loop = False
+                buyItem()
+            elif choice == 2:  # Redirects to viewCatelog()
+                loop = False
+                viewCatalog()
+            else:
+                print('\n-> Please choose between the options!')
+        except ValueError:
+            print('\n-> Please enter a valid input!')
 
 def printDetails(itemToPurchase):
     # NOTE: So it prints the details of every item with that name
@@ -158,48 +214,112 @@ def reviewFinancials():
 
 def reviewMyShoppingCart():
     if len(myShoppingCart) > 0:
-        print('Here are all of the items being held in your shopping cart: ')
+        print('\n[ Shopping cart: ] \n')
+
+        num = 0
         for item in myShoppingCart:
-            print(item.name)
+            num += 1
+            print(f'{num}. {item.name}')
 
         # Check to see if the user wants to purchase anything currently in their shopping cart
-
-        # NOTE: I added exception handling below
-        userChoice = input('Would you like to purchase any held items now? 1 for YES or any other key for NO')
-        try:
-            userChoice = int(userChoice)
-            if userChoice == 1:
-                buyItemInShoppingCart()
-            else:  # Random number typed
-                print('Leaving shopping cart as is and returning to the storefront ... ')
-        except ValueError:  # Random character type
-            print('Leaving shopping cart as is and returning to the storefront ... ')
+        # NOTE: I added exception handling and changed how this process works
+        continueOrExitCart(num)
 
     else: # If cart is empty
-        print('Your shopping cart is empty! Nothing to see here ... ')
+        print('\n-> Your shopping cart is empty! Nothing to see here ... ')
 
-def buyItemInShoppingCart():
-    userChoice = input('Type in the name of the item you want to buy from the shopping cart: ')
+def continueOrExitCart(num):
+    choice = input("\n[ Type '1' to purchase an item, '2' to remove an item, or any other key to exit ] \n")
+    try:
+        choice = int(choice)
+        # Redirects to choice
+        if choice == 1:
+            chosePurchaseFromCart(num)
+        elif choice == 2:
+            choseRemoveFromCart(num)
+        else:  # Entered a random integer
+            pass
+    except ValueError:  # Entered a random character
+        pass
 
-    # Compare user requested name with cart entry names and offer a purchasing offer if there is a match
-    itemInCart: Buyable
-    for itemInCart in myShoppingCart:
-        if itemInCart.name.lower() == userChoice.lower():
-            makePurchaseFromShoppingCart(itemInCart)
+def choseRemoveFromCart(num):
+    loop = True
+    while loop:
+        try:
+            userChoice = int(input("\n[ Enter the number of the item you\'d like to remove ] \n"))
+            loop = False
+            removeItemFromShoppingCart(num, userChoice)
+        except ValueError:
+            print('\n-> Please enter a valid input!')
+
+def chosePurchaseFromCart(num):
+    loop = True
+    while loop:
+        try:
+            userChoice = input("\n[ Type the number of the item you\'d like to purchase, or 'ALL' to buy everything in your cart ] \n")
+            if userChoice.lower() == 'all':
+                loop = False
+                buyEverythingInShoppingCart()
+            else:
+                userChoice = int(userChoice)
+                loop = False
+                buyItemInShoppingCart(num, userChoice)
+        except ValueError:
+            print('\n-> Please enter a valid input!')
+
+def buyItemInShoppingCart(num, choice):
+    if len(myShoppingCart) > 1:
+        try:
+            if choice > num or choice < 1:
+                print('\n-> Please choose between the options!')
+                continueOrExitCart(num)
+            else:
+                itemInCart = myShoppingCart[choice - 1]
+                makePurchaseFromShoppingCart(itemInCart)
+        except ValueError:
+            print('\n-> Please enter a valid input!')
+            continueOrExitCart(num)
+    else:  # Only one item in inventory
+        itemInCart = myShoppingCart[0]
+        makePurchaseFromShoppingCart(itemInCart)
+
+# NOTE: Created as a shortcut for buying all inventory items
+def buyEverythingInShoppingCart():
+    # To figure out the collective cost
+    itemPrice = 0
+    for item in myShoppingCart:
+        itemPrice += item.price
+
+    if myBankAccount.canAfford(itemPrice):
+        print('\n[ Verify your identity to proceed ]')
+        passEntry = input('Password: ')
+        if passEntry == myBankAccount.getPassword():
+            for itemInCart in myShoppingCart:
+                myStuff.append(itemInCart)
+                storeInventory.boughtItems.append(itemInCart)
+            myShoppingCart.clear()
+            myBankAccount.makePurchase(itemPrice)
+            print('\n-> Items successfully bought!')
         else:
-            print('Item could not be found in shopping cart ... ')
+            print('\n-> Incorrect password! Item cannot be bought')
+    else:
+        print(f'\n-> You don\'t have enough funds for these items')
 
-def removeItemFromShoppingCart(item):
-    userChoice = input('Which item would you like to remove from your shopping cart?')
-
-    # Compare user requested name with cart entry names and remove item if found
-    itemInCart: Buyable
-    for itemInCart in myShoppingCart:
-        if itemInCart.name.lower() == userChoice.lower():
-            print(f'You have removed {itemInCart.name} from your shopping cart!')
-            moveItemFromShoppingCartToInventory(itemInCart)
-        else:
-            print('Item could not be found in your shopping cart. Nothing was removed.')
+def removeItemFromShoppingCart(num, choice):
+    if len(myShoppingCart) > 1:
+        try:
+            if choice > num or choice < 1:
+                print('\n-> Please choose between the options!')
+                continueOrExitCart(num)
+            else:
+                itemInCart = myShoppingCart[choice - 1]
+                moveItemFromShoppingCartToInventory(itemInCart)
+        except ValueError:
+            print('\n-> Please enter a valid input!')
+            continueOrExitCart(num)
+    else:  # Only one item in inventory
+        itemInCart = myShoppingCart[0]
+        moveItemFromShoppingCartToInventory(itemInCart)
 
 def moveItemToShoppingCart(item):
     myShoppingCart.append(item)
@@ -208,11 +328,12 @@ def moveItemToShoppingCart(item):
 def moveItemFromShoppingCartToInventory(item):
     storeInventory.restockItemToInventory(item)
     myShoppingCart.remove(item)
+    print(f'\n-> Removal complete! {item.name} is no longer in your shopping cart')
 
 def makePurchaseFromStore(item):
     # If you can afford the item, buy it and remove it from the store
 
-    # NOTE: Moved the passEntry to here so the user can be stopped if the password is incorecct
+    # NOTE: Moved the passEntry to here so the user can be stopped if the password is incorrect
     if myBankAccount.canAfford(item.price):
         print('\n[ Verify your identity to proceed ]')
         passEntry = input('Password: ')
@@ -247,7 +368,8 @@ def makePurchaseFromShoppingCart(item):
 
 # NOTE: I made this function to show the user's 3 recently bought items
 def viewRecentPurchases():
-    print('\n[ Recent items: ]')
+    print('\n[ Recently purchased items: ]')
+    print('(max. 3 shown) \n')
     if len(storeInventory.boughtItems) > 0:
 
         # To get the last 3 items (displayed recent -> least recent)
@@ -263,7 +385,8 @@ def viewRecentPurchases():
 # NOTE: Another new function added; gives the ability to return 3 recent items
 def returnItem():
     # The code below is similar to viewRecentPurchases() but in the format of a numbered list instead of ->
-    print('\n[ Recent items: ]')
+    print('\n[ Recently purchased items: ]')
+    print('(max. 3 shown) \n')
     if len(storeInventory.boughtItems) > 0:
 
         # To get the last 3 items (displayed recent -> least recent)
@@ -284,18 +407,25 @@ def chooseToReturn(num, recentItems):
     loop = True
     while loop:
         try:
-            choice = int(input('\n[ Enter the number of the item you\'d like to return ] \n'))
-            if choice > num or choice < 1:
-                print('\n-> Please choose between the options!')
-            else:
-                item = storeInventory.boughtItems[choice - 1]
-                myStuff.remove(item)
-                storeInventory.boughtItems.remove(item)
-                storeInventory.restockItemToInventory(item)
-                myBankAccount.addMoney(item.price)
-                print(f'\n-> {item.name} successfully returned!')
-                myBankAccount.balanceReport()
+            choice = input("\n[ Enter the number of the item you\'d like to return or type 'EXIT' to go back ] \n")
+            if choice.lower() == 'exit':
+                print('\n-> Returning to the menu...')
                 loop = False
+            else:
+                choice = int(choice)
+
+                if choice > num or choice < 1:
+                    print('\n-> Please choose between the options!')
+                else:
+                    # Returns selected item to the store inventory & refunds money
+                    item = storeInventory.boughtItems[choice - 1]
+                    myStuff.remove(item)
+                    storeInventory.boughtItems.remove(item)
+                    storeInventory.restockItemToInventory(item)
+                    myBankAccount.addMoney(item.price)
+                    print(f'\n-> {item.name} successfully returned!')
+                    myBankAccount.balanceReport()
+                    loop = False
         except ValueError:
             print('\n-> Please enter a valid input!')
 
@@ -420,12 +550,12 @@ def redirectToChoice():
                     print('\n-> Please choose a valid option! \n')
                     showedOptions = True
                 elif userChoice == maxChoice:
-                    print('\nThanks for shopping! \n... Exiting program ... ')
+                    print('\nThanks for shopping! \n-> Exiting program')
                     stillShopping = False
                 elif userChoice == 1:
                     viewCatalog()
                 elif userChoice == 2:
-                    buyItem()
+                    offerToSeeInventory()
                 elif userChoice == 3:
                     reviewMyShoppingCart()
                 elif userChoice == 4:
@@ -473,6 +603,7 @@ try:
         if id == 'Nora':
             print('-> Welcome, admin! \n')
             admin = True
+            shortcut()
         else:  # Wrong ID
             print('-> ID not registered! \n')
             admin = False
