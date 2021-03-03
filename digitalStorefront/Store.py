@@ -1,7 +1,7 @@
 '''
 
-    CURRENT LEVEL: 7
-    (three tier 2 problems fully solved, two tier 3 problem fully solved)
+    CURRENT LEVEL: 8
+    (four tier 2 problems fully solved, three tier 3 problem fully solved)
 
     Features I implemented:
         - Exception handling & BuyableFurniture class (tier 1)
@@ -10,6 +10,8 @@
             - viewRecentPurchases(); returns 3 recently bought items (tier 3)
         - Ability to access the store as an administrator and add inventory items (tier 2)
             - Log-in at the start in order to show the 'add items' option to admins only (tier 3)
+        - Ability to return items back to the store (tier 2)
+            - Only the 3 most recent purchases can be returned (tier 3)
 
     Besides those changes, I also made some general improvements on the layout/design
     of the program and fixed up the logic for some existing functions and methods.
@@ -118,7 +120,7 @@ def pickItemToPurchase(itemToPurchase, num):
         while loop:  # So they get sent back if there's an invalid input
             try:
                 choice = int(input('\n[ Type the number of the item you want ] \n'))
-                if choice > num or choice < 0:
+                if choice > num or choice < 1:
                     print('\n-> Please choose between the options!')
                 else:
                     item = itemToPurchase[choice - 1]
@@ -258,6 +260,45 @@ def viewRecentPurchases():
     else:  # If there aren't any purchased items yet
         print('You have not purchased anything yet!')
 
+# NOTE: Another new function added; gives the ability to return 3 recent items
+def returnItem():
+    # The code below is similar to viewRecentPurchases() but in the format of a numbered list instead of ->
+    print('\n[ Recent items: ]')
+    if len(storeInventory.boughtItems) > 0:
+
+        # To get the last 3 items (displayed recent -> least recent)
+        recent = storeInventory.boughtItems[-3:]
+        recent.reverse()
+        num = 0
+
+        for item in recent:
+            num += 1
+            print(f'{num}. {item.name}')
+
+        chooseToReturn(num, recent)
+
+    else:  # If there aren't any purchased items yet
+        print('You have not purchased anything yet!')
+
+def chooseToReturn(num, recentItems):
+    loop = True
+    while loop:
+        try:
+            choice = int(input('\n[ Enter the number of the item you\'d like to return ] \n'))
+            if choice > num or choice < 1:
+                print('\n-> Please choose between the options!')
+            else:
+                item = storeInventory.boughtItems[choice - 1]
+                myStuff.remove(item)
+                storeInventory.boughtItems.remove(item)
+                storeInventory.restockItemToInventory(item)
+                myBankAccount.addMoney(item.price)
+                print(f'\n-> {item.name} successfully returned!')
+                myBankAccount.balanceReport()
+                loop = False
+        except ValueError:
+            print('\n-> Please enter a valid input!')
+
 # NOTE: The functions below for adding materials all follow the same logic (w/ slight customization)
 def addClothes():
     cName = input('\nName of clothing: ')
@@ -359,9 +400,9 @@ def addInventoryItems():
 def redirectToChoice():
     # NOTE: This is to ensure non-admins don't get the add inventory items option
     if admin:
-        maxChoice = 8
+        maxChoice = 9
     else:
-        maxChoice = 7
+        maxChoice = 8
 
     stillShopping = True
     while stillShopping:
@@ -393,7 +434,9 @@ def redirectToChoice():
                     reviewFinancials()
                 elif userChoice == 6:
                     viewRecentPurchases()
-                else:
+                elif userChoice == 7:
+                    returnItem()
+                else:  # userChoice == 8
                     addInventoryItems()
             except ValueError:
                 print('\n-> Please enter a valid input! \n')
@@ -408,12 +451,13 @@ def options():
     print("4. Review the items you already own")
     print("5. View the status of your financials")
     print("6. View recent purchases")
+    print("7. Return recent purchases")
 
     if admin:
-        print("7. Add inventory items")
-        print("8. Exit program")
+        print("8. Add inventory items")
+        print("9. Exit program")
     else:
-        print("7. Exit program")
+        print("8. Exit program")
 
 
 # PROGRAM BEGINS HERE
