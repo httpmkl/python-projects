@@ -79,7 +79,7 @@ class StoreInventory:
         # Populate initial food list
         # Perishables
         self.foodForSale.append(BuyableFood(12.99, 'Pizza', 400))
-        self.foodForSale.append(BuyableFood(24.00, 'Lasagna', 1000))
+        self.foodForSale.append(BuyableFood(24.99, 'Lasagna', 1000))
         self.foodForSale.append(BuyableFood(3.99, 'Spinach', 250))
 
         # Non-perishables

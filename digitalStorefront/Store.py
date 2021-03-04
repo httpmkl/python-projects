@@ -45,31 +45,52 @@ def showChoiceOfItems():
     while loop:
         try:
             choice = int(input('1. Clothes | 2. Food | 3. Games | 4. Furniture \n'))
+            noDuplicatesList = []
             print()  # For spacing/layout
             if choice == 1:
                 loop = False
                 item: Buyable
                 for item in storeInventory.getClothes():
-                    print(f'-> {item.name}')
+                    # Makes sure there aren't any duplicates in the names of items
+                    if item.name not in noDuplicatesList:
+                        print(f'-> {item.name}')
+                        noDuplicatesList.append(item.name)
             elif choice == 2:
                 loop = False
                 item: Buyable
                 for item in storeInventory.getFood():
-                    print(f'-> {item.name}')
+                    if item.name not in noDuplicatesList:
+                        print(f'-> {item.name}')
+                        noDuplicatesList.append(item.name)
             elif choice == 3:
                 loop = False
                 item: Buyable
                 for item in storeInventory.getGames():
-                    print(f'-> {item.name}')
+                    if item.name not in noDuplicatesList:
+                        print(f'-> {item.name}')
+                        noDuplicatesList.append(item.name)
             elif choice == 4:
                 loop = False
                 item: Buyable
                 for item in storeInventory.getFurniture():
-                    print(f'-> {item.name}')
+                    if item.name not in noDuplicatesList:
+                        print(f'-> {item.name}')
+                        noDuplicatesList.append(item.name)
             else:
                 print('-> Please choose between the options! \n')
         except ValueError:
             print('\n-> Please choose between the options! \n')
+
+def continueShopping():
+    # NOTE: So users can browse each section without having to go to the menu and back each time
+    try:
+        choice = int(input("\n[ Type '1' to continue browsing the inventory, and a random key to exit ] \n"))
+        if choice == 1:
+            viewCatalog()
+        else:
+            print('\n-> Exiting catalog...')
+    except ValueError:
+        print('\n-> Exiting catalog...')
 
 # NOTE: I added this function so the user can choose to view the selection before purchasing (if they haven't already)
 def offerToSeeInventory():
@@ -109,17 +130,6 @@ def buyItem():
 
     else:  # If user-entered item is not found in the store inventory
         print('\n-> The item you are looking for is sold out or does not exist. Sorry!')
-
-def continueShopping():
-    # NOTE: So users can browse each section without having to go to the menu and back each time
-    try:
-        choice = int(input("\n[ Type '1' to continue browsing the inventory, and a random key to exit ] \n"))
-        if choice == 1:
-            viewCatalog()
-        else:
-            print('\n-> Exiting inventory...')
-    except ValueError:
-        print('\n-> Exiting inventory...')
 
 def printDetails(itemToPurchase):
     # NOTE: So it prints the details of every item with that name
@@ -480,6 +490,7 @@ def addInventoryItems():
             print('\n[ What category does the new item fall under? ]')
             choice = int(input('1. Clothes | 2. Food | 3. Games | 4. Furniture \n'))
 
+            # Redirects user the functions this one
             if choice == 1:
                 addClothes()
                 gaveInput = True
@@ -551,7 +562,7 @@ def options():
     print("5. Recent purchases")
     print("6. Return an item")
 
-    if admin:
+    if admin:  # Shows the extra option if they are an admin
         print("7. Add an inventory item")
         print("8. Exit the store")
     else:
@@ -568,16 +579,16 @@ try:
     adminStatus = int(adminStatus)
     if adminStatus == 1:  # They claim to be admin
         id = input('\nAdmin ID: ')
-        if id == '123':
+        if id == '123':  # The only acceptable ID is '123'
             print('-> Welcome, admin! \n')
             admin = True
         else:  # Wrong ID
             print('-> ID not registered! \n')
             admin = False
-    else:
+    else:  # Random number
         print('')
         admin = False
-except ValueError:
+except ValueError:  # Random character
     print('')
     admin = False
 
