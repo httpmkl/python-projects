@@ -120,8 +120,8 @@ class FileWrite:
     # TODO
     # Create a method that can join 3 different files together into a single file
 
+    # Create a method that creates a new file with the contents of the ‘AllWords.txt’ file sorted by word length
+    # rather than alphabetically
 
-    # Create a method that creates a new file with the contents of the ‘AllWords.txt’ file sorted by word length rather than alphabetically
-
-
-    # Create a method that writes all sent data (either a String or a List) to a file with a common format decided by you
+    # Create a method that writes all sent data (either a String or a List) to a file with a common format decided by
+    # you
