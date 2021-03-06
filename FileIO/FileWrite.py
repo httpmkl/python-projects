@@ -115,6 +115,9 @@ class FileWrite:
         else:
             self.writeStringOverFile(fileName, stringToWrite)
 
+    def orderByWordLength(self, fileName):
+        ''' Creates a new file with the contents of the given file sorted by word length '''
+
 
 
     # TODO

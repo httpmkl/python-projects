@@ -4,5 +4,10 @@ from FileEncrypter import FileEncrypter
 from FileDecrypter import FileDecrypter
 
 reader = FileRead()
-writer = FileWrite
+writer = FileWrite()
 
+reader.numOfLinesInFile('AllWords.txt')
+reader.numOfLinesInFile('AllWords.txt')
+reader.numOfCharactersInFile('AllWords.txt')
+reader.checkIfFileHasPhrase('AllWords.txt', 'absent')
+reader.returnWordsOfLength('AllWords.txt', '1')

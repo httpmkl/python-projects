@@ -61,15 +61,62 @@ class FileRead:
                 i -= 1  # after removing an entry, we need to move back a step (the list is now 1 shorter)
         return data
 
-    # TODO
+    def numOfLinesInFile(self, fileName):
+        ''' Returns the total number of lines in a file '''
+        data = self.getAllDataFromFile(fileName)
+        linesInData = data.split('\n')
+        print(len(linesInData))  # prints out the amount of tokens separated by '\n' (lines)
 
-    # Create a method that returns the total number of lines of data in a file
+    def numOfWordsInFile(self, fileName):
+        ''' Returns the total number of words in a file '''
+        data = self.getAllDataFromFile(fileName)
+        wordsInData = data.split()
+        print(len(wordsInData)) # prints out the amount of tokens separated by ' ' (words)
 
-    # Create a method that returns the total number of words in a file
+    def numOfCharactersInFile(self, fileName):
+        ''' Returns the amount of characters in a file '''
+        char = 0
+        with open(fileName, 'r') as reader:
+            line = reader.readline()
+            while line:  # loop as long as line is defined (stops after last line is read and returns null)
+                char += len(line)  # updates the char counter with the length of each word
+                line = reader.readline()  # update line with next line data
+        print(char)
 
-    # Create a method that returns the total number of characters in a file
+    def checkIfFileHasPhrase(self, fileName, phrase):
+        ''' Returns whether or not the file has the given phrase '''
+        hasPhrase = False
 
-    # Create a method that returns whether or not a file contains a given word or phrase
+        rawData = self.getFileAllLines(fileName)
+        data = self.removeNewlinesFromData(rawData)
 
-    # Create a method that returns a list that only includes words of a certain length (ex: all the words with 3
-    # letters in them)
+        for line in data:
+            if line == phrase:  # if a line matches the given phrase
+                hasPhrase = True
+                print(f"The file has the word(s) '{phrase}'")
+                break  # loop ends
+
+        if not hasPhrase:
+            print(f"The file does not have the word(s) '{phrase}'")
+
+    def returnWordsOfLength(self, fileName, length):
+        ''' Returns words with the given amount of characters '''
+        try:
+            length = int(length) + 1
+            data = []
+
+            with open(fileName, 'r') as reader:
+                line = reader.readline()
+                while line:  # loop as long as line is defined (stops after last line is read and returns null)
+                    if len(line) == length:
+                        data.append(line)  # add line to data
+                    line = reader.readline()  # update line with next line data
+
+            if len(data) > 0:
+                self.removeNewlinesFromData(data)  # so the output doesnt show any \n
+                print(data)
+            else:  # no words were added to the data list
+                print('No words found with this amount of characters')
+
+        except:
+            print(f"Unable to check for words with '{length}' characters")
