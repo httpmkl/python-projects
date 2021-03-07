@@ -82,7 +82,7 @@ class FileWrite:
 
 
     def writeNumbersToFileAdvanced(self, fileName, append, maxNum, numsPerRow):
-        ''' Write a custom number of numbers using custom organization to file, appending or overwriting based on booleain input '''
+        ''' Write a custom number of numbers using custom organization to file, appending or overwriting based on boolean input '''
         numRows = int(maxNum / numsPerRow)  # determine number of rows that will fit custom organization with no remainder
         extraNums = maxNum % numsPerRow     # determine the number of overflow values (the final row) that need to be added
         num = 1     # value to start counting from
@@ -115,15 +115,62 @@ class FileWrite:
         else:
             self.writeStringOverFile(fileName, stringToWrite)
 
+    def joinFilesIntoNewFile(self, fileNameOne, fileNameTwo, fileNameThree):
+        ''' Joins the content of 3 different files into a new file '''
+        try:
+            # reads the content of the three files
+            with open(fileNameOne, 'r') as reader:
+                data1 = reader.read()
+            with open(fileNameTwo, 'r') as reader:
+                data2 = reader.read()
+            with open(fileNameThree, 'r') as reader:
+                data3 = reader.read()
+
+            # adds the content to NewFile.txt
+            data = data1 + '\n' + data2 + '\n' + data3
+            self.writeStringOverFile('NewFile.txt', data)
+
+        except IOError:
+            print('Error reading contents of files')
+
+    def joinFilesIntoGivenFile(self, fileNameOne, fileNameTwo, fileNameThree, fileNameFour):
+        ''' Joins the content of the first 3 files into the 4th given file '''
+        try:
+            # reads the content of the first three files
+            with open(fileNameOne, 'r') as reader:
+                data1 = reader.read()
+            with open(fileNameTwo, 'r') as reader:
+                data2 = reader.read()
+            with open(fileNameThree, 'r') as reader:
+                data3 = reader.read()
+
+            # adds the content to fourth file
+            data = '\n' + data1 + '\n' + data2 + '\n' + data3
+            self.writeStringToFile(fileNameFour, data)
+
+        except IOError:
+            print('Error reading contents of files')
+
     def orderByWordLength(self, fileName):
         ''' Creates a new file with the contents of the given file sorted by word length '''
+        try:
+            with open(fileName, 'r') as reader:
+                rawData = reader.read()
 
+            data = rawData.split('\n')  # splits the data into one-line tokens
+            data.sort(key=len)  # sorts the data by length
+            firstLine = data[0]
+            data.remove(firstLine)  # to get rid of the blank space in the first line
 
+            self.writeDataOverFile('OrderedFile.txt', data)  # puts the data in OrderedFile.txt
+
+        except IOError:
+            print('Unable to read from file: ', fileName)
 
     # TODO
-    # Create a method that can join 3 different files together into a single file
+    # FINISHED; Create a method that can join 3 different files together into a single file
 
-    # Create a method that creates a new file with the contents of the ‘AllWords.txt’ file sorted by word length
+    # FINISHED; Create a method that creates a new file with the contents of the ‘AllWords.txt’ file sorted by word length
     # rather than alphabetically
 
     # Create a method that writes all sent data (either a String or a List) to a file with a common format decided by
