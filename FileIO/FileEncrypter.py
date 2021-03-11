@@ -1,6 +1,8 @@
 from FileWrite import FileWrite
+from FileRead import FileRead
+import random
 
-
+reader = FileRead()
 writer = FileWrite()
 
 class FileEncrypter:
@@ -100,6 +102,7 @@ class FileEncrypter:
             # If a single string is given, it's added to the data list as a single token
             data.append(strings)
 
+        data = reader.removeNewlinesFromData(data)
         encryptedData = []
 
         try:
@@ -118,3 +121,10 @@ class FileEncrypter:
             print('Error encrypting values; please ensure all elements are strings!')
         except IndexError:
             print('Error encrypting values; please ensure all elements are strings!')
+
+    def randomizedEncrypter(self, fileName):
+        ''' Randomly generates a cypher to apply to the given file sends the encrypted data to another file '''
+
+        data = reader.getFileAllLines(fileName)
+        key = random.randint(1, 10)
+        self.encodeToFile(data, key)

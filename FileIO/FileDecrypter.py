@@ -1,6 +1,7 @@
 from FileEncrypter import FileEncrypter
 from FileRead import FileRead
 from FileWrite import FileWrite
+import random
 
 encrypt = FileEncrypter()
 reader = FileRead()
@@ -31,6 +32,12 @@ class FileDecrypter:
         for i in decrypt:
             print(f'-> {i}')
 
+    def decodeDataAndReturn(self, data, shift):
+        ''' Decrypts a list of String using the given shift (and returns the list) '''
+        shift *= -1
+        decrypt = encrypt.encodeDataAndReturn(data, shift)
+        return decrypt
+
     def decodeFromFile(self, fileName, shift):
         ''' Decrypts the content in a file using the given shift '''
         fileData = reader.getFileAllLines(fileName)
@@ -47,21 +54,15 @@ class FileDecrypter:
 
         try:
             if len(data) > 1:
-                for i in data:
-                    decryptedData.append(self.decodeStrAndReturn(i, shift))
-
-                # Writes decrypted data to file
-                writer.writeDataOverFile('DecodedData.txt', decryptedData)
-                cleanData = self.takeAwayF('DecodedData.txt')
-                writer.writeDataOverFile('DecodedData.txt', cleanData)
-                print('Decoded data sent to DecodedData.txt!')
+                decryptedData = self.decodeDataAndReturn(data, shift)
             else:
-                # Writes decrypted data to file
                 decryptedData.append(self.decodeStrAndReturn(data[0], shift))
-                writer.writeDataOverFile('DecodedData.txt', decryptedData)
-                cleanData = self.takeAwayF('DecodedData.txt')
-                writer.writeDataOverFile('DecodedData.txt', cleanData)
-                print('Decoded data sent to DecodedData.txt!')
+
+            # Writes decrypted data to file
+            writer.writeDataOverFile('DecodedData.txt', decryptedData)
+            cleanData = self.takeAwayF('DecodedData.txt')
+            writer.writeDataOverFile('DecodedData.txt', cleanData)
+            print('Decoded data sent to DecodedData.txt!')
 
         except TypeError:
             print('Error decrypting values')
@@ -72,27 +73,62 @@ class FileDecrypter:
         ''' Takes away the 'f' that appears at the end of decoded lines '''
         data = reader.getFileAllLines(fileName)
 
-        if len(data) > 1:  # If there are multiple elements in the data
-            for i in range(len(data)):  # loop through all data
-                data[i] = data[i].replace("f\n", "")  # removes the 'f' at the end of strings
-                if len(data[i]) == 0:  # if there are now empty entries in the data, remove them!
-                    data.remove(data[i])
-                    i -= 1  # after removing an entry, we need to move back a step (the list is now 1 shorter)
-        else:  # If there's only one element in the data
-            # To get rid of the last two characters
-            string = data[0]
+        for i in range(len(data)):  # loop through all data
+            string = data[i]
             wordList = list(string)  # Convert word to a list (each element is a character)
-            maxLen = len(wordList)  # Get the total number of elements
-            wordList.remove(wordList[maxLen - 1])  # Remove the last element (\n)
-            wordList.remove(wordList[maxLen - 2])  # Remove the second to last element ('f')
+            wordList.pop()  # Takes away last element in the array (\n)
+            wordList.pop()  # Takes away the second to element in the array (letter)
 
             # Connects the characters into a single word
             word = ''
             for char in wordList:
                 word += char
 
-            data = [word]  # Adds the word into the data list
+            data[i] = word  # Adds the word into the data list
 
         return data
 
+    def bruteForceDecryption(self, fileName):
+        ''' *DESC* '''
+        data = reader.getFileAllLines(fileName)
+        data = reader.removeNewlinesFromData(data)
 
+        print("-> Type in the number of the successful encryption, or any other key if none are found")
+        self.showDecryptTries(data)
+
+
+    def showDecryptTries(self, data):
+        ''' *DESC* '''
+        count = 0
+        rangeLen = 0
+        decryptedData = []
+        usedShift = []
+
+        while rangeLen < 5:
+            shift = random.randint(1, 10)
+            if shift not in usedShift:
+                rangeLen += 1
+                usedShift.append(shift)
+                decrypt = self.decodeDataAndReturn(data, shift)
+                decryptedData.append(decrypt)
+                count += 1
+                print(f'{count}. {decrypt}')
+
+        self.successOrTryAgain(count, data, decryptedData)
+
+    def successOrTryAgain(self, count, data, decryptedData):
+        ''' *DESC* '''
+        userInput = input()
+        try:
+            userInput = int(userInput)
+            if userInput > count or userInput < 1:
+                print('\n-> Alright, here\'s are alternatives...')
+                self.showDecryptTries(data)
+            else:
+                decrypt = decryptedData[userInput - 1]
+                print('\n-> Success! Here is the decryption: \n')
+                for i in decrypt:
+                    print(i)
+        except ValueError:
+            print('\n-> Alright, here\'s are alternatives...')
+            self.showDecryptTries(data)
