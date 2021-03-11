@@ -1,3 +1,9 @@
+'''
+
+    Project by Nora Calif :)
+
+'''
+
 from FileRead import FileRead
 from FileWrite import FileWrite
 from FileEncrypter import FileEncrypter
@@ -8,4 +14,7 @@ reader = FileRead()
 writer = FileWrite()
 encrypt = FileEncrypter()
 decrypt = FileDecrypter()
-print()
+print()  # Empty space for layout
+
+
+# ----- WRITE COMMANDS BELOW -----

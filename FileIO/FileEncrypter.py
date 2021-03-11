@@ -8,7 +8,7 @@ writer = FileWrite()
 class FileEncrypter:
 
     def __init__(self):
-        print('File encrypter created!')
+        pass
 
     def characterCast(self, character):
         return ord(character)
@@ -106,15 +106,16 @@ class FileEncrypter:
         encryptedData = []
 
         try:
-            if len(data) > 1:
+            if len(data) > 1:  # If there are multiple elements in the list
                 for i in data:
-                    encryptedData.append(self.encodeStrAndReturn(i, key))
+                    encryptedData.append(self.encodeStrAndReturn(i, key))  # Encrypts then adds to encrypted data list
 
-                writer.writeDataOverFile('EncodedData.txt', encryptedData)
+                writer.writeDataOverFile('EncodedData.txt', encryptedData)  # Adds encrypted data to EncodedData.txt
                 print('Encrypted data sent to EncodedData.txt! \n')
-            else:
-                encryptedData.append(self.encodeStrAndReturn(data[0], key))
-                writer.writeDataOverFile('EncodedData.txt', encryptedData)
+
+            else:  # If there is only one element
+                encryptedData.append(self.encodeStrAndReturn(data[0], key))  # Encrypts then adds to encrypted data list
+                writer.writeDataOverFile('EncodedData.txt', encryptedData)  # Adds encrypted data to EncodedData.txt
                 print('Encrypted data sent to EncodedData.txt! \n')
 
         except TypeError:

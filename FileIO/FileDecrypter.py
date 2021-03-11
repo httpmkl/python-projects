@@ -10,7 +10,7 @@ writer = FileWrite()
 class FileDecrypter:
 
     def __init__(self):
-        print('File decrypter created!')
+        pass
 
     def decodeString(self, string, shift):
         ''' Decrypts the String using the given shift that was previously applied on it '''
@@ -19,7 +19,7 @@ class FileDecrypter:
         print("\nDecrypted message: " + decrypt)
 
     def decodeStrAndReturn(self, string, shift):
-        ''' Decrypts the String using the given shift that was previously applied on it (and returns the value) '''
+        ''' Decrypts the String using the given shift that was previously applied on it (only returns the string) '''
         shift *= -1
         decrypt = encrypt.encodeStrAndReturn(string, shift)
         return decrypt
@@ -33,7 +33,7 @@ class FileDecrypter:
             print(f'-> {i}')
 
     def decodeDataAndReturn(self, data, shift):
-        ''' Decrypts a list of String using the given shift (and returns the list) '''
+        ''' Decrypts a list of String using the given shift (only returns the list) '''
         shift *= -1
         decrypt = encrypt.encodeDataAndReturn(data, shift)
         return decrypt
@@ -58,10 +58,10 @@ class FileDecrypter:
             else:
                 decryptedData.append(self.decodeStrAndReturn(data[0], shift))
 
-            # Writes decrypted data to file
+            # Puts decrypted data in DecodedData.txt
             writer.writeDataOverFile('DecodedData.txt', decryptedData)
-            cleanData = self.takeAwayExtraCharacters('DecodedData.txt')
-            writer.writeDataOverFile('DecodedData.txt', cleanData)
+            cleanData = self.takeAwayExtraCharacters('DecodedData.txt')  # Takes away any extra characters added
+            writer.writeDataOverFile('DecodedData.txt', cleanData)  # Adds the cleaned data into the file
             print('Decoded data sent to DecodedData.txt!')
 
         except TypeError:
@@ -73,22 +73,23 @@ class FileDecrypter:
         ''' Takes away the extra characters that appears at the end of decoded lines '''
         data = reader.getFileAllLines(fileName)
 
-        for i in range(len(data)):  # loop through all data
-            string = data[i]
-            wordList = list(string)  # Convert word to a list (each element is a character)
-            wordList.pop()  # Takes away last element in the array (\n)
-            wordList.pop()  # Takes away the second to element in the array (letter)
+        for i in range(len(data)):  # Loop through the data
+            string = data[i]  # Extracts element into a single string
+            wordList = list(string)  # Converts string to a list (each element is a character)
+            wordList.pop()  # Takes away last element in the list (\n)
+            wordList.pop()  # Takes away second to last element in the list (extra letter)
 
             # Connects the characters into a single word
             word = ''
             for char in wordList:
                 word += char
 
-            data[i] = word  # Adds the word into the data list
+            data[i] = word  # Replaces element with trimmed word
 
         return data
 
     def bruteForceDecryption(self, fileName):
+        ''' Decrypts the given file through intelligent guesses '''
         data = reader.getFileAllLines(fileName)
         data = reader.removeNewlinesFromData(data)
 
@@ -97,6 +98,7 @@ class FileDecrypter:
 
 
     def showDecryptTries(self, data):
+        ''' Generates 5 guesses for the decryption '''
         count = 0
         rangeLen = 0
         decryptedData = []
@@ -105,26 +107,30 @@ class FileDecrypter:
         while rangeLen < 5:
             shift = random.randint(1, 10)
             if shift not in usedShift:
+                usedShift.append(shift)  # To avoid repeat guesses in a single try
                 rangeLen += 1
-                usedShift.append(shift)
-                decrypt = self.decodeDataAndReturn(data, shift)
-                decryptedData.append(decrypt)
+
+                decrypt = self.decodeDataAndReturn(data, shift)  # Decrypts data using a random shift
+                decryptedData.append(decrypt)  # Adds decrypted data to a list
+
+                # To show only a sample of the data (in case of long entries)
                 count += 1
-                # To show only a sample of the data
                 sample = []
                 try:
                     for i in range(3):
-                        sample.append(decrypt[i])
-                except IndexError:
+                        sample.append(decrypt[i])  # Adds first three values to the sample
+                except IndexError:  # If there are less than three elements in the list
                     pass
-                print(f'{count}. {sample}')
+                print(f'{count}. {sample}')  # Prints sample of data
 
         self.divideToWords(data, decryptedData)
 
     def divideToWords(self, data, decryptedData):
+        ''' Divides each guess decryption into individual words '''
         separator = ' '
         attempt = 0
 
+        # Loops through decrypted data and separates each guess into their individual words
         for i in decryptedData:
             if attempt == 0:
                 string = separator.join(i)
@@ -149,6 +155,7 @@ class FileDecrypter:
         self.checkForSuccess(data, decryptedData, guessOne, guessTwo, guessThree, guessFour, guessFive)
 
     def checkForSuccess(self, data, decryptedData, guessOne, guessTwo, guessThree, guessFour, guessFive):
+        ''' Checks for real words in decryption to determine if it was successful '''
         dictionary = reader.getFileAllLines('AllWords.txt')
         dictionary = reader.removeNewlinesFromData(dictionary)
 
@@ -163,13 +170,14 @@ class FileDecrypter:
         while not success:
             for i in guessOne:
                 for word in dictionary:
-                    if i.lower() == word.lower():
-                        realWords += 1
-                        if realWords >= (len(guessOne)*0.8):
+                    if i.lower() == word.lower():  # Compares every word in the guess to every dictionary word
+                        realWords += 1  # realWords counter goes up by 1 for every match detected
+                        if realWords >= (len(guessOne)*0.8):  # If at least 80% of the guess had dictionary words (to account for slang, etc.)
                             oneCorrect = True
                             success = True
                             break
 
+            # The loops below follow the same pattern as above
             for i in guessTwo:
                 for word in dictionary:
                     if i.lower() == word.lower():
@@ -205,31 +213,34 @@ class FileDecrypter:
                             fiveCorrect = True
                             success = True
                             break
+
+            # If none of the decryptions worked
             if not success:
                 success = True
                 print('\n-> I guess there weren\'t any correct decryptions. We\'ll try again...')
-                self.showDecryptTries(data)
+                self.showDecryptTries(data)  # Tries again with another 5 guesses
 
         self.reportCorrectAnswer(decryptedData, oneCorrect, twoCorrect, threeCorrect, fourCorrect, fiveCorrect)
 
     def reportCorrectAnswer(self, decryptedData, one, two, three, four, five):
+        ''' Prints out the correct decryption '''
         if one:
             print('\n-> Eureka! We found a successful decryption')
-            guess = decryptedData[0]
+            guess = decryptedData[0]  # Grabs the first element in decryptedData (the first decryption made)
             print(guess)
         elif two:
             print('\n-> Eureka! We found a successful decryption')
-            guess = decryptedData[1]
+            guess = decryptedData[1]  # Grabs the second element in decryptedData
             print(guess)
         elif three:
             print('\n-> Eureka! We found a successful decryption')
-            guess = decryptedData[2]
+            guess = decryptedData[2]  # Grabs the third element in decryptedData
             print(guess)
         elif four:
             print('\n-> Eureka! We found a successful decryption')
-            guess = decryptedData[3]
+            guess = decryptedData[3]  # Grabs the fourth element in decryptedData
             print(guess)
         elif five:
             print('\n-> Eureka! We found a successful decryption')
-            guess = decryptedData[4]
+            guess = decryptedData[4]  # Grabs the fifth element in decryptedData
             print(guess)

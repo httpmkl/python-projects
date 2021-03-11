@@ -12,7 +12,7 @@
 class FileRead:
 
     def __init__(self):
-        print('File reader created!')
+        pass
 
     def readFirstLineFromFile(self, filename):
         ''' Print out the contents from the first line of a file '''
@@ -117,6 +117,5 @@ class FileRead:
                 print(data)
             else:  # no words were added to the data list
                 print('No words found with this amount of characters')
-
-        except:
+        except ValueError:
             print(f"Unable to check for words with '{length}' characters")

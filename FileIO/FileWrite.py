@@ -5,7 +5,7 @@
 class FileWrite:
 
     def __init__(self):
-        print('File writer created!')
+        pass
 
     def writeStringOverFile(self, fileName, stringData):
         ''' Write String data to file, overwriting previous file contents '''
@@ -168,8 +168,9 @@ class FileWrite:
             print('Unable to read from file: ', fileName)
 
     def outputWithFormat(self, data):
+        ''' Prints the data with a common format (->) '''
         if type(data) == str:
-            data = list(data)
+            data = list(data)  # If the data is a single string, it's converted to a list
 
         for i in data:
             print(f'-> {i}')
