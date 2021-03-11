@@ -166,3 +166,10 @@ class FileWrite:
 
         except IOError:
             print('Unable to read from file: ', fileName)
+
+    def outputWithFormat(self, data):
+        if type(data) == str:
+            data = list(data)
+
+        for i in data:
+            print(f'-> {i}')

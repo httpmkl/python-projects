@@ -111,11 +111,11 @@ class FileEncrypter:
                     encryptedData.append(self.encodeStrAndReturn(i, key))
 
                 writer.writeDataOverFile('EncodedData.txt', encryptedData)
-                print('Encrypted data sent to EncodedData.txt!')
+                print('Encrypted data sent to EncodedData.txt! \n')
             else:
                 encryptedData.append(self.encodeStrAndReturn(data[0], key))
                 writer.writeDataOverFile('EncodedData.txt', encryptedData)
-                print('Encrypted data sent to EncodedData.txt!')
+                print('Encrypted data sent to EncodedData.txt! \n')
 
         except TypeError:
             print('Error encrypting values; please ensure all elements are strings!')

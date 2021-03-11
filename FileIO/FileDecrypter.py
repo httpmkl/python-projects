@@ -60,7 +60,7 @@ class FileDecrypter:
 
             # Writes decrypted data to file
             writer.writeDataOverFile('DecodedData.txt', decryptedData)
-            cleanData = self.takeAwayF('DecodedData.txt')
+            cleanData = self.takeAwayExtraCharacters('DecodedData.txt')
             writer.writeDataOverFile('DecodedData.txt', cleanData)
             print('Decoded data sent to DecodedData.txt!')
 
@@ -69,8 +69,8 @@ class FileDecrypter:
         except IndexError:
             print('Error decrypting values')
 
-    def takeAwayF(self, fileName):
-        ''' Takes away the 'f' that appears at the end of decoded lines '''
+    def takeAwayExtraCharacters(self, fileName):
+        ''' Takes away the extra characters that appears at the end of decoded lines '''
         data = reader.getFileAllLines(fileName)
 
         for i in range(len(data)):  # loop through all data
@@ -89,16 +89,14 @@ class FileDecrypter:
         return data
 
     def bruteForceDecryption(self, fileName):
-        ''' *DESC* '''
         data = reader.getFileAllLines(fileName)
         data = reader.removeNewlinesFromData(data)
 
-        print("-> Type in the number of the successful encryption, or any other key if none are found")
+        print("-> Testing decryptions...")
         self.showDecryptTries(data)
 
 
     def showDecryptTries(self, data):
-        ''' *DESC* '''
         count = 0
         rangeLen = 0
         decryptedData = []
@@ -112,23 +110,126 @@ class FileDecrypter:
                 decrypt = self.decodeDataAndReturn(data, shift)
                 decryptedData.append(decrypt)
                 count += 1
-                print(f'{count}. {decrypt}')
+                # To show only a sample of the data
+                sample = []
+                try:
+                    for i in range(3):
+                        sample.append(decrypt[i])
+                except IndexError:
+                    pass
+                print(f'{count}. {sample}')
 
-        self.successOrTryAgain(count, data, decryptedData)
+        self.divideToWords(data, decryptedData)
 
-    def successOrTryAgain(self, count, data, decryptedData):
-        ''' *DESC* '''
-        userInput = input()
-        try:
-            userInput = int(userInput)
-            if userInput > count or userInput < 1:
-                print('\n-> Alright, here\'s are alternatives...')
+    def divideToWords(self, data, decryptedData):
+        separator = ' '
+        attempt = 0
+
+        for i in decryptedData:
+            if attempt == 0:
+                string = separator.join(i)
+                guessOne = string.split()
+                attempt += 1
+            elif attempt == 1:
+                string = separator.join(i)
+                guessTwo = string.split()
+                attempt += 1
+            elif attempt == 2:
+                string = separator.join(i)
+                guessThree = string.split()
+                attempt += 1
+            elif attempt == 3:
+                string = separator.join(i)
+                guessFour = string.split()
+                attempt += 1
+            elif attempt == 4:
+                string = separator.join(i)
+                guessFive = string.split()
+
+        self.checkForSuccess(data, decryptedData, guessOne, guessTwo, guessThree, guessFour, guessFive)
+
+    def checkForSuccess(self, data, decryptedData, guessOne, guessTwo, guessThree, guessFour, guessFive):
+        dictionary = reader.getFileAllLines('AllWords.txt')
+        dictionary = reader.removeNewlinesFromData(dictionary)
+
+        success = False
+        oneCorrect = False
+        twoCorrect = False
+        threeCorrect = False
+        fourCorrect = False
+        fiveCorrect = False
+        realWords = 0
+
+        while not success:
+            for i in guessOne:
+                for word in dictionary:
+                    if i.lower() == word.lower():
+                        realWords += 1
+                        if realWords >= (len(guessOne)*0.8):
+                            oneCorrect = True
+                            success = True
+                            break
+
+            for i in guessTwo:
+                for word in dictionary:
+                    if i.lower() == word.lower():
+                        realWords += 1
+                        if realWords >= (len(guessTwo) * 0.8):
+                            twoCorrect = True
+                            success = True
+                            break
+
+            for i in guessThree:
+                for word in dictionary:
+                    if i.lower() == word.lower():
+                        realWords += 1
+                        if realWords >= (len(guessThree) * 0.8):
+                            threeCorrect = True
+                            success = True
+                            break
+
+            for i in guessFour:
+                for word in dictionary:
+                    if i.lower() == word.lower():
+                        realWords += 1
+                        if realWords >= (len(guessFour) * 0.8):
+                            fourCorrect = True
+                            success = True
+                            break
+
+            for i in guessFive:
+                for word in dictionary:
+                    if i.lower() == word.lower():
+                        realWords += 1
+                        if realWords >= (len(guessFive) * 0.8):
+                            fiveCorrect = True
+                            success = True
+                            break
+            if not success:
+                success = True
+                print('\n-> I guess there weren\'t any correct decryptions. We\'ll try again...')
                 self.showDecryptTries(data)
-            else:
-                decrypt = decryptedData[userInput - 1]
-                print('\n-> Success! Here is the decryption: \n')
-                for i in decrypt:
-                    print(i)
-        except ValueError:
-            print('\n-> Alright, here\'s are alternatives...')
-            self.showDecryptTries(data)
+
+        self.reportCorrectAnswer(decryptedData, oneCorrect, twoCorrect, threeCorrect, fourCorrect, fiveCorrect)
+
+    def reportCorrectAnswer(self, decryptedData, one, two, three, four, five):
+        if one:
+            print('\n-> Eureka! We found a successful decryption')
+            guess = decryptedData[0]
+            print(guess)
+        elif two:
+            print('\n-> Eureka! We found a successful decryption')
+            guess = decryptedData[1]
+            print(guess)
+        elif three:
+            print('\n-> Eureka! We found a successful decryption')
+            guess = decryptedData[2]
+            print(guess)
+        elif four:
+            print('\n-> Eureka! We found a successful decryption')
+            guess = decryptedData[3]
+            print(guess)
+        elif five:
+            print('\n-> Eureka! We found a successful decryption')
+            guess = decryptedData[4]
+            print(guess)
