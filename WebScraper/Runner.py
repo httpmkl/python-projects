@@ -1,5 +1,9 @@
 '''
 
+    TODO:
+    - Figure out time issue with CBC (Mr. Rowell)
+    - Finish top news scrape (send info in an organized way to file and compare the categories)
+
     Ideas for websites to scrape:
     - Youtube (today's trend list)
         - or Twitch (says whether there was a stream today (looks at past broadcasts date)
