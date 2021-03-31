@@ -15,20 +15,17 @@ def scrapeGbNews():
     headlineData = data.find_all(class_="c-posts__headlineText")
     headlineData.pop(0)  # Gets rid of the repeated first header
 
-    global GNHeadlines
-    GNHeadlines = []
+    headlines = []
 
     for num in range(len(headlineData)):
-        GNHeadlines.append(headlineData[num].get_text())  # Adds each headline to the list
+        headlines.append(headlineData[num].get_text())  # Adds each headline to the list
 
     # Scrapes category & time info
     postInfo = data.find_all(class_="c-posts__info")
 
-    global GNCategories
-    GNCategories = []
+    categories = []
 
-    global GNTimeAgo
-    GNTimeAgo = []
+    timeAgo = []
 
     # To track which element is a category & time (since it alternates)
     didCategory = False
@@ -36,13 +33,15 @@ def scrapeGbNews():
 
     for num in range(len(postInfo)):
         if not didCategory:
-            GNCategories.append(postInfo[num].get_text())  # Adds first element to category list
+            categories.append(postInfo[num].get_text())  # Adds first element to category list
             didCategory = True
             didTime = False
         elif not didTime:
-            GNTimeAgo.append(postInfo[num].get_text() + " ago")  # Adds next element to the time list
+            timeAgo.append(postInfo[num].get_text() + " ago")  # Adds next element to the time list
             didCategory = False
             didTime = True
+
+    return headlines, categories, timeAgo
 
 
 def scrapeCBC():
@@ -54,16 +53,14 @@ def scrapeCBC():
 
     # Scrapes headline info
     headlineData = data.find_all(class_="headline")
-    global CBCHeadlines
-    CBCHeadlines = []
+    headlines = []
 
     for num in range(len(headlineData)):
-        CBCHeadlines.append(headlineData[num].get_text())  # Adds each element to the headlines list
+        headlines.append(headlineData[num].get_text())  # Adds each element to the headlines list
 
     # Scrapes category info
     categoryData = data.find_all(class_="departmentItem")
-    global CBCCategories
-    CBCCategories = []
+    categories = []
 
     for num in range(len(categoryData)):
         wordList = categoryData[num].get_text().split()  # Splits the element into its separate words
@@ -71,25 +68,24 @@ def scrapeCBC():
         if '-' in wordList:  # If a hyphen was in the element
             wordList.append(categoryData[num + 1].get_text())  # Adds the next category element to this one
             word = ' '.join(wordList)  # Joins words back into a single element
-            CBCCategories.append(word)
+            categories.append(word)
         else:  # If a hyphen was not in the element
             pastWordList = categoryData[num - 1].get_text().split()  # Gets info of the past element
             if '-' not in pastWordList:  # If there isn't a hyphen in that one either
-                CBCCategories.append(categoryData[num].get_text())
+                categories.append(categoryData[num].get_text())
             # If there was a hyphen in the previous element, it's assumed that the current one has been added to that
 
     # To take out the space at the end of each category
     index = 0
-    for i in CBCCategories:
+    for i in categories:
         splitWord = i.split()
         joinWord = ' '.join(splitWord)
-        CBCCategories[index] = joinWord
+        categories[index] = joinWord
         index += 1
 
     # Scrapes time info
     timeData = data.find_all("time", {"class": "timeStamp"})
-    global CBCTimeAgo
-    CBCTimeAgo = []
+    timeAgo = []
 
     for num in range(len(timeData)):
         singleEntry = str(timeData[num])
@@ -120,15 +116,17 @@ def scrapeCBC():
             else:
                 timeDiff = timeDiff[0]
             if int(timeDiff) == 1:
-                CBCTimeAgo.append(f"{timeDiff} hour ago")
+                timeAgo.append(f"{timeDiff} hour ago")
             else:
-                CBCTimeAgo.append(f"{timeDiff} hours ago")
+                timeAgo.append(f"{timeDiff} hours ago")
         else:
             timeDiff = timeDiff[1]
             if int(timeDiff) == 1:
-                CBCTimeAgo.append(f"{timeDiff} minute ago")
+                timeAgo.append(f"{timeDiff} minute ago")
             else:
-                CBCTimeAgo.append(f"{timeDiff} minutes ago")
+                timeAgo.append(f"{timeDiff} minutes ago")
+
+    return headlines, categories, timeAgo
 
 def scrapeVanSun():
     "Scrapes Vancouver Sun to return latest 5 headlines, category, and time since posted"
@@ -139,16 +137,14 @@ def scrapeVanSun():
 
     # Scrapes headline info
     headlineData = data.find_all(class_="article-card__headline-clamp")
-    global VSHeadlines
-    VSHeadlines = []
+    headlines = []
 
     for num in range(len(headlineData)):
-        VSHeadlines.append(headlineData[num].get_text())  # Adds each title to the headlines list
+        headlines.append(headlineData[num].get_text())  # Adds each title to the headlines list
 
     # Scrapes category info
     categoryData = data.find_all(class_="article-card__category-link")
-    global VSCategories
-    VSCategories = []
+    categories = []
 
     countedOnce = False
     for num in range(len(categoryData)):
@@ -156,7 +152,7 @@ def scrapeVanSun():
         if not countedOnce:
             category = categoryData[num].get_text()
             category = category.strip()  # Takes away whitespace
-            VSCategories.append(category)  # Adds category to list
+            categories.append(category)  # Adds category to list
             countedOnce = True
         elif countedOnce:
             countedOnce = False
@@ -164,13 +160,15 @@ def scrapeVanSun():
 
     # Scrapes time info
     timeData = data.find_all(class_="article-card__time")
-    global VSTimeAgo
-    VSTimeAgo = []
+    timeAgo = []
 
     for num in range(len(timeData)):
         time = str(timeData[num].get_text()).strip()
         time = time.replace(u'\xa0', u' ')
-        VSTimeAgo.append(time)  # Adds each time to the timeAgo list
+        timeAgo.append(time)  # Adds each time to the timeAgo list
+
+    return headlines, categories, timeAgo
+
 
 def scrapeNatPost():
     """Scrapes The National Post to return latest 5 headlines, category, and time since posted"""
@@ -181,16 +179,14 @@ def scrapeNatPost():
 
     # Scrapes headline info
     headlineData = data.find_all(class_="article-card__headline-clamp")
-    global NPHeadlines
-    NPHeadlines = []
+    headlines = []
 
     for num in range(len(headlineData)):
-        NPHeadlines.append(headlineData[num].get_text())  # Adds headlines to list
+        headlines.append(headlineData[num].get_text())  # Adds headlines to list
 
     # Scrapes category info
     categoryData = data.find_all(class_="article-card__category-link")
-    global NPCategories
-    NPCategories = []
+    categories = []
 
     countedOnce = False
     for num in range(len(categoryData)):
@@ -198,7 +194,7 @@ def scrapeNatPost():
         if not countedOnce:
             category = categoryData[num].get_text()
             category = category.strip()  # Takes away whitespace
-            NPCategories.append(category)  # Adds category to list
+            categories.append(category)  # Adds category to list
             countedOnce = True
         elif countedOnce:
             countedOnce = False
@@ -206,15 +202,17 @@ def scrapeNatPost():
 
     # Scrapes time info
     timeInfo = data.find_all(class_="article-card__time")
-    global NPTimeAgo
-    NPTimeAgo = []
+    timeAgo = []
 
     for num in range(len(timeInfo)):
         time = timeInfo[num].get_text().strip()  # Takes away whitespace
         time = time.replace(u'\xa0', u' ')
-        NPTimeAgo.append(time)  # Adds time to the list
+        timeAgo.append(time)  # Adds time to the list
+
+    return headlines, categories, timeAgo
 
 
+# TODO: Take this out!!
 def scrapeNewsSites():
     # Scrapes each of the four news sites
     scrapeGbNews()

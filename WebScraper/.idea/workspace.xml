@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f9dcb725-8476-49e8-b754-5a3591e2d789" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/FileWrite.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebScraper.py.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/Runner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebScraper.py" beforeDir="false" afterPath="$PROJECT_DIR$/WebScraper.py" afterDir="false" />
@@ -42,7 +40,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.WebScraper">
+  <component name="RunManager" selected="Python.Runner">
     <configuration name="Runner" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="WebScraper" />
       <option name="INTERPRETER_OPTIONS" value="" />
