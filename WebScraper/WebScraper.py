@@ -212,15 +212,6 @@ def scrapeNatPost():
     return headlines, categories, timeAgo
 
 
-# TODO: Take this out!!
-def scrapeNewsSites():
-    # Scrapes each of the four news sites
-    scrapeGbNews()
-    scrapeCBC()
-    scrapeVanSun()
-    scrapeNatPost()
-
-
 def scrapeNewegg():
     page = requests.get("https://www.newegg.ca/todays-deals")
     soup = BeautifulSoup(page.content, 'html.parser')
