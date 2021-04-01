@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f9dcb725-8476-49e8-b754-5a3591e2d789" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../FileIO/.idea/FileIO.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../FileIO/.idea/FileIO.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../FileIO/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../FileIO/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/WebScraper.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/WebScraper.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NewsScrape.txt" beforeDir="false" afterPath="$PROJECT_DIR$/NewsScrape.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/Runner.py" afterDir="false" />
@@ -35,6 +39,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">

@@ -245,12 +245,16 @@ def scrapeNewegg():
         itemNames.append(itemData[num].get_text())
 
     # Scrapes original price
-    ogPriceData = data.find_all(class_="price-was-data")
+    ogPriceData = data.find_all(class_="price-was")
     global ogPrices
     ogPrices = []
 
     for num in range(len(ogPriceData)):
-        ogPrices.append(ogPriceData[num].get_text())  # Stores price in ogPrices list
+        if ogPriceData[num].get_text() == '':
+            # Since they also put new items with no original price on the list
+            ogPrices.append('N/A')
+        else:
+            ogPrices.append(ogPriceData[num].get_text())  # Stores price in ogPrices list
 
     # Scrapes new price
     newPriceData = data.find_all(class_="price-current")
@@ -261,13 +265,32 @@ def scrapeNewegg():
         wordList = newPriceData[num].get_text().split()  # To get rid of the hyphen at the end of the amount
         newPrices.append(wordList[0])  # Stores current price in newPrices list
 
+    # Scrapes shipping info
+    shippingData = data.find_all(class_="price-ship")
+    global shippingPrices
+    shippingPrices = []
+
+    for num in range(len(shippingData)):
+        shippingPrices.append(shippingData[num].get_text())  # Stores shipping price in the list
+
     # Scrapes discount info
-    discountData = data.find_all(class_="price-was-data")
+    discountData = data.find_all(class_="price-save")
     global discounts
     discounts = []
 
     for num in range(len(discountData)):
-        discounts.append(discountData[num].get_text())  # Stores percentage in discounts list
+        discount = discountData[num].get_text()
 
-    return itemNames, ogPrices, newPrices, discounts
+        # Clean up the element
+        if discount == '':
+            # Since discounts aren't always provided
+            discount = 'N/A'
+        else:  # If there is a discount provided
+            words = discount.split(' ')
+            discount = words[1]  # Removes the "Save: " from the string
+
+        discounts.append(discount)  # Stores percentage (or N/A) in discounts list
+
+
+    return itemNames, ogPrices, newPrices, shippingPrices, discounts
 

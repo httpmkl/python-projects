@@ -30,9 +30,6 @@ def getCurrentTime():
     return dateNow, timeNow  # Returns date & time
 
 def menu(isStart):
-    if isStart == True:
-        bgScraping = False
-
     menuOptions()  # Shows menu options
     global userChoice  # So I can access it in later functions
 
@@ -42,16 +39,21 @@ def menu(isStart):
         try:
             userChoice = int(input())
             if 0 < userChoice < 6:  # Chose 1-5
-                accessContent()  # Asks the user how they want to see the content
+                accessContent(isStart)  # Asks the user how they want to see the content
                 gaveInput = True
             else:  # Gave a value out of bounds
                 print('\n-> Please enter a valid input!')
         except ValueError:  # Entered non-integer characters
             print('\n-> Please enter a valid input!')
 
-def accessContent():
+
+def accessContent(isStart):
     global accessChoice
     global bgScraping
+
+    if isStart == True:
+        # bgScraping is given a value of false in the beginning and when it becomes true, it doesn't change
+        bgScraping = False
 
     print('\n[ How would you like to access the content? ]')
     print('1. Show me in the console  \n2. Send it to a file  \n3. Set up an automatic scraping timer')
@@ -142,6 +144,7 @@ def redirectToMenu():
                 print('\n-> Please enter a valid input!')
         except ValueError:  # Entered non-integer characters
             print('\n-> Please enter a valid input!')
+
 
 # Choice 1: Current top news headlines
 def scrapeNews():
@@ -381,10 +384,10 @@ def setTimer(unit):
         try:
             secs = int(input('\nEnter amount: '))
             if unit == 'hours':
-                secs *= 3600
+                secs *= 3600  # Converts hours to seconds
                 gaveInput = True
             elif unit == 'minutes':
-                secs *= 60
+                secs *= 60  # Converts minutes to seconds
                 gaveInput = True
             elif unit == 'seconds':
                 # If unit is seconds, time isn't altered
@@ -394,15 +397,57 @@ def setTimer(unit):
 
     return secs
 
+
 # Choice 2: Today's discounts & deals for PC parts
+def scrapePcParts():
+    global itemName
+    global ogPrice
+    global newPrice
+    global shipping
+    global discount
+    newegg = WebScraper.scrapeNewegg()
+
+    itemName = newegg[0]
+    ogPrice = newegg[1]
+    newPrice = newegg[2]
+    shipping = newegg[3]
+    discount = newegg[4]
+
 def pcDiscountsConsole():
-    pass
+    scrapePcParts()
+    print('')  # Empty space
+
+    for i in range(len(itemName)):
+        if shipping[i] == 'Free Shipping':
+            ship = '(w/ Free Shipping)'
+        else:
+            ship = '+ ' + str(shipping[i])
+
+        if discount[i] == 'N/A':
+            price = ogPrice[i].split('$')
+            newP = newPrice[i].split('$')
+            diff = float(price[1]) - float(newP[1])  # TODO: Fix out of range error
+            disc = '$' + str(format(diff, '.2f')) + ' off'
+        else:
+            disc = str(discount[i]) + ' off'
+
+        if ogPrice[i] == 'N/A':
+            print('\n-> NEW ITEM')
+            print(f'Name: {itemName[i]}')
+            print(f'Price: {newPrice[i]} {ship}')
+        else:
+            print('\n-> DISCOUNTED ITEM')
+            print(f'Name: {itemName[i]}')
+            print(f'Original price: {ogPrice[i]} {ship}')
+            print(f'Discount: {disc}')
+            print(f'New price: {newPrice[i]} {ship}')
+
 
 def pcDiscountsFile():
-    pass
+    scrapePcParts()
 
 def pcDiscountsSchedule():
-    pass
+    scrapePcParts()
 
 
 # Choice 5: All of the above
