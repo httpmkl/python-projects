@@ -18,7 +18,8 @@ def scrapeGbNews():
     headlines = []
 
     for num in range(len(headlineData)):
-        headlines.append(headlineData[num].get_text())  # Adds each headline to the list
+        if len(headlines) <= 3:
+            headlines.append(headlineData[num].get_text())  # Adds each headline to the list
 
     # Scrapes category & time info
     postInfo = data.find_all(class_="c-posts__info")
@@ -33,16 +34,23 @@ def scrapeGbNews():
 
     for num in range(len(postInfo)):
         if not didCategory:
-            categories.append(postInfo[num].get_text())  # Adds first element to category list
-            didCategory = True
-            didTime = False
+            if len(categories) <= 3:
+                categories.append(postInfo[num].get_text())  # Adds first element to category list
+                didCategory = True
+                didTime = False
         elif not didTime:
-            timeAgo.append(postInfo[num].get_text() + " ago")  # Adds next element to the time list
-            didCategory = False
-            didTime = True
+            if len(timeAgo) <= 3:
+                word = postInfo[num].get_text().split()
+                if 'mins' in word:
+                    word[1] = 'minutes'
+                if 'min' in word:
+                    word[1] = 'minute'
+                word = str(word[0]) + ' ' + str(word[1]) + " ago"
+                timeAgo.append(word)  # Adds next element to the time list
+                didCategory = False
+                didTime = True
 
     return headlines, categories, timeAgo
-
 
 def scrapeCBC():
     "Scrapes CBC to return top 4 headlines, category, and time since posted"
@@ -56,24 +64,26 @@ def scrapeCBC():
     headlines = []
 
     for num in range(len(headlineData)):
-        headlines.append(headlineData[num].get_text())  # Adds each element to the headlines list
+        if len(headlines) < 3:
+            headlines.append(headlineData[num].get_text())  # Adds each element to the headlines list
 
     # Scrapes category info
     categoryData = data.find_all(class_="departmentItem")
     categories = []
 
     for num in range(len(categoryData)):
-        wordList = categoryData[num].get_text().split()  # Splits the element into its separate words
+        if len(categories) < 3:
+            wordList = categoryData[num].get_text().split()  # Splits the element into its separate words
 
-        if '-' in wordList:  # If a hyphen was in the element
-            wordList.append(categoryData[num + 1].get_text())  # Adds the next category element to this one
-            word = ' '.join(wordList)  # Joins words back into a single element
-            categories.append(word)
-        else:  # If a hyphen was not in the element
-            pastWordList = categoryData[num - 1].get_text().split()  # Gets info of the past element
-            if '-' not in pastWordList:  # If there isn't a hyphen in that one either
-                categories.append(categoryData[num].get_text())
-            # If there was a hyphen in the previous element, it's assumed that the current one has been added to that
+            if '-' in wordList:  # If a hyphen was in the element
+                wordList.append(categoryData[num + 1].get_text())  # Adds the next category element to this one
+                word = ' '.join(wordList)  # Joins words back into a single element
+                categories.append(word)
+            else:  # If a hyphen was not in the element
+                pastWordList = categoryData[num - 1].get_text().split()  # Gets info of the past element
+                if '-' not in pastWordList:  # If there isn't a hyphen in that one either
+                    categories.append(categoryData[num].get_text())
+                # If there was a hyphen in the previous element, it's assumed that the current one has been added to that
 
     # To take out the space at the end of each category
     index = 0
@@ -88,43 +98,44 @@ def scrapeCBC():
     timeAgo = []
 
     for num in range(len(timeData)):
-        singleEntry = str(timeData[num])
-        prunedData = singleEntry.split(' ')
-        prunedData = prunedData[2].split('"')
-        time = prunedData[1].split('T')
-        hms = time[1].split('Z')
-        hms = hms[0]
-        time.pop()
-        time.append(hms)
-        now = str(dt.now(tz=timezone.utc)).split("+")
-        now = now[0].split(" ")
+        if len(timeAgo) < 3:
+            singleEntry = str(timeData[num])
+            prunedData = singleEntry.split(' ')
+            prunedData = prunedData[2].split('"')
+            time = prunedData[1].split('T')
+            hms = time[1].split('Z')
+            hms = hms[0]
+            time.pop()
+            time.append(hms)
+            now = str(dt.now(tz=timezone.utc)).split("+")
+            now = now[0].split(" ")
 
-        ymd = time[0].split("-")
-        hms = time[1].split(":")
+            ymd = time[0].split("-")
+            hms = time[1].split(":")
 
-        ymdNow = now[0].split("-")
-        hmsNow = now[1].split(":")
+            ymdNow = now[0].split("-")
+            hmsNow = now[1].split(":")
 
-        a = datetime.datetime(int(ymd[0]), int(ymd[1]), int(ymd[2]), int(hms[0]), int(hms[1]), int(float(hms[2])))
-        b = datetime.datetime(int(ymdNow[0]), int(ymdNow[1]), int(ymdNow[2]), int(hmsNow[0]), int(hmsNow[1]), int(float(hmsNow[2])))
-        timeDiff = b - a
+            a = datetime.datetime(int(ymd[0]), int(ymd[1]), int(ymd[2]), int(hms[0]), int(hms[1]), int(float(hms[2])))
+            b = datetime.datetime(int(ymdNow[0]), int(ymdNow[1]), int(ymdNow[2]), int(hmsNow[0]), int(hmsNow[1]), int(float(hmsNow[2])))
+            timeDiff = b - a
 
-        timeDiff = str(timeDiff).split(":")
-        if int(timeDiff[0]) > 0:
-            if int(timeDiff[1]) >= 30:
-                timeDiff = str(int(timeDiff[0]) + 1)
+            timeDiff = str(timeDiff).split(":")
+            if int(timeDiff[0]) > 0:
+                if int(timeDiff[1]) >= 30:
+                    timeDiff = str(int(timeDiff[0]) + 1)
+                else:
+                    timeDiff = timeDiff[0]
+                if int(timeDiff) == 1:
+                    timeAgo.append(f"{timeDiff} hour ago")
+                else:
+                    timeAgo.append(f"{timeDiff} hours ago")
             else:
-                timeDiff = timeDiff[0]
-            if int(timeDiff) == 1:
-                timeAgo.append(f"{timeDiff} hour ago")
-            else:
-                timeAgo.append(f"{timeDiff} hours ago")
-        else:
-            timeDiff = timeDiff[1]
-            if int(timeDiff) == 1:
-                timeAgo.append(f"{timeDiff} minute ago")
-            else:
-                timeAgo.append(f"{timeDiff} minutes ago")
+                timeDiff = timeDiff[1]
+                if int(timeDiff) == 1:
+                    timeAgo.append(f"{timeDiff} minute ago")
+                else:
+                    timeAgo.append(f"{timeDiff} minutes ago")
 
     return headlines, categories, timeAgo
 
@@ -140,7 +151,8 @@ def scrapeVanSun():
     headlines = []
 
     for num in range(len(headlineData)):
-        headlines.append(headlineData[num].get_text())  # Adds each title to the headlines list
+        if len(headlines) < 3:
+            headlines.append(headlineData[num].get_text())  # Adds each title to the headlines list
 
     # Scrapes category info
     categoryData = data.find_all(class_="article-card__category-link")
@@ -148,24 +160,26 @@ def scrapeVanSun():
 
     countedOnce = False
     for num in range(len(categoryData)):
-        # Because I noticed repeats in the list
-        if not countedOnce:
-            category = categoryData[num].get_text()
-            category = category.strip()  # Takes away whitespace
-            categories.append(category)  # Adds category to list
-            countedOnce = True
-        elif countedOnce:
-            countedOnce = False
-            # Skips every other entry (since it's a repeat)
+        if len(categories) < 3:
+            # Because I noticed repeats in the list
+            if not countedOnce:
+                category = categoryData[num].get_text()
+                category = category.strip()  # Takes away whitespace
+                categories.append(category)  # Adds category to list
+                countedOnce = True
+            elif countedOnce:
+                countedOnce = False
+                # Skips every other entry (since it's a repeat)
 
     # Scrapes time info
     timeData = data.find_all(class_="article-card__time")
     timeAgo = []
 
     for num in range(len(timeData)):
-        time = str(timeData[num].get_text()).strip()
-        time = time.replace(u'\xa0', u' ')
-        timeAgo.append(time)  # Adds each time to the timeAgo list
+        if len(timeAgo) < 3:
+            time = str(timeData[num].get_text()).strip()
+            time = time.replace(u'\xa0', u' ')
+            timeAgo.append(time)  # Adds each time to the timeAgo list
 
     return headlines, categories, timeAgo
 
@@ -182,7 +196,8 @@ def scrapeNatPost():
     headlines = []
 
     for num in range(len(headlineData)):
-        headlines.append(headlineData[num].get_text())  # Adds headlines to list
+        if len(headlines) < 3:
+            headlines.append(headlineData[num].get_text())  # Adds headlines to list
 
     # Scrapes category info
     categoryData = data.find_all(class_="article-card__category-link")
@@ -190,29 +205,32 @@ def scrapeNatPost():
 
     countedOnce = False
     for num in range(len(categoryData)):
-        # Because I noticed repeats in the list
-        if not countedOnce:
-            category = categoryData[num].get_text()
-            category = category.strip()  # Takes away whitespace
-            categories.append(category)  # Adds category to list
-            countedOnce = True
-        elif countedOnce:
-            countedOnce = False
-            # Skips every other entry (since it's a repeat)
+        if len(categories) < 3:
+            # Because I noticed repeats in the list
+            if not countedOnce:
+                category = categoryData[num].get_text()
+                category = category.strip()  # Takes away whitespace
+                categories.append(category)  # Adds category to list
+                countedOnce = True
+            elif countedOnce:
+                countedOnce = False
+                # Skips every other entry (since it's a repeat)
 
     # Scrapes time info
     timeInfo = data.find_all(class_="article-card__time")
     timeAgo = []
 
     for num in range(len(timeInfo)):
-        time = timeInfo[num].get_text().strip()  # Takes away whitespace
-        time = time.replace(u'\xa0', u' ')
-        timeAgo.append(time)  # Adds time to the list
+        if len(timeAgo) < 3:
+            time = timeInfo[num].get_text().strip()  # Takes away whitespace
+            time = time.replace(u'\xa0', u' ')
+            timeAgo.append(time)  # Adds time to the list
 
     return headlines, categories, timeAgo
 
 
 def scrapeNewegg():
+    """Scrapes Newegg and returns info about today's deals"""
     page = requests.get("https://www.newegg.ca/todays-deals")
     soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -250,4 +268,6 @@ def scrapeNewegg():
 
     for num in range(len(discountData)):
         discounts.append(discountData[num].get_text())  # Stores percentage in discounts list
+
+    return itemNames, ogPrices, newPrices, discounts
 

@@ -1,61 +1,88 @@
-Here are some of the top headlines from today:
+TOP HEADLINES FOR 2021-03-31:
+[ Last scraped: 17:35 ]
 
+
+----------
 
 -> GLOBAL NEWS
 
-Title: Canada adds 4,880 new COVID-19 cases as global infections top 128 million
+----------
+
+
+Title: Johnson & Johnson says batch of COVID-19 vaccines failed quality check
+Category: Health
+Time posted: 53 minutes ago
+
+Title: With COVID-19 variant cases on the rise, what do experts recommend?
 Category: Canada
-Time posted: 6 hours ago
+Time posted: 1 hour ago
 
-Title: Boy found after Winnipeg police issue Amber Alert for missing 2-year-old
-Category: Crime
-Time posted: 4 hours ago
+Title: B.C. reports highest-ever daily COVID-19 case count
+Category: Health
+Time posted: 47 minutes ago
 
-Title: From furniture to toilet paper, Canadians warned of shortages, price hikes amid trade logjams
-Category: Money
-Time posted: 10 hours ago
 
+----------
 
 -> CBC
 
-Title: Trudeau urges Canadians to 'stay strong' as vaccine deliveries accelerate
+----------
+
+
+Title: Tam says pandemic now at 'most challenging' stage, calls on Canadians to give vaccines time to work
 Category: Politics
-Time posted: 8 hours ago
+Time posted: 24 minutes ago
 
-Title: B.C. ski resort says all staff who attended rowdy restaurant party will be fired
-Category: Canada - British Columbia
-Time posted: 1 hour ago
-
-Title: Filipina mom grateful for extraordinary act of kindness in small-town Alberta
-Category: Canada - Calgary
+Title: 'What if I've already had one dose?' Your AstraZeneca vaccine questions answered
+Category: Radio - The Dose
 Time posted: 9 hours ago
 
+Title: Charges approved against alleged arsonist in fire at Masonic hall in Vancouver
+Category: Canada - British Columbia
+Time posted: 3 hours ago
+
+
+----------
 
 -> VANCOUVER SUN
 
-Title: Political strategist Gavin Dew announces B.C. Liberal leadership bid
-Category: News
-Time posted: 11 minutes ago
+----------
 
-Title: Five newborn kittens stolen from Abbotsford home
+
+Title: Surrey RCMP say this man wanted for assault on pregnant woman
+Category: News
+Time posted: 5 hours ago
+
+Title: Charges laid in Vancouver Masonic lodges arson case
+Category: Crime
+Time posted: 2 hours ago
+
+Title: Newborn kittens stolen from Abbotsford home found, reunited with mom, Mittens
 Category: Local News
-Time posted: 4 hours ago
+Time posted: 24 minutes ago
 
-Title: RCMP investigate assault on Asian woman on UBC campus
-Category: News
-Time posted: 4 hours ago
 
+----------
 
 -> THE NATIONAL POST
 
-Title: Canadian economy set to roar back after COVID restrictions lifted: conference board report
-Category: Canadian Politics
-Time posted: 3 hours ago
+----------
 
-Title: Woman arrested after disturbance outside Drake's mansion in exclusive Toronto neighbourhood
-Category: Celebrity
-Time posted: 4 hours ago
 
-Title: John Ivison: The Liberals' contemptible snubbing of parliamentary procedure
+Title: John Ivison: Liberals sitting pretty as Canadians' wealth rises, but budget spending needs to be reined in
 Category: NP Comment
-Time posted: 5 hours ago
+Time posted: 23 minutes ago
+
+Title: 'Big telecom is already big': Quebecor, consumer groups appear before committee studying Rogers-Shaw merger
+Category: Canadian Politics
+Time posted: 40 minutes ago
+
+Title: Federal government to spend $415M on influenza vaccine plant in Toronto
+Category: Canadian Politics
+Time posted: 1 hour ago
+
+
+----------
+
+TRENDS & ANALYSIS
+-> Common theme for today: HEALTH
