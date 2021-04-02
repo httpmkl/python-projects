@@ -8,7 +8,7 @@ class FileWrite:
         pass
 
     def writeStringOverFile(self, fileName, stringData):
-        ''' Write String data to file, overwriting previous file contents '''
+        ''' Write String newsData to file, overwriting previous file contents '''
         try:
             with open(fileName, 'w') as writer:
                 writer.write(stringData)
@@ -16,7 +16,7 @@ class FileWrite:
             print('Error writing to file: ', fileName)
 
     def writeStringToFile(self, fileName, stringData):
-        ''' Write String data to file, appending onto exiting file contents '''
+        ''' Write String newsData to file, appending onto exiting file contents '''
         try:
             with open(fileName, 'a') as writer:
                 writer.write(stringData)
@@ -24,38 +24,38 @@ class FileWrite:
             print('Error writing to file: ', fileName)
 
     def writeDataOverFile(self, fileName, data):
-        ''' Write list data to file, overwriting previous file contents '''
+        ''' Write list newsData to file, overwriting previous file contents '''
         try:
             with open(fileName, 'w') as writer:
                 for entry in data:
-                    writer.write(entry + '\n')  # add each data entry on its own line
+                    writer.write(entry + '\n')  # add each newsData entry on its own line
         except IOError:
             print('Error writing to file: ', fileName)
 
     def writeDataToFile(self, fileName, data):
-        ''' Write list data to file, appending onto existing file contents '''
+        ''' Write list newsData to file, appending onto existing file contents '''
         try:
             with open(fileName, 'a') as writer:
                 for entry in data:
-                    writer.write(entry + '\n')  # add each data entry on its own line
+                    writer.write(entry + '\n')  # add each newsData entry on its own line
         except IOError:
             print('Error writing to file: ', fileName)
 
     def writeDataOverFileCustom(self, fileName, data, delimiter):
-        ''' Write list data to file, overwriting previous file contents, using custom delimiter '''
+        ''' Write list newsData to file, overwriting previous file contents, using custom delimiter '''
         try:
             with open(fileName, 'w') as writer:
                 for entry in data:
-                    writer.write(entry + delimiter)  # add each data entry separated by custom delimiter
+                    writer.write(entry + delimiter)  # add each newsData entry separated by custom delimiter
         except IOError:
             print('Error writing to file: ', fileName)
 
     def writeDataToFileCustom(self, fileName, data, delimiter):
-        ''' Write list data to file, appending onto existing file contents, using custom delimiter '''
+        ''' Write list newsData to file, appending onto existing file contents, using custom delimiter '''
         try:
             with open(fileName, 'a') as writer:
                 for entry in data:
-                    writer.write(entry + delimiter)  # add each data entry separated by custom delimiter
+                    writer.write(entry + delimiter)  # add each newsData entry separated by custom delimiter
         except IOError:
             print('Error writing to file: ', fileName)
 
@@ -157,20 +157,20 @@ class FileWrite:
             with open(fileName, 'r') as reader:
                 rawData = reader.read()
 
-            data = rawData.split('\n')  # splits the data into one-line tokens
-            data.sort(key=len)  # sorts the data by length
+            data = rawData.split('\n')  # splits the newsData into one-line tokens
+            data.sort(key=len)  # sorts the newsData by length
             firstLine = data[0]
             data.remove(firstLine)  # to get rid of the blank space in the first line
 
-            self.writeDataOverFile('../FileIO/OrderedFile.txt', data)  # puts the data in OrderedFile.txt
+            self.writeDataOverFile('../FileIO/OrderedFile.txt', data)  # puts the newsData in OrderedFile.txt
 
         except IOError:
             print('Unable to read from file: ', fileName)
 
     def outputWithFormat(self, data):
-        ''' Prints the data with a common format (->) '''
+        ''' Prints the newsData with a common format (->) '''
         if type(data) == str:
-            data = list(data)  # If the data is a single string, it's converted to a list
+            data = list(data)  # If the newsData is a single string, it's converted to a list
 
         for i in data:
             print(f'-> {i}')

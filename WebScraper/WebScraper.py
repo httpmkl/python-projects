@@ -99,45 +99,59 @@ def scrapeCBC():
 
     for num in range(len(timeData)):
         if len(timeAgo) < 3:
-            singleEntry = str(timeData[num])
-            prunedData = singleEntry.split(' ')
-            prunedData = prunedData[2].split('"')
-            time = prunedData[1].split('T')
-            hms = time[1].split('Z')
-            hms = hms[0]
-            time.pop()
-            time.append(hms)
-            now = str(dt.now(tz=timezone.utc)).split("+")
-            now = now[0].split(" ")
+            timeDiff = getTimeDifference(timeData, num)
 
-            ymd = time[0].split("-")
-            hms = time[1].split(":")
-
-            ymdNow = now[0].split("-")
-            hmsNow = now[1].split(":")
-
-            a = datetime.datetime(int(ymd[0]), int(ymd[1]), int(ymd[2]), int(hms[0]), int(hms[1]), int(float(hms[2])))
-            b = datetime.datetime(int(ymdNow[0]), int(ymdNow[1]), int(ymdNow[2]), int(hmsNow[0]), int(hmsNow[1]), int(float(hmsNow[2])))
-            timeDiff = b - a
-
-            timeDiff = str(timeDiff).split(":")
-            if int(timeDiff[0]) > 0:
+            if int(timeDiff[0]) > 0:  # If there has been 1+ hours since posted
                 if int(timeDiff[1]) >= 30:
+                    # Rounds up the hour if its above 30 minutes in
                     timeDiff = str(int(timeDiff[0]) + 1)
                 else:
                     timeDiff = timeDiff[0]
+
+                # For grammatical correctness
                 if int(timeDiff) == 1:
                     timeAgo.append(f"{timeDiff} hour ago")
                 else:
                     timeAgo.append(f"{timeDiff} hours ago")
-            else:
-                timeDiff = timeDiff[1]
+            else:  # If there hasn't been an hour sine posted
+                timeDiff = timeDiff[1]  # Time is shown in minutes
+
+                # Again for grammatical correctness
                 if int(timeDiff) == 1:
                     timeAgo.append(f"{timeDiff} minute ago")
                 else:
                     timeAgo.append(f"{timeDiff} minutes ago")
 
     return headlines, categories, timeAgo
+
+def getTimeDifference(timeData, num):
+    # Cleans timeData[num] to get a list with one element as the date and one element as the time
+    singleEntry = str(timeData[num])
+    prunedData = singleEntry.split(' ')
+    prunedData = prunedData[2].split('"')
+    time = prunedData[1].split('T')
+    hms = time[1].split('Z')
+    time[1] = hms[0]
+
+    # Gathers information on the current time and stores it in a similar format as above
+    now = str(dt.now(tz=timezone.utc)).split("+")
+    now = now[0].split(" ")
+
+    # Separates the year/month/day and hour/min/sec elements into their components
+    ymdPost = time[0].split("-")
+    hmsPost = time[1].split(":")
+    ymdNow = now[0].split("-")
+    hmsNow = now[1].split(":")
+
+    # Stores post time and current time in datetime objects
+    postTime = datetime.datetime(int(ymdPost[0]), int(ymdPost[1]), int(ymdPost[2]), int(hmsPost[0]), int(hmsPost[1]), int(float(hmsPost[2])))
+    currentTime = datetime.datetime(int(ymdNow[0]), int(ymdNow[1]), int(ymdNow[2]), int(hmsNow[0]), int(hmsNow[1]), int(float(hmsNow[2])))
+    timeDiff = currentTime - postTime  # Subtracts the two to get the difference in time
+
+    # Separates the time difference into hours/min/sec
+    timeDiff = str(timeDiff).split(":")
+
+    return timeDiff
 
 def scrapeVanSun():
     "Scrapes Vancouver Sun to return latest 5 headlines, category, and time since posted"
@@ -290,7 +304,6 @@ def scrapeNewegg():
             discount = words[1]  # Removes the "Save: " from the string
 
         discounts.append(discount)  # Stores percentage (or N/A) in discounts list
-
 
     return itemNames, ogPrices, newPrices, shippingPrices, discounts
 
