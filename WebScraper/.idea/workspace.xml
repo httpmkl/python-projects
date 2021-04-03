@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f9dcb725-8476-49e8-b754-5a3591e2d789" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/VSScrape.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CBCScrape.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CBCScrape.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GlobalNewsScrape.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GlobalNewsScrape.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/Runner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TechScrape.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TechScrape.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VNScrape.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebScraper.py" beforeDir="false" afterPath="$PROJECT_DIR$/WebScraper.py" afterDir="false" />
-    </list>
+    <list default="true" id="f9dcb725-8476-49e8-b754-5a3591e2d789" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
