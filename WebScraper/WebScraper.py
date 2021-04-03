@@ -25,7 +25,6 @@ def scrapeGbNews():
     postInfo = data.find_all(class_="c-posts__info")
 
     categories = []
-
     timeAgo = []
 
     # To track which element is a category & time (since it alternates)
@@ -45,7 +44,11 @@ def scrapeGbNews():
                     word[1] = 'minutes'
                 if 'min' in word:
                     word[1] = 'minute'
-                word = str(word[0]) + ' ' + str(word[1]) + " ago"
+
+                if word[0].isdigit():
+                    word = str(word[0]) + ' ' + str(word[1]) + " ago"
+                else:
+                    word = str(word[0]) + ' ' + str(word[1])
                 timeAgo.append(word)  # Adds next element to the time list
                 didCategory = False
                 didTime = True
@@ -276,8 +279,11 @@ def scrapeNewegg():
     newPrices = []
 
     for num in range(len(newPriceData)):
-        wordList = newPriceData[num].get_text().split()  # To get rid of the hyphen at the end of the amount
-        newPrices.append(wordList[0])  # Stores current price in newPrices list
+        if newPriceData[num].get_text() == '':
+            newPrices.append('N/A')
+        else:
+            wordList = newPriceData[num].get_text().split()  # To get rid of the hyphen at the end of the amount
+            newPrices.append(wordList[0])  # Stores current price in newPrices list
 
     # Scrapes shipping info
     shippingData = data.find_all(class_="price-ship")

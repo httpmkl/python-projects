@@ -1,5 +1,5 @@
-TOP HEADLINES FOR 2021-04-01:
-[ Last scraped: 16:55 ]
+TOP HEADLINES FOR 2021-04-02:
+[ Last scraped: 23:55 ]
 
 
 ----------
@@ -9,17 +9,17 @@ TOP HEADLINES FOR 2021-04-01:
 ----------
 
 
-Title: ‘He’s a tough little guy’: Officer who found toddler lost in Ontario woods tells of recovery
+Title: U.S. Capitol police officer, knife-wielding suspect dead after vehicle ramming
+Category: Politics
+Date posted: Apr 2
+
+Title: Canada sees another Easter weekend with rising COVID-19 cases, tough restrictions
 Category: Canada
+Time posted: 5 hours ago
+
+Title: Taiwan seeks to arrest truck driver who may have caused train crash that killed 50
+Category: World
 Time posted: 6 hours ago
-
-Title: Making Easter plans? Here’s what happened to COVID-19 cases after past holidays
-Category: Health
-Time posted: 3 hours ago
-
-Title: ‘Hit the hardest’: Why COVID-19 cases are rising among young Canadians
-Category: Health
-Time posted: Apr 1 ago
 
 
 ----------
@@ -29,17 +29,17 @@ Time posted: Apr 1 ago
 ----------
 
 
-Title: Gym outbreak in Quebec City leads to more than 140 COVID-19 infections
-Category: Canada - Montreal
-Time posted: 1 hour ago
-
-Title: Ontario imposes provincewide 'emergency brake' as 3rd wave of COVID-19 hits hard
-Category: Canada - Toronto
-Time posted: 1 hour ago
-
-Title: This is your brain on pandemic: What chronic stress is doing to us
-Category: Health
+Title: Record-high lumber prices add as much as $30K to the cost of building a house
+Category: Business
 Time posted: 4 hours ago
+
+Title: Federal court judge rules in favour of Acho Dene Koe First Nation member's complaint about election delay
+Category: Canada - North
+Time posted: 8 hours ago
+
+Title: Alberta MLAs quit coalition against public health restrictions after Ontario MPP invokes Hitler
+Category: Canada - Calgary
+Time posted: 3 hours ago
 
 
 ----------
@@ -49,17 +49,17 @@ Time posted: 4 hours ago
 ----------
 
 
-Title: B.C. adds three more Vancouver hotels to housing stock for homeless
+Title: B.C. ferry returns to dock after 'belligerent' anti-masker raises a fuss
 Category: Local News
-Time posted: 2 hours ago
-
-Title: B.C. safeguards time off for workers to get vaccinated: labour minister
-Category: Local News
-Time posted: 1 hour ago
-
-Title: Section of New Westminster's Pier Park to reopen after fire badly damaged pier
-Category: News
 Time posted: 3 hours ago
+
+Title: Report says social service agencies helped keep seniors safe during COVID-19
+Category: News
+Time posted: 8 hours ago
+
+Title: COVID-19 update for April 2: Outbreak at Chartwell Langley | Health officials urge residents to follow restrictions over Easter weekend | Five more deaths
+Category: Health
+Time posted: 4 hours ago
 
 
 ----------
@@ -69,17 +69,17 @@ Time posted: 3 hours ago
 ----------
 
 
-Title: Federal government pushing two million vaccines to provinces in coming days
+Title: GraceLife Church holds packed Good Friday service in violation of COVID-19 restrictions
 Category: Canada
-Time posted: 1 hour ago
+Time posted: 9 hours ago
 
-Title: Ontario imposes four-week provincewide 'shutdown' to combat spike in COVID-19 cases
-Category: Canada
-Time posted: 2 hours ago
-
-Title: Young, female Japanese biker is actually a 50-year-old man with a face-editing app
+Title: U.S. Capitol police shoot and kill man who rammed car into two officers, killing one
 Category: World
-Time posted: 2 hours ago
+Time posted: 11 hours ago
+
+Title: Fully vaccinated people can resume travel at 'low risk,' U.S. CDC says
+Category: Canada
+Time posted: 14 hours ago
 
 
 ----------
