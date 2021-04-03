@@ -1,8 +1,6 @@
 '''
 
-    TODO:
-    - Continue organizing the content from CBC to the end
-    - Add "Loading..." text before scrapes
+    Project by Nora Calif :)
 
 '''
 
@@ -23,13 +21,15 @@ def menuOptions():
     print('5. All of the above')
     print('6. BONUS: Tech discounts on Newegg')
 
+
 def getCurrentTime():
+    '''Returns the current date and time'''
     now = datetime.now()  # Gets current date and time
     dateAndTime = str(now).split(' ')  # Splits into separate elements for date & time
 
     dateNow = dateAndTime[0]  # Assigns first element to date
-
     timeNow = dateAndTime[1]  # Assigns second element to time
+
     # Cleans up timeNow to display only hour:min
     timeNow = timeNow.split('.')
     timeNow = timeNow[0]
@@ -38,9 +38,10 @@ def getCurrentTime():
 
     return dateNow, timeNow  # Returns date & time
 
+
 def menu(isStart):
     menuOptions()  # Shows menu options
-    global userChoice  # So I can access it in later functions
+    global userChoice  # To be accessed in later functions
 
     # Loop for entering input until a valid choice is made
     gaveInput = False
@@ -55,7 +56,8 @@ def menu(isStart):
         except ValueError:  # Entered non-integer characters
             print('\n-> Please enter a valid input!')
 
-def accessContent(isStart):
+
+def accessContent(isStart):  # Determines how user wants to view the scraped content
     global accessChoice
     global bgScraping
 
@@ -86,6 +88,7 @@ def accessContent(isStart):
         except ValueError:  # Entered non-integer characters
             print('\n-> Please enter a valid input!')
 
+
 def consoleRedirect():
     # Redirects to console output based on original choice
     if userChoice == 1:
@@ -100,6 +103,7 @@ def consoleRedirect():
         newsHeadlinesConsole()
     elif userChoice == 6:
         neweggConsole()
+
 
 def fileRedirect():
     # Redirects to file output based on original choice
@@ -116,8 +120,9 @@ def fileRedirect():
     elif userChoice == 6:
         neweggFile(True)
 
-# Schedules a timer for when the scraped info is sent to a file
+
 def setSchedule():
+    # Schedules a timer for when the scraped info is sent to a file
     global time
     print('\n[ How often would you like the content to be scraped? ]')
     print('1. ___ hours  \n2. ___ minutes  \n3. ___ seconds')
@@ -127,13 +132,13 @@ def setSchedule():
     while not gaveInput:
         try:
             choice = int(input())
-            if choice == 1:
+            if choice == 1:  # Chose hours
                 time = setTimer('hours')
                 gaveInput = True
-            elif choice == 2:
+            elif choice == 2:  # Chose minutes
                 time = setTimer('minutes')
                 gaveInput = True
-            elif choice == 3:
+            elif choice == 3:  # Chose seconds
                 time = setTimer('seconds')
                 gaveInput = True
             else:  # Gave a value out of bounds
@@ -141,7 +146,12 @@ def setSchedule():
         except ValueError:  # Entered non-integer characters
             print('\n-> Please enter a valid input!')
 
-    # Sets up automatic scraping based on their original choice for source
+    redirectToContinuousScrape()  # Initiates automatic scraping
+    redirectToMenu()  # Redirects to menu afterwards
+
+
+def redirectToContinuousScrape():
+    '''Sets up automatic scraping based on their original choice of content'''
     if userChoice == 1:
         continuousGNScrape()
     elif userChoice == 2:
@@ -155,10 +165,9 @@ def setSchedule():
     elif userChoice == 6:
         continuousTechScrape()
 
-    redirectToMenu()  # Redirects to menu afterwards
 
 def setTimer(unit):
-    # Converts desired time interval to seconds and returns value
+    '''Converts desired time interval to seconds and returns value'''
     gaveInput = False
     while not gaveInput:
         try:
@@ -177,13 +186,13 @@ def setTimer(unit):
 
     return secs
 
-# Shows at the end of every scrape
-def redirectToMenu():
+
+def redirectToMenu(): # Shows at the end of every scrape
     print('\n\n[ Would you like to see more content scraped? ]')
     print('1. YES, take me back to the menu')
-    if bgScraping == True:
+    if bgScraping == True:  # If there is something being scaped in the background
         print('2. NO, exit the main program and continue scraping in the background')
-    else:
+    else:  # If nothing is being scraped
         print('2. NO, I\'d like to exit the program')
 
     # Loop for entering input until a valid choice is made
@@ -191,10 +200,10 @@ def redirectToMenu():
     while not gaveInput:
         try:
             choice = int(input())
-            if choice == 1:
+            if choice == 1:  # Chose menu
                 menu(False)
                 gaveInput = True
-            elif choice == 2:
+            elif choice == 2:  # Chose to exit
                 print('\n-> Have a nice day!')
                 if bgScraping == True:
                     # Reminds user that their content is being scraped
@@ -204,6 +213,7 @@ def redirectToMenu():
                 print('\n-> Please enter a valid input!')
         except ValueError:  # Entered non-integer characters
             print('\n-> Please enter a valid input!')
+
 
 def scrapeNews():
     '''Scrapes the news sites and stores them in global variables'''
@@ -219,8 +229,10 @@ def scrapeNews():
 
 
 # Option 1: Global News
-def GNConsole():
+def GNConsole():  # Chose to view in console
     '''Presents content from Global News in the console'''
+    print('\nLoading content...')
+
     scrapeNews()
     now = getCurrentTime()
 
@@ -229,6 +241,7 @@ def GNConsole():
 
     printGlobalNews()
     redirectToMenu()
+
 
 def printGlobalNews():
     print('\n\n----------')
@@ -251,24 +264,31 @@ def printGlobalNews():
         else:  # If a date is given
             print(f'Date posted: {GBTimeAgo[num]}')
 
-def GNFile(choseFile):
+
+def GNFile(choseFile):  # Chose to view in file
     '''Presents content from Global News in the file GlobalNewsScrape.txt'''
+    if choseFile == True:
+        print('\nLoading content...')
+
     scrapeNews()
     now = getCurrentTime()
 
     global newsData
     newsData = []
+
     newsData.append(f'TOP HEADLINES FOR {now[0]}:')
     newsData.append(f'[ Last scraped: {now[1]} ]')
 
     returnGlobalNews()
 
+    # Writes information to GlobalNewsScrape.txt
     FileWrite.writeDataOverFile(FileWrite, 'GlobalNewsScrape.txt', newsData)
 
     if choseFile == True:
         # To avoid printing this msg for scheduled scrapes
         print('\n-> Success! Content is send to GlobalNewsScrape.txt')
         redirectToMenu()
+
 
 def returnGlobalNews():
     newsData.append('\n\n----------')
@@ -284,21 +304,25 @@ def returnGlobalNews():
         # Same as printGlobalNews() except adds content to newsData list
         newsData.append(f'\nTitle: {GBHeadlines[num]}')
         newsData.append(f'Category: {GBCategories[num]}')
+
         word = GBTimeAgo[num].split(' ')
         if word[0].isdigit():  # If time is given
             newsData.append(f'Time posted: {GBTimeAgo[num]}')
         else:  # If date is given
             newsData.append(f'Date posted: {GBTimeAgo[num]}')
 
-def continuousGNScrape():
+
+def continuousGNScrape():  # Chose automatic scraping
     '''Scrapes Global News periodically based on an interval set by the user'''
     GNFile(False)
     threading.Timer(time, continuousGNScrape).start()
 
 
 # Option 2: CBC
-# TODO: Continue organizing the functions and adding desc from here
-def CBCConsole():
+def CBCConsole():  # Chose to view in console
+    '''Presents content from CBC in the console'''
+    print('\nLoading content...')
+
     scrapeNews()
     now = getCurrentTime()
 
@@ -307,6 +331,7 @@ def CBCConsole():
 
     printCBCNews()
     redirectToMenu()
+
 
 def printCBCNews():
     print('\n\n----------')
@@ -324,7 +349,60 @@ def printCBCNews():
         print(f'Category: {CBCCategories[num]}')
         print(f'Time posted: {CBCTimeAgo[num]}')
 
-def VSConsole():  # Prints Vancouver Sun scrape
+
+def CBCFile(choseFile):  # Chose to view in file
+    '''Presents content from CBC in the file CBCScrape.txt'''
+    if choseFile == True:
+        print('\nLoading content...')
+
+    scrapeNews()
+    now = getCurrentTime()
+
+    global newsData
+    newsData = []
+
+    newsData.append(f'TOP HEADLINES FOR {now[0]}:')
+    newsData.append(f'[ Last scraped: {now[1]} ]')
+
+    returnCBCNews()
+
+    # Writes content to file CBCScrape.txt
+    FileWrite.writeDataOverFile(FileWrite, 'CBCScrape.txt', newsData)
+
+    if choseFile == True:
+        # To avoid printing this msg for scheduled scrapes
+        print('\n-> Success! Content is send to CBCScrape.txt')
+        redirectToMenu()
+
+
+def returnCBCNews():
+    newsData.append('\n\n----------')
+    newsData.append('\n-> CBC')
+    newsData.append('\n----------\n')
+
+    # Separates scraped data into its components
+    CBCHeadlines = cbcNews[0]
+    CBCCategories = cbcNews[1]
+    CBCTimeAgo = cbcNews[2]
+
+    for num in range(len(CBCHeadlines)):
+        # Prints data accordingly
+        newsData.append(f'\nTitle: {CBCHeadlines[num]}')
+        newsData.append(f'Category: {CBCCategories[num]}')
+        newsData.append(f'Time posted: {CBCTimeAgo[num]}')
+
+
+def continuousCBCScrape():  # Chose automatic scraping
+    '''Scrapes CBC periodically based on an interval set by the user'''
+    CBCFile(False)
+    threading.Timer(time, continuousCBCScrape).start()
+
+
+# Option 3: Vancouver Sun
+def VSConsole():  # Chose to view in console
+    '''Presents content from Vancouver Sun in the console'''
+    print('\nLoading content...')
+
     scrapeNews()
     now = getCurrentTime()
 
@@ -334,23 +412,77 @@ def VSConsole():  # Prints Vancouver Sun scrape
     printVSNews()
     redirectToMenu()
 
+
 def printVSNews():
     print('\n\n----------')
     print('\n-> VANCOUVER SUN')
     print('\n----------\n')
 
-    # Separates info
+    # Separates info into its parts
     VSHeadlines = vanSun[0]
     VSCategories = vanSun[1]
     VSTimeAgo = vanSun[2]
 
     for num in range(len(VSHeadlines)):
-        # Prints info
+        # Prints info one article at a time
         print(f'\nTitle: {VSHeadlines[num]}')
         print(f'Category: {VSCategories[num]}')
         print(f'Time posted: {VSTimeAgo[num]}')
 
-def NPConsole():  # Prints The National Post scrape
+
+def VSFile(choseFile):  # Chose to view in file
+    '''Presents content from Vancouver Sun in the file VSScrape.txt'''
+    if choseFile == True:
+        print('\nLoading content...')
+
+    scrapeNews()
+    now = getCurrentTime()
+
+    global newsData
+    newsData = []
+
+    newsData.append(f'TOP HEADLINES FOR {now[0]}:')
+    newsData.append(f'[ Last scraped: {now[1]} ]')
+
+    returnVSNews()
+
+    # Writes content to file VSScrape.txt
+    FileWrite.writeDataOverFile(FileWrite, 'VSScrape.txt', newsData)
+
+    if choseFile == True:
+        # To avoid printing this msg for scheduled scrapes
+        print('\n-> Success! Content is send to VSScrape.txt')
+        redirectToMenu()
+
+
+def returnVSNews():
+    newsData.append('\n\n----------')
+    newsData.append('\n-> VANCOUVER SUN')
+    newsData.append('\n----------\n')
+
+    # Separates scraped data
+    VSHeadlines = vanSun[0]
+    VSCategories = vanSun[1]
+    VSTimeAgo = vanSun[2]
+
+    for num in range(len(VSHeadlines)):
+        # Prints data one article at a time
+        newsData.append(f'\nTitle: {VSHeadlines[num]}')
+        newsData.append(f'Category: {VSCategories[num]}')
+        newsData.append(f'Time posted: {VSTimeAgo[num]}')
+
+
+def continuousVSScrape():  # Chose automatic scraping
+    '''Scrapes Vancouver Sun periodically based on an interval set by the user'''
+    VSFile(False)
+    threading.Timer(time, continuousVSScrape).start()
+
+
+# Option 4: The National Post
+def NPConsole():  # Chose to view in console
+    '''Presents content from The National Post in the console'''
+    print('\nLoading content...')
+
     scrapeNews()
     now = getCurrentTime()
 
@@ -359,6 +491,7 @@ def NPConsole():  # Prints The National Post scrape
 
     printNPNews()
     redirectToMenu()
+
 
 def printNPNews():
     print('\n\n----------')
@@ -376,13 +509,67 @@ def printNPNews():
         print(f'Category: {NPCategories[num]}')
         print(f'Time posted: {NPTimeAgo[num]}')
 
-def newsHeadlinesConsole():  # Scrapes all 4 news sites
+
+def NPFile(choseFile):  # Chose to view in file
+    '''Presents content from The National Post in the file NPScrape.txt'''
+    if choseFile == True:
+        print('\nLoading content...')
+
+    scrapeNews()
+    now = getCurrentTime()
+
+    global newsData
+    newsData = []
+
+    newsData.append(f'TOP HEADLINES FOR {now[0]}:')
+    newsData.append(f'[ Last scraped: {now[1]} ]')
+
+    returnVSNews()
+
+    # Writes content to file NPScrape.txt
+    FileWrite.writeDataOverFile(FileWrite, 'NPScrape.txt', newsData)
+
+    if choseFile == True:
+        # To avoid printing this msg for scheduled scrapes
+        print('\n-> Success! Content is send to NPScrape.txt')
+        redirectToMenu()
+
+
+def returnNPNews():
+    newsData.append('\n\n----------')
+    newsData.append('\n-> THE NATIONAL POST')
+    newsData.append('\n----------\n')
+
+    # Separates info
+    NPHeadlines = natPost[0]
+    NPCategories = natPost[1]
+    NPTimeAgo = natPost[2]
+
+    for num in range(len(NPHeadlines)):
+        # Prints info one article at a time
+        newsData.append(f'\nTitle: {NPHeadlines[num]}')
+        newsData.append(f'Category: {NPCategories[num]}')
+        newsData.append(f'Time posted: {NPTimeAgo[num]}')
+
+
+def continuousNPScrape():  # Chose automatic scraping
+    '''Scrapes The National Post periodically based on an interval set by the user'''
+    NPFile(False)
+    threading.Timer(time, continuousNPScrape).start()
+
+
+# Option 5: Scrape all
+def newsHeadlinesConsole():  # Chose to view in console
+    '''Presents content from all 4 of the news sites in the console'''
+    print('\nLoading content...')
+
     scrapeNews()
     now = getCurrentTime()
 
     print(f'\n\nTOP HEADLINES FOR {now[0]}:')
     print(f'[ Last scraped: {now[1]} ]')
 
+    # Scrapes all 4 sites + reports trends
     printGlobalNews()
     printCBCNews()
     printVSNews()
@@ -391,7 +578,9 @@ def newsHeadlinesConsole():  # Scrapes all 4 news sites
 
     redirectToMenu()
 
-def printTrends():  # Reports a common theme between the news sites
+
+def printTrends():
+    '''Prints the most reoccurring category between the 4 news sites'''
     scrapeNews()
 
     # Gathers category info for different news sites
@@ -414,108 +603,18 @@ def printTrends():  # Reports a common theme between the news sites
     print('\nTRENDS & ANALYSIS')
     print(f'-> Common theme for today: {commonCatg.upper()}')
 
-def CBCFile(choseFile):
-    scrapeNews()
-    now = getCurrentTime()
 
-    global newsData
-    newsData = []
-    newsData.append(f'TOP HEADLINES FOR {now[0]}:')
-    newsData.append(f'[ Last scraped: {now[1]} ]')
-
-    returnCBCNews()
-
-    FileWrite.writeDataOverFile(FileWrite, 'CBCScrape.txt', newsData)
-
+def newsHeadlinesFile(choseFile):  # Chose to view in file
+    '''Presents content from all 4 news sites in the file NewsScrape.txt'''
     if choseFile == True:
-        # To avoid printing this msg for scheduled scrapes
-        print('\n-> Success! Content is send to CBCScrape.txt')
-        redirectToMenu()
+        print('\nLoading content...')
 
-def returnCBCNews():
-    newsData.append('\n\n----------')
-    newsData.append('\n-> CBC')
-    newsData.append('\n----------\n')
-
-    CBCHeadlines = cbcNews[0]
-    CBCCategories = cbcNews[1]
-    CBCTimeAgo = cbcNews[2]
-
-    for num in range(3):
-        newsData.append(f'\nTitle: {CBCHeadlines[num]}')
-        newsData.append(f'Category: {CBCCategories[num]}')
-        newsData.append(f'Time posted: {CBCTimeAgo[num]}')
-
-def VSFile(choseFile):
     scrapeNews()
     now = getCurrentTime()
 
     global newsData
     newsData = []
-    newsData.append(f'TOP HEADLINES FOR {now[0]}:')
-    newsData.append(f'[ Last scraped: {now[1]} ]')
 
-    returnVSNews()
-
-    FileWrite.writeDataOverFile(FileWrite, 'VNScrape.txt', newsData)
-
-    if choseFile == True:
-        # To avoid printing this msg for scheduled scrapes
-        print('\n-> Success! Content is send to VNScrape.txt')
-        redirectToMenu()
-
-def returnVSNews():
-    newsData.append('\n\n----------')
-    newsData.append('\n-> VANCOUVER SUN')
-    newsData.append('\n----------\n')
-
-    VSHeadlines = vanSun[0]
-    VSCategories = vanSun[1]
-    VSTimeAgo = vanSun[2]
-
-    for num in range(3):
-        newsData.append(f'\nTitle: {VSHeadlines[num]}')
-        newsData.append(f'Category: {VSCategories[num]}')
-        newsData.append(f'Time posted: {VSTimeAgo[num]}')
-
-def NPFile(choseFile):
-    scrapeNews()
-    now = getCurrentTime()
-
-    global newsData
-    newsData = []
-    newsData.append(f'TOP HEADLINES FOR {now[0]}:')
-    newsData.append(f'[ Last scraped: {now[1]} ]')
-
-    returnVSNews()
-
-    FileWrite.writeDataOverFile(FileWrite, 'NPScrape.txt', newsData)
-
-    if choseFile == True:
-        # To avoid printing this msg for scheduled scrapes
-        print('\n-> Success! Content is send to NPScrape.txt')
-        redirectToMenu()
-
-def returnNPNews():
-    newsData.append('\n\n----------')
-    newsData.append('\n-> THE NATIONAL POST')
-    newsData.append('\n----------\n')
-
-    NPHeadlines = natPost[0]
-    NPCategories = natPost[1]
-    NPTimeAgo = natPost[2]
-
-    for num in range(3):
-        newsData.append(f'\nTitle: {NPHeadlines[num]}')
-        newsData.append(f'Category: {NPCategories[num]}')
-        newsData.append(f'Time posted: {NPTimeAgo[num]}')
-
-def newsHeadlinesFile(choseFile):
-    scrapeNews()
-    now = getCurrentTime()
-
-    global newsData
-    newsData = []
     newsData.append(f'TOP HEADLINES FOR {now[0]}:')
     newsData.append(f'[ Last scraped: {now[1]} ]')
 
@@ -525,6 +624,7 @@ def newsHeadlinesFile(choseFile):
     returnNPNews()
     returnTrends()
 
+    # Writes content to file NewsScrape.txt
     FileWrite.writeDataOverFile(FileWrite, 'NewsScrape.txt', newsData)
 
     if choseFile == True:
@@ -532,46 +632,41 @@ def newsHeadlinesFile(choseFile):
         print('\n-> Success! Content is send to NewsScrape.txt')
         redirectToMenu()
 
+
 def returnTrends():
+    '''Returns the most reoccurring category between the 4 news sites'''
     scrapeNews()
+
+    # Gathers category info for different news sites
     GBCategories = globalNews[1]
     CBCCategories = cbcNews[1]
     VSCategories = vanSun[1]
     NPCategories = natPost[1]
+
     allCategories = []
 
     for i in range(len(GBCategories)):
+        # Stores categories in a single list
         allCategories.append(GBCategories[i])
         allCategories.append(CBCCategories[i])
         allCategories.append(VSCategories[i])
         allCategories.append(NPCategories[i])
 
-    commonCatg = statistics.mode(allCategories)
+    commonCatg = statistics.mode(allCategories)  # Gets the most reoccurring category
     newsData.append('\n\n----------')
     newsData.append('\nTRENDS & ANALYSIS')
     newsData.append(f'-> Common theme for today: {commonCatg.upper()}')
 
 
-# Scrapes news sites periodically
-
-def continuousCBCScrape():
-    CBCFile(False)
-    threading.Timer(time, continuousCBCScrape).start()
-
-def continuousVSScrape():
-    VSFile(False)
-    threading.Timer(time, continuousVSScrape).start()
-
-def continuousNPScrape():
-    NPFile(False)
-    threading.Timer(time, continuousNPScrape).start()
-
-def continuousNewsScrape():
+def continuousNewsScrape():  # Chose automatic scraping
+    '''Scrapes all 4 news sites periodically based on an interval set by the user'''
     newsHeadlinesFile(False)
     threading.Timer(time, continuousNewsScrape).start()
 
-# Bonus option: Newegg scrape
+
+# Bonus option 6: Newegg scrape
 def scrapeTechDeals():
+    '''Scrapes Newegg's deals page and stores them in global variables'''
     global itemName
     global ogPrice
     global newPrice
@@ -586,7 +681,33 @@ def scrapeTechDeals():
     shipping = newegg[3]
     discount = newegg[4]
 
-def neweggConsole():
+
+def organizeTechData(i):
+    '''Sorts data to organize how the shipping and discount is presented'''
+    # To organize how the shipping is presented
+    if shipping[i] == 'Free Shipping':
+        ship = '(w/ Free Shipping)'
+    else:
+        ship = '+ ' + str(shipping[i])
+
+    # To organize how the discount is presented
+    if discount[i] == 'N/A' and ogPrice[i] != 'N/A' and newPrice[i] != 'N/A':
+        # Discount isn't specified (but it's not a new item)
+        price = ogPrice[i].split('$')
+        newP = newPrice[i].split('$')
+        diff = float(price[1]) - float(newP[1])  # Calculates the difference between the two prices
+        disc = '$' + str(format(diff, '.2f')) + ' off'  # Stores difference in 'disc' variable
+    else:
+        # Discount percentage is given
+        disc = str(discount[i]) + ' off'  # Stores discount in 'disc' variable
+
+    return ship, disc
+
+
+def neweggConsole():  # Chose to view in console
+    '''Presents content from Newegg in the console'''
+    print('\nLoading content...')
+
     scrapeTechDeals()
     now = getCurrentTime()
 
@@ -596,43 +717,36 @@ def neweggConsole():
     print('')  # Empty space
 
     for i in range(len(itemName)):
-        printDeal(i)
+        data = organizeTechData(i)
+        printDeal(i, data[0], data[1])
 
-    redirectToMenu()
+    redirectToMenu()  # Redirects to menu at the end
 
-def printDeal(i):
-    # To organize how the shipping is presented
-    if shipping[i] == 'Free Shipping':
-        ship = '(w/ Free Shipping)'
-    else:
-        ship = '+ ' + str(shipping[i])
 
-    if discount[i] == 'N/A' and ogPrice[i] != 'N/A' and newPrice[
-        i] != 'N/A':  # Discount isn't specified (but it's not a new item)
-        price = ogPrice[i].split('$')
-        newP = newPrice[i].split('$')
-        diff = float(price[-1]) - float(newP[-1])
-        disc = '$' + str(format(diff, '.2f')) + ' off'
-    else:  # Discount percentage is given
-        disc = str(discount[i]) + ' off'
-
-    if ogPrice[i] == 'N/A':
+def printDeal(i, ship, disc):
+    '''Decides whether an item has a discount, promo, or is new, then prints info accordingly'''
+    if ogPrice[i] == 'N/A':  # No original price = new item
         print('\n-> NEW ITEM')
         print(f'Name: {itemName[i]}')
         print(f'Price: {newPrice[i]} {ship} \n')
-    elif newPrice[i] == 'N/A':
+    elif newPrice[i] == 'N/A':  # No new price = promo deal
         print('\n-> PROMO DEAL')
         print(f'Name: {itemName[i]}')
         print(f'Original price: {ogPrice[i]} {ship}')
         print('[ Check site for a limited time offer on this item! ]\n')
-    else:
-        print('\n-> DISCOUNTED ITEM')
+    else:  # Original price & new price = discount item
+        print('\n-> DISCOUNT ITEM')
         print(f'Name: {itemName[i]}')
         print(f'Original price: {ogPrice[i]} {ship}')
         print(f'Discount: {disc}')
         print(f'New price: {newPrice[i]} {ship} \n')
 
-def neweggFile(choseFile):
+
+def neweggFile(choseFile):  # Chose to view in file
+    '''Presents content from Newegg in the file TechScrape.txt'''
+    if choseFile == True:
+        print('\nLoading content...')
+
     scrapeTechDeals()
     now = getCurrentTime()
 
@@ -645,47 +759,42 @@ def neweggFile(choseFile):
     pcData.append('')  # Empty space
 
     for i in range(len(itemName)):
-        # To organize how the shipping is presented
-        if shipping[i] == 'Free Shipping':
-            ship = '(w/ Free Shipping)'
-        else:
-            ship = '+ ' + str(shipping[i])
+        data = organizeTechData(i)
+        returnDeal(i, data[0], data[1])
 
-        if discount[i] == 'N/A' and ogPrice[i] != 'N/A' and newPrice[
-            i] != 'N/A':  # Discount isn't specified (but it's not a new item)
-            price = ogPrice[i].split('$')
-            newP = newPrice[i].split('$')
-            diff = float(price[-1]) - float(newP[-1])
-            disc = '$' + str(format(diff, '.2f')) + ' off'
-        else:  # Discount percentage is given
-            disc = str(discount[i]) + ' off'
-
-        if ogPrice[i] == 'N/A':
-            pcData.append('\n-> NEW ITEM')
-            pcData.append(f'Name: {itemName[i]}')
-            pcData.append(f'Price: {newPrice[i]} {ship} \n')
-        elif newPrice[i] == 'N/A':
-            pcData.append('\n-> PROMO DEAL')
-            pcData.append(f'Name: {itemName[i]}')
-            pcData.append(f'Original price: {ogPrice[i]} {ship}')
-            pcData.append('[ Check site for a limited time offer on this item! ]\n')
-        else:
-            pcData.append('\n-> DISCOUNTED ITEM')
-            pcData.append(f'Name: {itemName[i]}')
-            pcData.append(f'Original price: {ogPrice[i]} {ship}')
-            pcData.append(f'Discount: {disc}')
-            pcData.append(f'New price: {newPrice[i]} {ship} \n')
-
+    # Writes content to file TechScrape.txt
     FileWrite.writeDataOverFile(FileWrite, 'TechScrape.txt', pcData)
 
     if choseFile == True:
         # To avoid printing this msg for scheduled scrapes
         print('\n-> Success! Content is send to TechScrape.txt')
-        redirectToMenu()
+        redirectToMenu()  # Redirects to menu at the end
 
-# Scrapes Newegg periodically
-def continuousTechScrape():
+
+def returnDeal(i, ship, disc):
+    '''Decides whether an item has a discount, promo, or is new, then adds info to pcData accordingly'''
+    if ogPrice[i] == 'N/A':  # No original price = new item
+        pcData.append('\n-> NEW ITEM')
+        pcData.append(f'Name: {itemName[i]}')
+        pcData.append(f'Price: {newPrice[i]} {ship} \n')
+    elif newPrice[i] == 'N/A':  # No new price = promo deal
+        pcData.append('\n-> PROMO DEAL')
+        pcData.append(f'Name: {itemName[i]}')
+        pcData.append(f'Original price: {ogPrice[i]} {ship}')
+        pcData.append('[ Check site for a limited time offer on this item! ]\n')
+    else:  # Original price & new price = discount item
+        pcData.append('\n-> DISCOUNT ITEM')
+        pcData.append(f'Name: {itemName[i]}')
+        pcData.append(f'Original price: {ogPrice[i]} {ship}')
+        pcData.append(f'Discount: {disc}')
+        pcData.append(f'New price: {newPrice[i]} {ship} \n')
+
+
+def continuousTechScrape():  # Chose automatic scraping
+    '''Scrapes Newegg periodically based on an interval set by the user'''
     neweggFile(False)
     threading.Timer(time, continuousTechScrape).start()
 
+
+# Runs at the start of the program
 menu(True)
