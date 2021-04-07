@@ -1,3 +1,27 @@
+'''
+
+    What I added:
+        - All of the basic UNO gameplay mechanics
+        - The ability to play against the computer
+        - UN0's special cards (Wild (card & +4), +2, reverse, skip)
+            - The computer's ability to use special cards
+        - Different modes of gameplay (beginner/easy/normal)
+
+    What I need to add:
+        -> gameplay development:
+            - The ability to stack special cards to avoid picking up
+            - Unique special cards (that are not in UNO)
+        -> extended:
+            - Save/load game abilities
+            - Multiplayer options (multiple people on the same device)
+                - Team mode for even numbers
+            - Menu screen to contain & organize these features
+        -> general reminders:
+            - Improve the reverse card mechanics when multiplayer is introduced
+            - Ensure everything is modular & organized before submitting
+
+'''
+
 import random
 
 myCards = []
@@ -7,56 +31,41 @@ compPlayCards = []
 deck = []
 specialCards = []
 
+skippedTurn = []
+userSkip = []
+reversedTurn = []
+userReverse = []
+
+
 def populateCards():
-    for num in range(10):
-        deck.append(f'RED {num}')
-        deck.append(f'RED {num}')
-        deck.append(f'YELLOW {num}')
-        deck.append(f'YELLOW {num}')
-        deck.append(f'GREEN {num}')
-        deck.append(f'GREEN {num}')
-        deck.append(f'BLUE {num}')
-        deck.append(f'BLUE {num}')
+    moves = ['+2', 'SKIP', 'REVERSE']  # Coloured card moves
+    wildMoves = ['+4', 'CARD']  # Wild card moves
 
-    specialCards.append(f'RED +2')
-    specialCards.append(f'RED +2')
-    specialCards.append(f'YELLOW +2')
-    specialCards.append(f'YELLOW +2')
-    specialCards.append(f'GREEN +2')
-    specialCards.append(f'GREEN +2')
-    specialCards.append(f'BLUE +2')
-    specialCards.append(f'BLUE +2')
+    for num in range(10):  # Adds numbers 0-9 to the moves list
+        moves.append(f'{num}')
 
-    specialCards.append(f'RED SKIP')
-    specialCards.append(f'RED SKIP')
-    specialCards.append(f'YELLOW SKIP')
-    specialCards.append(f'YELLOW SKIP')
-    specialCards.append(f'GREEN SKIP')
-    specialCards.append(f'GREEN SKIP')
-    specialCards.append(f'BLUE SKIP')
-    specialCards.append(f'BLUE SKIP')
+    for num in range(2):  # So each card gets added twice
+        for i in moves:  # Creates a card w/ each move & colour combination
+            deck.append(f'RED {i}')
+            deck.append(f'YELLOW {i}')
+            deck.append(f'GREEN {i}')
+            deck.append(f'BLUE {i}')
 
-    specialCards.append(f'RED REVERSE')
-    specialCards.append(f'RED REVERSE')
-    specialCards.append(f'YELLOW REVERSE')
-    specialCards.append(f'YELLOW REVERSE')
-    specialCards.append(f'GREEN REVERSE')
-    specialCards.append(f'GREEN REVERSE')
-    specialCards.append(f'BLUE REVERSE')
-    specialCards.append(f'BLUE REVERSE')
+        for i in wildMoves:  # Creates the two variations of wild cards
+            deck.append(f'WILD {i}')
+            deck.append(f'WILD {i}')
 
-    specialCards.append('WILD +4')
-    specialCards.append('WILD +4')
-    specialCards.append('WILD +4')
-    specialCards.append('WILD +4')
+    specialCardCheck()
 
-    specialCards.append('WILD CARD')
-    specialCards.append('WILD CARD')
-    specialCards.append('WILD CARD')
-    specialCards.append('WILD CARD')
-
-    for i in specialCards:
-        deck.append(i)
+def specialCardCheck():
+    for i in deck:  # Goes through each card in the deck
+        move = str(i).split(' ')  # Splits card name
+        try:
+            testIfInt = int(str(move[1]))
+            if move[1] == '+2' or move[1] == '+4':  # To account for +2 and +4
+                specialCards.append(i)
+        except ValueError:  # Second word isn't a number (ex. 'REVERSE')
+            specialCards.append(i)
 
 def intro():
     global gameplay
@@ -98,8 +107,7 @@ def handCards():
         compCards.append(randCard)  # Adds card to computer's stack
         deck.remove(randCard)  # Removes card from deck
 
-    deckCard = []
-    deckCard.append(random.choice(deck))
+    deckCard = [random.choice(deck)]
     startRound(deckCard)
 
 def startRound(deckCard):
@@ -125,6 +133,8 @@ def startRound(deckCard):
 
         playerTurn = False
         compTurn = True
+        userSkip.clear()
+        userReverse.clear()
 
         while compTurn and not playerTurn:
             gameOver = checkIfWon()
@@ -137,10 +147,21 @@ def startRound(deckCard):
             lastCard = deckCard[len(deckCard) - 1]
             print(f'\nCard on deck: {lastCard}')
 
-            compPlayableCards(lastCard)
-            if len(compPlayCards) != 0:
-                compPutCardDown()
-                deckCard.append(compPlayedCard)
+            if len(skippedTurn) == 0 and len(reversedTurn) == 0:
+                compPlayableCards(lastCard)
+
+                if len(compPlayCards) != 0:
+                    compPutCardDown()
+                    deckCard.append(compPlayedCard)
+
+            elif len(skippedTurn) != 0 and len(reversedTurn) == 0:  # Their turn has been skipped
+                print('THEIR TURN HAS BEEN SKIPPED!')
+                skippedTurn.clear()
+
+            elif len(skippedTurn) == 0 and len(reversedTurn) != 0:  # The order has been reversed
+                # On 2 player games, reverse works as a skip
+                print('THE ORDER HAS BEEN REVERSED!')
+                reversedTurn.clear()
 
             print('\n----------')
 
@@ -152,7 +173,6 @@ def startRound(deckCard):
             print('\n----------')
             print('\nGame over! Player won')
         elif len(compCards) == 0:
-            print('\n----------')
             print('\nGame over! Computer won')
 
 
@@ -192,14 +212,27 @@ def playableCards(card):
 
         counter += 1  # Updates counter
 
+    if len(userSkip) != 0 or len(userReverse) != 0:
+        playCards.clear()
+
     if len(playCards) == 0:  # No playable cards
         gaveInput = False
         while not gaveInput:
-            choice = input('\n-> Press enter to draw a card!')
-            if choice == '':  # Pressed enter
-                gaveInput = True
-                drawCard('Player', card)
-            # If they don't press enter it just prompts them again
+            if len(userReverse) == 0 and len(userSkip) != 0:
+                choice = input('\n-> Your turn has been skipped! Press enter to continue')
+                if choice == '':  # Pressed enter
+                    gaveInput = True
+            elif len(userSkip) == 0 and len(userReverse) != 0:
+                choice = input('\n-> The order has been reversed! Press enter to continue')
+                if choice == '':  # Pressed enter
+                    gaveInput = True
+            else:
+                choice = input('\n-> Press enter to draw a card!')
+                if choice == '':  # Pressed enter
+                    gaveInput = True
+                    drawCard('Player', card)
+                # If they don't press enter it just prompts them again
+
 
 
 def compPlayableCards(card):
@@ -239,8 +272,8 @@ def putCardDown():
                 if not validCard:  # Didn't choose a valid card
                     print('[ This is not a playable card! ]')
                 else:  # Chose a valid card
-                    print(f'[ PLAYED CARD: {card} ]')
                     playCard(card)
+                    print(f'[ PLAYED CARD: {card} ]')
                     gaveInput = True
             else:
                 print('\n-> Enter a valid input!')
@@ -258,11 +291,11 @@ def playCard(card):
         myCards.remove(card)
         deck.append(card)  # Returns card to deck so it doesn't run out
         crd = card.split(' ')
+        specialCard(card)
         if crd[0] == 'WILD':
             wildCardPrompt()
-            card = colour + 'CARD'
+            card = colour + ' CARD'
         playedCard = card
-        specialCard()
 
 def wildCardPrompt():
     global colour
@@ -271,7 +304,7 @@ def wildCardPrompt():
     gaveInput = False
     while not gaveInput:
         try:
-            choice = int(input('1. Red  2. Blue  3. Yellow  3. Green  \n'))
+            choice = int(input('1. Red | 2. Blue | 3. Yellow | 4. Green  \n'))
             if choice == 1:
                 colour = 'RED'
                 gaveInput = True
@@ -289,28 +322,99 @@ def wildCardPrompt():
         except ValueError:
             print('\n-> Enter a valid input!')
 
-def specialCard():
-    # TODO: special card moves
-    pass
+def specialCard(card):
+    crd = card.split(' ')
+    move = crd[1]
+
+    if move == '+4':  # Wild +4
+        for i in range(4):
+            randCard = random.choice(deck)
+            compCards.append(randCard)  # Adds card to computer's stack
+            deck.remove(randCard)  # Removes card from deck
+        skippedTurn.append('skip')  # Skips turn
+    elif move == '+2':  # Colour +2
+        for i in range(2):
+            randCard = random.choice(deck)
+            compCards.append(randCard)  # Adds card to computer's stack
+            deck.remove(randCard)  # Removes card from deck
+        skippedTurn.append('skip')  # Skips turn
+    elif move == 'SKIP':  # Colour skip
+        skippedTurn.append('skip')
+    elif move == 'REVERSE':  # Colour reverse
+        reversedTurn.append('reverse')
+
+    # Nothing happens for wild cards; only changes colour
 
 def compPutCardDown():
+    card = random.choice(compPlayCards)
+    compPlayCard(card)
+    print(f'[ PLAYED CARD: {card} ]')
+
+def compPlayCard(card):
     global compPlayedCard
 
-    card = random.choice(compPlayCards)
-    print(f'[ PLAYED CARD: {card} ]')
-    compCards.remove(card)
-    deck.append(card)  # Returns card to deck so it doesn't run out
-    compPlayedCard = card
+    if card not in specialCards:
+        compCards.remove(card)
+        deck.append(card)  # Returns card to deck so it doesn't run out
+        compPlayedCard = card
+    else:  # It's a special card
+        compCards.remove(card)
+        deck.append(card)  # Returns card to deck so it doesn't run out
+        crd = card.split(' ')
+        compSpecialCard(card)
+        if crd[0] == 'WILD':
+            col = compWildCard()
+            card = col + ' CARD'
+        compPlayedCard = card
 
-def drawCard(type, card):
-    if type == 'Player':
+def compWildCard():
+    choice = random.randint(1, 5)
+
+    if choice == 1:
+        col = 'RED'
+    elif choice == 2:
+        col = 'BLUE'
+    elif choice == 3:
+        col = 'YELLOW'
+    elif choice == 4:
+        col = 'GREEN'
+
+    return col
+
+def compSpecialCard(card):
+    crd = card.split(' ')
+    move = crd[1]
+
+    if move == '+4':  # Wild +4
+        for i in range(4):
+            randCard = random.choice(deck)
+            myCards.append(randCard)  # Adds card to player's stack
+            deck.remove(randCard)  # Removes card from deck
+        userSkip.append('skip')  # Skips turn
+    elif move == '+2':  # Colour +2
+        for i in range(2):
+            randCard = random.choice(deck)
+            myCards.append(randCard)  # Adds card to player's stack
+            deck.remove(randCard)  # Removes card from deck
+        userSkip.append('skip')  # Skips turn
+    elif move == 'SKIP':  # Colour skip
+        userSkip.append('skip')
+    elif move == 'REVERSE':  # Colour reverse
+        userReverse.append('reverse')
+
+def drawCard(user, card):
+    if user == 'Player':
         randCard = getRandomCard(card)
         myCards.append(randCard)  # Adds card to your stack
         print('[ YOU DREW A CARD ]')
-    elif type == 'Computer':
+        skippedTurn.clear()
+        reversedTurn.clear()
+    elif user == 'Computer':
         randCard = random.choice(deck)
         compCards.append(randCard)  # Adds card to computer's stack
         print('[ THE COMPUTER DREW A CARD ]')
+        userSkip.clear()
+        userReverse.clear()
 
     deck.remove(randCard)  # Removes card from deck
 
@@ -327,16 +431,16 @@ def getRandomCard(card):
 
     return drawnCard
 
-def checkForMatching(card, deck):
+def checkForMatching(card, deckOfCards):
     card = str(card).split(' ')
     matchingCards = []
 
-    for i in range(len(deck)):
-        deckCrd = str(deck[i]).split(' ')
+    for i in range(len(deckOfCards)):
+        deckCrd = str(deckOfCards[i]).split(' ')
         if card[0] == deckCrd[0]:
-            matchingCards.append(str(deck[i]))
+            matchingCards.append(str(deckOfCards[i]))
         elif card[1] == deckCrd[1]:
-            matchingCards.append(str(deck[i]))
+            matchingCards.append(str(deckOfCards[i]))
         else:
             pass
 

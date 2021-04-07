@@ -26,6 +26,7 @@ def introText():
 # Starting screen for battle
 def gameIntro(trueOrFalse):
     hasItStarted = trueOrFalse
+    # Yeah im typing ?? :/
 
     # So the intro text only shows before the game first starts
     while not hasItStarted:
