@@ -8,6 +8,7 @@
         - Different modes of gameplay (beginner/easy/normal)
 
     What I need to add:
+        TODO: POPULATE CARDS.PY AND PLAYER.PY
         -> gameplay development:
             - The ability to stack special cards to avoid picking up
             - Unique special cards (that are not in UNO)
@@ -23,12 +24,12 @@
 '''
 
 import random
+from cards import Cards
 
 myCards = []
 playCards = []
 compCards = []
 compPlayCards = []
-deck = []
 specialCards = []
 
 skippedTurn = []
@@ -36,36 +37,6 @@ userSkip = []
 reversedTurn = []
 userReverse = []
 
-
-def populateCards():
-    moves = ['+2', 'SKIP', 'REVERSE']  # Coloured card moves
-    wildMoves = ['+4', 'CARD']  # Wild card moves
-
-    for num in range(10):  # Adds numbers 0-9 to the moves list
-        moves.append(f'{num}')
-
-    for num in range(2):  # So each card gets added twice
-        for i in moves:  # Creates a card w/ each move & colour combination
-            deck.append(f'RED {i}')
-            deck.append(f'YELLOW {i}')
-            deck.append(f'GREEN {i}')
-            deck.append(f'BLUE {i}')
-
-        for i in wildMoves:  # Creates the two variations of wild cards
-            deck.append(f'WILD {i}')
-            deck.append(f'WILD {i}')
-
-    specialCardCheck()
-
-def specialCardCheck():
-    for i in deck:  # Goes through each card in the deck
-        move = str(i).split(' ')  # Splits card name
-        try:
-            testIfInt = int(str(move[1]))
-            if move[1] == '+2' or move[1] == '+4':  # To account for +2 and +4
-                specialCards.append(i)
-        except ValueError:  # Second word isn't a number (ex. 'REVERSE')
-            specialCards.append(i)
 
 def intro():
     global gameplay
@@ -91,9 +62,10 @@ def intro():
 
     handCards()
 
+
 def handCards():
     # Adds cards to deck
-    populateCards()
+    cards.populateCards()
 
     for i in range(7):
         # Chooses 7 random cards for player
@@ -109,6 +81,7 @@ def handCards():
 
     deckCard = [random.choice(deck)]
     startRound(deckCard)
+
 
 def startRound(deckCard):
     playerTurn = True
@@ -184,8 +157,11 @@ def checkIfWon():
     else:
         return False
 
+
 def playableCards(card):
     deckCard = str(card).split(' ')
+
+    # TODO: Put some of this in cards.py
 
     counter = 1
     for i in myCards:
@@ -234,7 +210,6 @@ def playableCards(card):
                 # If they don't press enter it just prompts them again
 
 
-
 def compPlayableCards(card):
     deckCard = str(card).split(' ')
 
@@ -254,6 +229,7 @@ def compPlayableCards(card):
 
     if len(compPlayCards) == 0:  # No playable cards
         drawCard('Computer', card)
+
 
 def putCardDown():
     gaveInput = False
@@ -280,6 +256,7 @@ def putCardDown():
         except ValueError:
             print('\n-> Enter a valid input!')
 
+
 def playCard(card):
     global playedCard
 
@@ -296,6 +273,7 @@ def playCard(card):
             wildCardPrompt()
             card = colour + ' CARD'
         playedCard = card
+
 
 def wildCardPrompt():
     global colour
@@ -322,6 +300,7 @@ def wildCardPrompt():
         except ValueError:
             print('\n-> Enter a valid input!')
 
+
 def specialCard(card):
     crd = card.split(' ')
     move = crd[1]
@@ -345,10 +324,12 @@ def specialCard(card):
 
     # Nothing happens for wild cards; only changes colour
 
+
 def compPutCardDown():
     card = random.choice(compPlayCards)
     compPlayCard(card)
     print(f'[ PLAYED CARD: {card} ]')
+
 
 def compPlayCard(card):
     global compPlayedCard
@@ -367,6 +348,7 @@ def compPlayCard(card):
             card = col + ' CARD'
         compPlayedCard = card
 
+
 def compWildCard():
     choice = random.randint(1, 5)
 
@@ -380,6 +362,7 @@ def compWildCard():
         col = 'GREEN'
 
     return col
+
 
 def compSpecialCard(card):
     crd = card.split(' ')
@@ -402,9 +385,10 @@ def compSpecialCard(card):
     elif move == 'REVERSE':  # Colour reverse
         userReverse.append('reverse')
 
+
 def drawCard(user, card):
     if user == 'Player':
-        randCard = getRandomCard(card)
+        randCard = cards.getRandomCard(card, gameplay)
         myCards.append(randCard)  # Adds card to your stack
         print('[ YOU DREW A CARD ]')
         skippedTurn.clear()
@@ -418,32 +402,9 @@ def drawCard(user, card):
 
     deck.remove(randCard)  # Removes card from deck
 
-def getRandomCard(card):
-    if gameplay != 3:  # Normal or Easy mode
-        drawnCard = random.choice(deck)
-    else:  # Beginner
-        matching = checkForMatching(card, deck)
-        chance = random.randint(0, 10)
-        if chance < 7:
-            drawnCard = random.choice(matching)
-        else:
-            drawnCard = random.choice(deck)
 
-    return drawnCard
-
-def checkForMatching(card, deckOfCards):
-    card = str(card).split(' ')
-    matchingCards = []
-
-    for i in range(len(deckOfCards)):
-        deckCrd = str(deckOfCards[i]).split(' ')
-        if card[0] == deckCrd[0]:
-            matchingCards.append(str(deckOfCards[i]))
-        elif card[1] == deckCrd[1]:
-            matchingCards.append(str(deckOfCards[i]))
-        else:
-            pass
-
-    return matchingCards
+cards = Cards()
+deck = cards.deck
+specialCards = cards.specialCards
 
 intro()
