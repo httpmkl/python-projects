@@ -8,7 +8,6 @@
         - Different modes of gameplay (beginner/easy/normal)
 
     What I need to add:
-        TODO: POPULATE CARDS.PY AND PLAYER.PY
         -> gameplay development:
             - The ability to stack special cards to avoid picking up
             - Unique special cards (that are not in UNO)
@@ -27,10 +26,7 @@ import random
 from cards import Cards
 
 myCards = []
-playCards = []
 compCards = []
-compPlayCards = []
-specialCards = []
 
 skippedTurn = []
 userSkip = []
@@ -93,7 +89,6 @@ def startRound(deckCard):
         if gameOver:
             break
 
-        playCards.clear()
         lastCard = deckCard[len(deckCard) - 1]
         print(f'\nCard on deck: {lastCard}')
 
@@ -108,6 +103,7 @@ def startRound(deckCard):
         compTurn = True
         userSkip.clear()
         userReverse.clear()
+        playCards.clear()
 
         while compTurn and not playerTurn:
             gameOver = checkIfWon()
@@ -116,7 +112,6 @@ def startRound(deckCard):
 
             print('\n----------')
 
-            compPlayCards.clear()
             lastCard = deckCard[len(deckCard) - 1]
             print(f'\nCard on deck: {lastCard}')
 
@@ -140,6 +135,7 @@ def startRound(deckCard):
 
             playerTurn = True
             compTurn = False
+            compPlayCards.clear()
 
     if gameOver:
         if len(myCards) == 0:
@@ -159,30 +155,20 @@ def checkIfWon():
 
 
 def playableCards(card):
-    deckCard = str(card).split(' ')
+    global playCards
 
-    # TODO: Put some of this in cards.py
+    deckCard = str(card).split(' ')
+    cards.playableCards(myCards, deckCard)
+    playCards = cards.playCards
 
     counter = 1
     for i in myCards:
-        # Checks if card is playable
-        myCard = str(i).split(' ')
-        if myCard[0] == deckCard[0]:
-            canPlay = True
-        elif myCard[1] == deckCard[1]:
-            canPlay = True
-        elif myCard[0] == 'WILD':
-            canPlay = True
-        else:  # No similarities
-            canPlay = False
-
         # Prints card
-        if canPlay:
+        if i in playCards:
             if gameplay != 1:
                 print(f'{counter}. [ {i} ]')
             else:  # Doesn't highlight playable cards w/ normal mode
                 print(f'{counter}. {i}')
-            playCards.append(i)
         else:
             print(f'{counter}. {i}')
 
@@ -211,21 +197,11 @@ def playableCards(card):
 
 
 def compPlayableCards(card):
+    global compPlayCards
+
     deckCard = str(card).split(' ')
-
-    for i in compCards:
-        # Checks if card is playable
-        compCard = str(i).split(' ')
-        if compCard[0] == deckCard[0]:
-            canPlay = True
-        elif compCard[1] == deckCard[1]:
-            canPlay = True
-        else:  # No similarities
-            canPlay = False
-
-        # Prints card
-        if canPlay:
-            compPlayCards.append(i)
+    cards.playableCards(compCards, deckCard)
+    compPlayCards = cards.playCards
 
     if len(compPlayCards) == 0:  # No playable cards
         drawCard('Computer', card)

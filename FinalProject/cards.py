@@ -6,6 +6,7 @@ class Cards:
     def __init__(self):
         self.deck = []
         self.specialCards = []
+        self.playCards = []
 
     def populateCards(self):
         moves = ['+2', 'SKIP', 'REVERSE']  # Coloured card moves
@@ -36,10 +37,21 @@ class Cards:
             except ValueError:  # Second word isn't a number (ex. 'REVERSE')
                 self.specialCards.append(i)
 
+    def playableCards(self, cards, deckCard):
+        for i in cards:
+            # Checks if card is playable
+            card = str(i).split(' ')
+            if card[0] == deckCard[0]:
+                self.playCards.append(i)
+            elif card[1] == deckCard[1]:
+                self.playCards.append(i)
+            elif card[0] == 'WILD':
+                self.playCards.append(i)
+
     def getRandomCard(self, card, gameplay):
         if gameplay != 3:  # Normal or Easy mode
             drawnCard = random.choice(self.deck)
-        else:  # Beginner
+        else:  # Beginner2
             matching = self.checkForMatching(card)
             chance = random.randint(0, 10)
             if chance < 7:
