@@ -7,6 +7,7 @@ class Cards:
         self.deck = []
         self.specialCards = []
         self.playCards = []
+        self.gameplay = 0
 
     def populateCards(self):
         moves = ['+2', 'SKIP', 'REVERSE']  # Coloured card moves
@@ -48,10 +49,10 @@ class Cards:
             elif card[0] == 'WILD':
                 self.playCards.append(i)
 
-    def getRandomCard(self, card, gameplay):
-        if gameplay != 3:  # Normal or Easy mode
+    def getRandomCard(self, card):
+        if self.gameplay != 3:  # Normal or Easy mode
             drawnCard = random.choice(self.deck)
-        else:  # Beginner2
+        else:  # Beginner
             matching = self.checkForMatching(card)
             chance = random.randint(0, 10)
             if chance < 7:
