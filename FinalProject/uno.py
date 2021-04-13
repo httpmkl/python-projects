@@ -9,12 +9,10 @@
         - Multiplayer options
         - Improved reverse mechanics
         - Menu screen to contain & organize these features
+        - Generalize player functions to adapt to computer plays
+        - Team mode for even numbers (in multiplayer)
 
     What I need to add/do:
-        - Team mode for even numbers (in multiplayer)
-            - TODO: add ability to see teammate cards (in playableCards function)
-        - Generalize player functions to adapt to computer plays
-            - (add conditional variables in the parenthesis to distinguish between the types)
         - The ability to stack special cards to avoid picking up
         - Unique special cards (that are not in UNO)
         - Save/load game abilities
@@ -29,7 +27,6 @@ from player import Player
 from player import Computer
 
 myCards = []
-compCards = []
 
 skippedTurn = []
 reversedTurn = []
@@ -71,7 +68,7 @@ def playerOptions():
             if choice == 1:
                 players.append(playerOne)
                 players.append(comp)
-                gameplayPrompt()
+                enterNames()
                 gaveInput = True
             elif choice == 2:
                 multiOptions()
@@ -190,8 +187,21 @@ def handCards():
     deckCard = [random.choice(deck)]
     startRound(deckCard)
 
+def turn(i, lastCard, deckCard):
+    playableCards(i, lastCard)
+
+    if len(playCards) != 0:
+        for num in range(len(players)):
+            if i == players[num]:
+                nextPlayer = num + 1
+        try:
+            putCardDown(i, players[nextPlayer])
+        except IndexError:
+            putCardDown(i, players[0])
+        deckCard.append(playedCard)
+
 def startRound(deckCard):
-    global playCards, compPlayCards
+    global playCards
 
     i = players[0]  # First player in the list
 
@@ -201,38 +211,15 @@ def startRound(deckCard):
     print(f'\nCard on deck: {lastCard}')
 
     if i.type == 'Player':
-        print(f'\nYour Cards:')
-
-        playableCards(i, lastCard)
-        if len(playCards) != 0:
-            for num in range(len(players)):
-                if i == players[num]:
-                    next = num + 1
-            try:
-                putCardDown(i, players[next])
-            except IndexError:
-                putCardDown(i, players[0])
-            deckCard.append(playedCard)
-            playCards.clear()
+        turn(i, lastCard, deckCard)
     else:
         if len(skippedTurn) == 0:
-            compPlayableCards(i, lastCard)
-
-            if len(compPlayCards) != 0:
-                for num in range(len(players)):
-                    if i == players[num]:
-                        next = num + 1
-                try:
-                    compPutCardDown(players[next])
-                except IndexError:
-                    compPutCardDown(players[0])
-                deckCard.append(compPlayedCard)
-
-            compPlayCards.clear()
-
+            turn(i, lastCard, deckCard)
         elif len(skippedTurn) != 0:  # Their turn has been skipped
             print('THEIR TURN HAS BEEN SKIPPED!')
             skippedTurn.clear()
+
+    playCards.clear()
 
     playersWon = checkIfWon()
     if len(playersWon) > 0:
@@ -274,17 +261,17 @@ def buffer(i):
     time.sleep(4)
 
 def gameOver(player):
-        if player.type == 'Player':
-            print('\n----------')
-            if player.teammate != None:
-                print(f'\nGame over! {player.myName} and {player.teammate.myName} won')
-            else:
-                print(f'\nGame over! {player.myName} won')
-            quit()
+    if player.type == 'Player':
+        print('\n----------')
+        if player.teammate is not None:
+            print(f'\nGame over! {player.myName} and {player.teammate.myName} won')
         else:
-            print('\n----------')
-            print('\nGame over! Computer won')
-            quit()
+            print(f'\nGame over! {player.myName} won')
+        quit()
+    else:
+        print('\n----------')
+        print('\nGame over! Computer won')
+        quit()
 
 
 def checkIfWon():
@@ -303,73 +290,73 @@ def playableCards(player, card):
     cards.playableCards(player.myCards, deckCard)
     playCards = cards.playCards
 
-    counter = 1
-    for i in player.myCards:
-        # Prints card
-        if i in playCards:
-            if cards.gameplay != 1:
-                print(f'{counter}. [ {i} ]')
-            else:  # Doesn't highlight playable cards w/ normal mode
+    if player.type == 'Player':
+        if player.teammate is not None:
+            print(f'\nYOUR TEAMMATE: {player.teammate.myName}')
+            counter = 1
+            for i in player.teammate.myCards:
                 print(f'{counter}. {i}')
-        else:
-            print(f'{counter}. {i}')
+                counter += 1
 
-        counter += 1  # Updates counter
+        counter = 1
+        print(f'\n{player.myName} Cards:')
+        for i in player.myCards:
+            # Prints card
+            if i in playCards and cards.gameplay != 1:
+                print(f'{counter}. [ {i} ]')
+            else:
+                print(f'{counter}. {i}')
 
-    if len(skippedTurn) != 0:
-        playCards.clear()
+            counter += 1  # Updates counter
+
+        if len(skippedTurn) != 0:
+            playCards.clear()
 
     if len(playCards) == 0:  # No playable cards
-        gaveInput = False
-        while not gaveInput:
-            if len(skippedTurn) != 0:
-                choice = input('\n-> Your turn has been skipped! Press enter to continue')
-                if choice == '':  # Pressed enter
-                    gaveInput = True
-                    skippedTurn.clear()
-            else:
-                choice = input('\n-> Press enter to draw a card!')
-                if choice == '':  # Pressed enter
-                    gaveInput = True
-                    drawCard('Player', player, card)
-                # If they don't press enter it just prompts them again
-
-
-def compPlayableCards(player, card):
-    global compPlayCards
-
-    deckCard = str(card).split(' ')
-    cards.playableCards(compCards, deckCard)
-    compPlayCards = cards.playCards
-
-    if len(compPlayCards) == 0:  # No playable cards
-        drawCard('Computer', player, card)
-
+        if player.type == 'Player':
+            gaveInput = False
+            while not gaveInput:
+                if len(skippedTurn) != 0:
+                    choice = input('\n-> Your turn has been skipped! Press enter to continue')
+                    if choice == '':  # Pressed enter
+                        gaveInput = True
+                        skippedTurn.clear()
+                else:
+                    choice = input('\n-> Press enter to draw a card!')
+                    if choice == '':  # Pressed enter
+                        gaveInput = True
+                        drawCard(player, card)
+                    # If they don't press enter it just prompts them again
+        else:
+            drawCard(player, card)
 
 def putCardDown(player, nextPlayer):
     gaveInput = False
     validCard = False
 
-    while not gaveInput:
-        try:
-            choice = int(input('\n-> What card # would you like to play?  \n'))
-            if 0 < choice <= len(player.myCards):
-                card = player.myCards[choice - 1]
-                # Checks for a valid card
-                for i in playCards:
-                    if card == i:
-                        validCard = True  # Chosen card is playable
-
-                if not validCard:  # Didn't choose a valid card
-                    print('[ This is not a playable card! ]')
-                else:  # Chose a valid card
-                    playCard(player, card, nextPlayer)
-                    print(f'[ PLAYED CARD: {card} ]')
-                    gaveInput = True
-            else:
+    if player.type == 'Player':
+        while not gaveInput:
+            try:
+                choice = int(input('\n-> What card # would you like to play?  \n'))
+                if 0 < choice <= len(player.myCards):
+                    card = player.myCards[choice - 1]
+                    # Checks for a valid card
+                    for i in playCards:
+                        if card == i:
+                            validCard = True  # Chosen card is playable
+                    if not validCard:  # Didn't choose a valid card
+                        print('[ This is not a playable card! ]')
+                    else:  # Chose a valid card
+                        gaveInput = True
+                else:
+                    print('\n-> Enter a valid input!')
+            except ValueError:
                 print('\n-> Enter a valid input!')
-        except ValueError:
-            print('\n-> Enter a valid input!')
+    else:
+        card = random.choice(playCards)
+
+    playCard(player, card, nextPlayer)
+    print(f'[ PLAYED CARD: {card} ]')
 
 
 def playCard(player, card, nextPlayer):
@@ -385,8 +372,12 @@ def playCard(player, card, nextPlayer):
         crd = card.split(' ')
         specialCard(nextPlayer, card)
         if crd[0] == 'WILD':
-            wildCardPrompt()
-            card = colour + ' ' + crd[1]
+            if player.type == 'Player':
+                wildCardPrompt()
+                card = colour + ' ' + crd[1]
+            elif player.type == 'Computer':
+                col = compWildCard()
+                card = col + ' CARD'
         playedCard = card
 
 
@@ -439,73 +430,18 @@ def specialCard(nextPlayer, card):
 
     # Nothing happens for wild cards; only changes colour
 
-
-def compPutCardDown(nextPlayer):
-    card = random.choice(compPlayCards)
-    compPlayCard(nextPlayer, card)
-    print(f'[ PLAYED CARD: {card} ]')
-
-
-def compPlayCard(nextPlayer, card):
-    global compPlayedCard
-
-    if card not in specialCards:
-        compCards.remove(card)
-        deck.append(card)  # Returns card to deck so it doesn't run out
-        compPlayedCard = card
-    else:  # It's a special card
-        compCards.remove(card)
-        deck.append(card)  # Returns card to deck so it doesn't run out
-        crd = card.split(' ')
-        compSpecialCard(nextPlayer, card)
-        if crd[0] == 'WILD':
-            col = compWildCard()
-            card = col + ' CARD'
-        compPlayedCard = card
-
-
 def compWildCard():
     colours = ['RED', 'BLUE', 'YELLOW', 'GREEN']
     choice = random.choice(colours)
 
     return choice
 
-
-def compSpecialCard(nextPlayer, card):
-    crd = card.split(' ')
-    move = crd[1]
-
-    if move == '+4':  # Wild +4
-        for i in range(4):
-            randCard = random.choice(deck)
-            nextPlayer.myCards.append(randCard)  # Adds card to player's stack
-            deck.remove(randCard)  # Removes card from deck
-        skippedTurn.append('skip')  # Skips turn
-    elif move == '+2':  # Colour +2
-        for i in range(2):
-            randCard = random.choice(deck)
-            nextPlayer.myCards.append(randCard)  # Adds card to player's stack
-            deck.remove(randCard)  # Removes card from deck
-        skippedTurn.append('skip')  # Skips turn
-    elif move == 'SKIP':  # Colour skip
-        skippedTurn.append('skip')
-    elif move == 'REVERSE':  # Colour reverse
-        reversedTurn.append('reverse')
-
-
-def drawCard(user, player, card):
-    if user == 'Player':
-        randCard = cards.getRandomCard(card)
-        player.myCards.append(randCard)  # Adds card to your stack
-        print(f'[ {player.myName.upper()} DREW A CARD ]')
-        skippedTurn.clear()
-        reversedTurn.clear()
-    elif user == 'Computer':
-        randCard = random.choice(deck)
-        compCards.append(randCard)  # Adds card to computer's stack
-        print('[ THE COMPUTER DREW A CARD ]')
-        skippedTurn.clear()
-        reversedTurn.clear()
+def drawCard(player, card):
+    randCard = cards.getRandomCard(card)
+    player.myCards.append(randCard)  # Adds card to stack
+    print(f'[ {player.myName.upper()} DREW A CARD ]')
+    skippedTurn.clear()
+    reversedTurn.clear()
 
     deck.remove(randCard)  # Removes card from deck
 
@@ -533,13 +469,7 @@ comp.myName = 'Computer'
 deck = cards.deck
 specialCards = cards.specialCards
 
-compCards = comp.myCards
-
-slots = []
-slots.append(playerOne)
-slots.append(playerTwo)
-slots.append(playerThree)
-slots.append(playerFour)
+slots = [playerOne, playerTwo, playerThree, playerFour, playerFive]
 
 players = []
 menu()
