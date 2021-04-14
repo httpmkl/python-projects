@@ -15,30 +15,33 @@
             - The prevention of stacking +2 on top of a +4
 
     What I need to add/do:
+        - Save/load game abilities
         - The ability to reverse wild cards
         - Unique special cards (that are not in UNO)
-        - Save/load game abilities
         - Ensure everything is modular & organized before submitting
 
 '''
 
 import random
 import time
+from datetime import datetime
 from cards import Cards
 from player import Player
 from player import Computer
 
-myCards = []
+games = []
 
 skippedTurn = []
 reversedTurn = []
 specialSkip = []
 
-
 def menu():
     print('\nUNO — PYTHON VER.')
     print('-> made by Nora Calif')
 
+    menuOptions()
+
+def menuOptions():
     print('\nMENU:')
     print('1. New game  \n2. Saved games  \n3. Instructions')
 
@@ -50,7 +53,7 @@ def menu():
                 playerOptions()
                 gaveInput = True
             elif choice == 2:
-                print('\nUnder Construction')
+                loadGames()
                 gaveInput = True
             elif choice == 3:
                 print('\nUnder Construction')
@@ -59,6 +62,97 @@ def menu():
                 print('\n-> Choose from the options!')
         except ValueError:
             print('\n-> Enter a valid input!')
+
+def loadGames():
+    print('\n----------')
+
+    if len(games) == 0:
+        print('\n[ NO SAVED GAMES ]')
+    else:
+        print('\nSaved Games:')
+        print('(ordered from recent -> oldest)')
+
+        games.reverse()
+        counter = 1
+        for i in games:
+            print(f'{counter}. {i[0]}')
+            counter += 1
+
+        chooseGame()
+
+    print('\n----------')
+    menuOptions()
+
+def chooseGame():
+    # TODO: write functionality for picking a saved game and creating a game with the saved states
+    pass
+
+def getTime():
+    now = datetime.now()  # Gets the current time
+
+    # Splits it into separate elements for date & time
+    dateAndTime = str(now).split(' ')
+
+    # Cleans up the time element to include only hours:minutes
+    time = dateAndTime[1]
+    hrsMinsSecs = time.split('.')
+    hrsMinsSecs = hrsMinsSecs[0]  # Gets rid of numbers after the decimal
+    hrsMins = hrsMinsSecs.split(':')
+    hrsMins = hrsMins[0] + ':' + hrsMins[1]  # Gets rid of seconds
+
+    # Replaces previous time element with shortened one
+    dateAndTime.pop()
+    dateAndTime.append(hrsMins)
+
+    # Combines date & time into a single string again
+    currentTime = dateAndTime[0] + ' ' + dateAndTime[1]
+
+    return currentTime  # Returns current time
+
+def saveGame(deckCard):
+    gameInfo = []
+
+    gameplayMode = cards.gameplay
+    playerInfo = []
+    for i in players:
+        # Stores info on player attributes
+        playerInfo.append(i.myName)
+        playerInfo.append(i.type)
+        playerInfo.append(i.myCards)
+        playerInfo.append(i.teammate)
+
+    # Stores info on the game states
+    gameStates = [gameplayMode, skippedTurn, reversedTurn, specialSkip]
+
+    if len(specialSkip) <= 1:
+        cardOnDeck = deckCard[len(deckCard) - 1]
+    else:
+        cardOnDeck = str(specialSkip[0])
+        counter = 0
+        for j in specialSkip:
+            if counter != 0:
+                cardOnDeck += str(f' / {j}')
+            counter += 1
+        cardOnDeck += str(' STACKED')
+
+    gameDeck = cards.deck
+    gameSpecials = cards.specialCards
+
+    # Stores info on cards
+    cardStates = [cardOnDeck, gameDeck, gameSpecials]
+
+    now = getTime()
+    now = now.split(' ')
+
+    gameInfo.append(f'{now[0]} at {now[1]}')
+    gameInfo.append(playerInfo)
+    gameInfo.append(gameStates)
+    gameInfo.append(cardStates)
+
+    games.append(gameInfo)
+
+    print('\n\n--------------------\n')
+    menu()
 
 def playerOptions():
     print('\nMATCH TYPES:')
@@ -186,6 +280,10 @@ def handCards():
             randCard = random.choice(deck)
             i.myCards.append(randCard)  # Adds card to stack
             deck.remove(randCard)  # Removes card from deck
+        i.myCards.append('WILD +4')  # Adds card to stack
+        deck.remove('WILD +4')  # Removes card from deck
+        i.myCards.append('WILD +4')  # Adds card to stack
+        deck.remove('WILD +4')  # Removes card from deck
 
     deckCard = [random.choice(deck)]
     startRound(deckCard)
@@ -195,13 +293,13 @@ def turn(i, lastCard, deckCard):
         if i == players[num]:
             nextPlayer = num + 1
 
-    playableCards(i, lastCard, players[nextPlayer])
+    playableCards(i, lastCard, deckCard)
 
     if len(playCards) != 0:
         try:
-            putCardDown(i)
+            putCardDown(i, deckCard)
         except IndexError:
-            putCardDown(i)
+            putCardDown(i, deckCard)
         deckCard.append(playedCard)
 
 def startRound(deckCard):
@@ -297,7 +395,7 @@ def checkIfWon():
     return playersWon
 
 
-def playableCards(player, card, nextPlayer):
+def playableCards(player, card, deckCard):
     global playCards, stackPlayCards
 
     deckCard = str(card).split(' ')
@@ -356,22 +454,28 @@ def playableCards(player, card, nextPlayer):
             while not gaveInput:
                 if len(specialSkip) != 0:
                     gaveInput = True
-                    stackCard(stackPlayCards, player)
+                    stackCard(stackPlayCards, player, deckCard)
                 elif len(skippedTurn) != 0:
                     choice = input('\n-> Your turn has been skipped! Press enter to continue')
                     if choice == '':  # Pressed enter
                         gaveInput = True
                         skippedTurn.clear()
+                    elif choice.lower() == 'save':
+                        gaveInput = True
+                        saveGame(deckCard)
                 else:
                     choice = input('\n-> Press enter to draw a card!')
                     if choice == '':  # Pressed enter
                         gaveInput = True
                         drawCard(player, card)
+                    elif choice.lower() == 'save':
+                        gaveInput = True
+                        saveGame(deckCard)
                     # If they don't press enter it just prompts them again
         else:
             drawCard(player, card)
 
-def stackCard(stackPlayCards, player):
+def stackCard(stackPlayCards, player, deckCard):
     global playCards
 
     print('\n-> Stack a special card on top or pick up?')
@@ -379,7 +483,8 @@ def stackCard(stackPlayCards, player):
     gaveInput = False
     while not gaveInput:
         try:
-            choice = int(input('1. COUNTER ATTACK \n2. PICK UP CARDS  \n'))
+            choice = input('1. COUNTER ATTACK \n2. PICK UP CARDS  \n')
+            choice = int(choice)
             if choice == 1:
                 gaveInput = True
                 playCards = stackPlayCards
@@ -389,7 +494,11 @@ def stackCard(stackPlayCards, player):
             else:
                 print('\n-> Choose from the options!')
         except ValueError:
-            print('\n-> Enter a valid input!')
+            if choice.lower() == 'save':
+                gaveInput = True
+                saveGame(deckCard)
+            else:
+                print('\n-> Enter a valid input!')
 
 def pickUpCards(player):
     if len(specialSkip) != 0:
@@ -398,7 +507,7 @@ def pickUpCards(player):
         for i in specialSkip:
             crd = i.split(' ')
             crd = crd[1]
-            amnt = crd.split('+')
+            crd = crd.split('+')
             amnt = crd[1]
             num = int(amnt)
             amount += num
@@ -410,7 +519,7 @@ def pickUpCards(player):
 
         specialSkip.clear()
 
-def putCardDown(player):
+def putCardDown(player, deckCard):
     global playCards, stackPlayCards
 
     gaveInput = False
@@ -420,7 +529,8 @@ def putCardDown(player):
         if len(stackPlayCards) != 1:
             while not gaveInput:
                 try:
-                    choice = int(input('\n-> What card # would you like to play?  \n'))
+                    choice = input('\n-> What card # would you like to play?  \n')
+                    choice = int(choice)
                     if 0 < choice <= len(player.myCards):
                         card = player.myCards[choice - 1]
                         # Checks for a valid card
@@ -434,7 +544,11 @@ def putCardDown(player):
                     else:
                         print('\n-> Enter a valid input!')
                 except ValueError:
-                    print('\n-> Enter a valid input!')
+                    if choice.lower() == 'save':
+                        gaveInput = True
+                        saveGame(deckCard)
+                    else:
+                        print('\n-> Enter a valid input!')
         else:
             card = stackPlayCards[0]
     else:
