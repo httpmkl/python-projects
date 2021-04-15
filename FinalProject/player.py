@@ -12,3 +12,4 @@ class Computer:
         self.myCards = []
         self.type = 'Computer'
         self.myName = self.type
+        self.teammate = None

@@ -1,4 +1,4 @@
-'''
+"""
 
     What I added:
         - All of the basic UNO gameplay mechanics
@@ -13,61 +13,65 @@
         - Team mode for even numbers (in multiplayer)
         - The ability to stack special cards to avoid picking up
             - The prevention of stacking +2 on top of a +4
+        - Save/load game abilities
 
     What I need to add/do:
-        - Save/load game abilities
         - Unique special cards (that are not in UNO)
         - Ensure everything is modular & organized before submitting
 
-    note:
-        - I removed some exception handling in order to discover where the errors are
-        - Figure out the issue with restarting games and resetting states.
-
-'''
+"""
 
 import random
 import time
 from datetime import datetime
-from typing import List
 
 from cards import Cards
 from player import Player
 from player import Computer
 
+cards = Cards()
 games = []
+players = []
 
 skippedTurn = []
 reversedTurn = []
 specialSkip = []
 
+
 def menu():
     print('\nUNO — PYTHON VER.')
     print('-> made by Nora Calif')
 
-    resetPlayers()
     menuOptions()
+
 
 def menuOptions():
     print('\nMENU:')
-    print('1. New game  \n2. Saved games  \n3. Instructions')
+    print('1. New game  \n2. Saved games  \n3. Instructions  \n4. Exit Program')
 
     gaveInput = False
     while not gaveInput:
-    #    try:
-        choice = int(input())
-        if choice == 1:
-            gaveInput = True
-            playerOptions()
-        elif choice == 2:
-            gaveInput = True
-            loadGames()
-        elif choice == 3:
-            gaveInput = True
-            print('\nUnder Construction')
-        else:
-            print('\n-> Choose from the options!')
-    #    except ValueError:
-    #        print('\n-> Enter a valid input!')
+        try:
+            choice = int(input())
+            if choice == 1:
+                gaveInput = True
+                playerOptions()
+            elif choice == 2:
+                gaveInput = True
+                loadGames()
+            elif choice == 3:
+                gaveInput = True
+                print('\nUnder Construction')
+            elif choice == 4:
+                gaveInput = True
+                print('\n----------')
+                print('\n-> Have a nice day! \n')
+                quit()
+            else:
+                print('\n-> Choose from the options!')
+        except ValueError:
+            print('\n-> Enter a valid input!')
+
 
 def loadGames():
     print('\n----------')
@@ -88,6 +92,7 @@ def loadGames():
 
         chooseGame(counter)
 
+
 def chooseGame(counter):
     print('\n[ Which game would you like to resume? ]')
 
@@ -98,18 +103,53 @@ def chooseGame(counter):
             if choice > counter or choice < 1:
                 print('\n-> Choose from the options!')
             else:
-                print('\n----------')
                 gaveInput = True
                 resumeGame(choice)
         except ValueError:
             print('\n-> Enter a valid input!')
 
-def resumeGame(choice):
-    gameInfo = games[choice - 1]
-    for i in gameInfo:
-        print(i)
 
-    print('can i delay?')
+def resumeGame(choice):
+    players.clear()
+    slots = resetPlayers()
+
+    gameInfo = games[choice - 1]
+    games.remove(games[choice - 1])
+
+    playerList = gameInfo[1]
+    gameStates = gameInfo[2]
+    cardStates = gameInfo[3]
+
+    # Adding back player data
+    for i in range(len(playerList)):
+        players.append(slots[i])
+
+    for i in range(len(players)):
+        attributes = playerList[i]
+        players[i].myName = attributes[0]
+        players[i].type = attributes[1]
+        players[i].myCards = attributes[2]
+        players[i].teammate = attributes[3]
+
+    # Adding back game data
+    cards.gameplay = gameStates[0]
+    skippedTurn.clear()
+    for i in gameStates[1]:
+        skippedTurn.append(i)
+    reversedTurn.clear()
+    for i in gameStates[2]:
+        reversedTurn.append(i)
+    specialSkip.clear()
+    for i in gameStates[3]:
+        specialSkip.append(i)
+
+    # Adding back card data
+    deckCard = cardStates[0]
+    cards.deck = cardStates[1]
+    cards.specialCards = cardStates[2]
+
+    startRound(deckCard)
+
 
 def getTime():
     now = datetime.now()  # Gets the current time
@@ -133,23 +173,36 @@ def getTime():
 
     return currentTime  # Returns current time
 
-def saveGame(deckCard):
+
+def saveGame(lastCard):
     gameInfo = []
 
-    gameplayMode = cards.gameplay
-    playerInfo = []
+    playerList = []
     for i in players:
         # Stores info on player attributes
+        playerInfo = []
         playerInfo.append(i.myName)
         playerInfo.append(i.type)
         playerInfo.append(i.myCards)
         playerInfo.append(i.teammate)
 
+        playerList.append(playerInfo)
+
+    gameplayMode = cards.gameplay
     # Stores info on the game states
-    gameStates = [gameplayMode, skippedTurn, reversedTurn, specialSkip]
+    skips = []
+    for i in skippedTurn:
+        skips.append(i)
+    reverses = []
+    for i in reversedTurn:
+        reverses.append(i)
+    specials = []
+    for i in specialSkip:
+        specials.append(i)
+    gameStates = [gameplayMode, skips, reverses, specials]
 
     if len(specialSkip) <= 1:
-        cardOnDeck = deckCard[len(deckCard) - 1]
+        cardOnDeck = lastCard
     else:
         cardOnDeck = str(specialSkip[0])
         counter = 0
@@ -169,38 +222,44 @@ def saveGame(deckCard):
     now = now.split(' ')
 
     gameInfo.append(f'{now[0]} at {now[1]}')
-    gameInfo.append(playerInfo)
+    gameInfo.append(playerList)
     gameInfo.append(gameStates)
     gameInfo.append(cardStates)
 
     games.append(gameInfo)
 
     print('\n\n--------------------\n')
-    menu()
+    menuOptions()
+
 
 def playerOptions():
+    players.clear()
+    slots = resetPlayers()
+
     print('\nMATCH TYPES:')
     print('1. Against the computer  \n2. Against players on same device')
 
     gaveInput = False
     while not gaveInput:
-        uchoice = input('')
-        uchoice = int(uchoice)
-        if uchoice == 1:
-            gaveInput = True
-            players.append(playerOne)
-            players.append(comp)
-            enterNames()
-        elif uchoice == 2:
-            gaveInput = True
-            multiOptions()
-            break
-        else:
-            print('\n-> Choose from the options!')
-        '''except ValueError:
-            print('\n-> EXCEPTION AT MATCH TYPES')'''
+        try:
+            choice = input('')
+            choice = int(choice)
+            if choice == 1:
+                gaveInput = True
+                players.append(slots[0])
+                players.append(slots[5])
+                enterNames()
+            elif choice == 2:
+                gaveInput = True
+                multiOptions(slots)
+                break
+            else:
+                print('\n-> Choose from the options!')
+        except ValueError:
+            print('\n-> Enter a valid input!')
 
-def multiOptions():
+
+def multiOptions(slots):
     print('\n[ How many players? Enter a value from 2-5, or TM for Team Mode ]')
     print('-> Team Mode is only available for 4 players!')
 
@@ -222,9 +281,10 @@ def multiOptions():
                     players.append(slots[i])
                 teamMode()
             else:
-                print('\n-> EXCEPTION AT PLAYER AMOUNT')
+                print('\n-> Enter a valid amount!')
 
     enterNames()
+
 
 def teamMode():
     teamOne = []
@@ -262,6 +322,7 @@ def teamMode():
     players.append(onePl2)
     players.append(twoPl2)
 
+
 def enterNames():
     for i in players:
         if i.type == 'Player':
@@ -272,7 +333,14 @@ def enterNames():
 
     gameplayPrompt()
 
+
 def gameplayPrompt():
+    # Resets states
+    cards.deck = []
+    cards.specialCards = []
+    cards.playCards = []
+    cards.gameplay = 0
+
     print('\n[ Which mode of gameplay do you want? ]')
 
     gaveInput = False
@@ -291,13 +359,15 @@ def gameplayPrompt():
             else:
                 print('\n-> Choose from the options!')
         except ValueError:
-            print('\n-> EXCEPTION AT GAMEPLAY')
+            print('\n-> Enter a valid input!')
 
     handCards()
 
+
 def handCards():
-    # Adds cards to deck
+    # Adds cards to cards.deck
     cards.populateCards()
+    deck = cards.deck
 
     for i in players:
         for num in range(7):
@@ -305,13 +375,10 @@ def handCards():
             randCard = random.choice(deck)
             i.myCards.append(randCard)  # Adds card to stack
             deck.remove(randCard)  # Removes card from deck
-        i.myCards.append('WILD +4')  # Adds card to stack
-        deck.remove('WILD +4')  # Removes card from deck
-        i.myCards.append('WILD +4')  # Adds card to stack
-        deck.remove('WILD +4')  # Removes card from deck
 
     deckCard = [random.choice(deck)]
     startRound(deckCard)
+
 
 def turn(i, lastCard, deckCard):
     for num in range(len(players)):
@@ -326,6 +393,7 @@ def turn(i, lastCard, deckCard):
         except IndexError:
             putCardDown(i, deckCard)
         deckCard.append(playedCard)
+
 
 def startRound(deckCard):
     global playCards, stackPlayCards
@@ -368,7 +436,7 @@ def startRound(deckCard):
 
     if len(reversedTurn) != 0:
         if len(players) > 2:
-            players.reverse()   # Reverses order
+            players.reverse()  # Reverses order
         # If there are two players, nothing happens (considered to be a skip)
         reversedTurn.clear()
     else:
@@ -379,10 +447,11 @@ def startRound(deckCard):
     for j in players:
         types.append(j.type)
 
-    #if 'Computer' not in types:
+    # if 'Computer' not in types:
     #    buffer(players[0])
 
     startRound(deckCard)  # Loops back up
+
 
 def buffer(i):
     print('\n----------')
@@ -398,6 +467,7 @@ def buffer(i):
 
     time.sleep(4)
 
+
 def gameOver(player):
     if player.type == 'Player':
         print('\n----------')
@@ -405,11 +475,12 @@ def gameOver(player):
             print(f'\nGame over! {player.myName} and {player.teammate.myName} won')
         else:
             print(f'\nGame over! {player.myName} won')
-        quit()
+        menu()
     else:
         print('\n----------')
         print('\nGame over! Computer won')
-        quit()
+        menu()
+
 
 def checkIfWon():
     playersWon = []
@@ -420,7 +491,7 @@ def checkIfWon():
     return playersWon
 
 
-def playableCards(player, card, deckCard):
+def playableCards(player, card, deckCrdList):
     global playCards, stackPlayCards
 
     deckCard = str(card).split(' ')
@@ -487,7 +558,7 @@ def playableCards(player, card, deckCard):
                         skippedTurn.clear()
                     elif choice.lower() == 'save':
                         gaveInput = True
-                        saveGame(deckCard)
+                        saveGame(deckCrdList)
                 else:
                     choice = input('\n-> Press enter to draw a card!')
                     if choice == '':  # Pressed enter
@@ -495,10 +566,11 @@ def playableCards(player, card, deckCard):
                         drawCard(player, card)
                     elif choice.lower() == 'save':
                         gaveInput = True
-                        saveGame(deckCard)
+                        saveGame(deckCrdList)
                     # If they don't press enter it just prompts them again
         else:
             drawCard(player, card)
+
 
 def stackCard(stackPlayCards, player, deckCard):
     global playCards
@@ -525,6 +597,7 @@ def stackCard(stackPlayCards, player, deckCard):
             else:
                 print('\n-> Enter a valid input!')
 
+
 def pickUpCards(player):
     if len(specialSkip) != 0:
         amount = 0
@@ -538,11 +611,12 @@ def pickUpCards(player):
             amount += num
 
         for i in range(amount):
-            randCard = random.choice(deck)
+            randCard = random.choice(cards.deck)
             player.myCards.append(randCard)  # Adds card to computer's stack
-            deck.remove(randCard)  # Removes card from deck
+            cards.deck.remove(randCard)  # Removes card from cards.deck
 
         specialSkip.clear()
+
 
 def putCardDown(player, deckCard):
     global playCards, stackPlayCards
@@ -557,7 +631,6 @@ def putCardDown(player, deckCard):
                     choice = input('\n-> What card # would you like to play?  \n')
                     if choice.lower() == 'save':
                         gaveInput = True
-                        card = ''
                         saveGame(deckCard)
                     else:
                         choice = int(choice)
@@ -587,22 +660,23 @@ def putCardDown(player, deckCard):
 def playCard(player, card):
     global playedCard
 
-    if card not in specialCards:
+    if card not in cards.specialCards:
         player.myCards.remove(card)
-        deck.append(card)  # Returns card to deck so it doesn't run out
+        cards.deck.append(card)  # Returns card to cards.deck so it doesn't run out
         playedCard = card
     else:  # It's a special card
         player.myCards.remove(card)
-        deck.append(card)  # Returns card to deck so it doesn't run out
+        cards.deck.append(card)  # Returns card to cards.deck so it doesn't run out
         crd = card.split(' ')
         specialCard(card)
         if crd[0] == 'WILD':
             if player.type == 'Player':
                 wildCardPrompt()
                 card = colour + ' ' + crd[1]
-                if specialSkip[len(specialSkip) - 1] == 'WILD +4':
-                    specialSkip.pop()
-                    specialSkip.append(card)
+                if len(specialSkip) > 0:
+                    if specialSkip[len(specialSkip) - 1] == 'WILD +4':
+                        specialSkip.pop()
+                        specialSkip.append(card)
             elif player.type == 'Computer':
                 col = compWildCard()
                 card = col + ' CARD'
@@ -649,11 +723,13 @@ def specialCard(card):
         reversedTurn.append('reverse')
     # Nothing happens for wild cards; only changes colour
 
+
 def compWildCard():
     colours = ['RED', 'BLUE', 'YELLOW', 'GREEN']
     choice = random.choice(colours)
 
     return choice
+
 
 def drawCard(player, card):
     randCard = cards.getRandomCard(card)
@@ -662,13 +738,11 @@ def drawCard(player, card):
     skippedTurn.clear()
     reversedTurn.clear()
 
-    deck.remove(randCard)  # Removes card from deck
+    cards.deck.remove(randCard)  # Removes card from cards.deck
+
 
 def resetPlayers():
-    global cards, slots, players, playerOne, playerTwo, playerThree, playerFour, playerFive, comp
-
-    cards = Cards()
-
+    # Creates 5 new player objects with reset states
     playerOne = Player()
     playerOne.myName = 'Player 1'
 
@@ -687,34 +761,10 @@ def resetPlayers():
     comp = Computer()
     comp.myName = 'Computer'
 
-    slots = [playerOne, playerTwo, playerThree, playerFour, playerFive]
-    players.clear()
+    slots = [playerOne, playerTwo, playerThree, playerFour, playerFive, comp]
+
+    return slots
 
 
-cards = Cards()
-
-playerOne = Player()
-playerOne.myName = 'Player 1'
-
-playerTwo = Player()
-playerTwo.myName = 'Player 2'
-
-playerThree = Player()
-playerThree.myName = 'Player 3'
-
-playerFour = Player()
-playerFour.myName = 'Player 4'
-
-playerFive = Player()
-playerFive.myName = 'Player 5'
-
-comp = Computer()
-comp.myName = 'Computer'
-
-deck = cards.deck
-specialCards = cards.specialCards
-
-slots = [playerOne, playerTwo, playerThree, playerFour, playerFive]
-
-players = []
+# Starts at the beginning of the program
 menu()
