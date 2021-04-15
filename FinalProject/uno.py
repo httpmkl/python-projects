@@ -16,15 +16,20 @@
 
     What I need to add/do:
         - Save/load game abilities
-        - The ability to reverse wild cards
         - Unique special cards (that are not in UNO)
         - Ensure everything is modular & organized before submitting
+
+    note:
+        - I removed some exception handling in order to discover where the errors are
+        - Figure out the issue with restarting games and resetting states.
 
 '''
 
 import random
 import time
 from datetime import datetime
+from typing import List
+
 from cards import Cards
 from player import Player
 from player import Computer
@@ -39,6 +44,7 @@ def menu():
     print('\nUNO — PYTHON VER.')
     print('-> made by Nora Calif')
 
+    resetPlayers()
     menuOptions()
 
 def menuOptions():
@@ -47,27 +53,29 @@ def menuOptions():
 
     gaveInput = False
     while not gaveInput:
-        try:
-            choice = int(input())
-            if choice == 1:
-                playerOptions()
-                gaveInput = True
-            elif choice == 2:
-                loadGames()
-                gaveInput = True
-            elif choice == 3:
-                print('\nUnder Construction')
-                gaveInput = True
-            else:
-                print('\n-> Choose from the options!')
-        except ValueError:
-            print('\n-> Enter a valid input!')
+    #    try:
+        choice = int(input())
+        if choice == 1:
+            gaveInput = True
+            playerOptions()
+        elif choice == 2:
+            gaveInput = True
+            loadGames()
+        elif choice == 3:
+            gaveInput = True
+            print('\nUnder Construction')
+        else:
+            print('\n-> Choose from the options!')
+    #    except ValueError:
+    #        print('\n-> Enter a valid input!')
 
 def loadGames():
     print('\n----------')
 
     if len(games) == 0:
         print('\n[ NO SAVED GAMES ]')
+        print('\n----------')
+        menuOptions()
     else:
         print('\nSaved Games:')
         print('(ordered from recent -> oldest)')
@@ -78,14 +86,30 @@ def loadGames():
             print(f'{counter}. {i[0]}')
             counter += 1
 
-        chooseGame()
+        chooseGame(counter)
 
-    print('\n----------')
-    menuOptions()
+def chooseGame(counter):
+    print('\n[ Which game would you like to resume? ]')
 
-def chooseGame():
-    # TODO: write functionality for picking a saved game and creating a game with the saved states
-    pass
+    gaveInput = False
+    while not gaveInput:
+        try:
+            choice = int(input())
+            if choice > counter or choice < 1:
+                print('\n-> Choose from the options!')
+            else:
+                print('\n----------')
+                gaveInput = True
+                resumeGame(choice)
+        except ValueError:
+            print('\n-> Enter a valid input!')
+
+def resumeGame(choice):
+    gameInfo = games[choice - 1]
+    for i in gameInfo:
+        print(i)
+
+    print('can i delay?')
 
 def getTime():
     now = datetime.now()  # Gets the current time
@@ -160,20 +184,21 @@ def playerOptions():
 
     gaveInput = False
     while not gaveInput:
-        try:
-            choice = int(input())
-            if choice == 1:
-                players.append(playerOne)
-                players.append(comp)
-                enterNames()
-                gaveInput = True
-            elif choice == 2:
-                multiOptions()
-                gaveInput = True
-            else:
-                print('\n-> Choose from the options!')
-        except ValueError:
-            print('\n-> Enter a valid amount!')
+        uchoice = input('')
+        uchoice = int(uchoice)
+        if uchoice == 1:
+            gaveInput = True
+            players.append(playerOne)
+            players.append(comp)
+            enterNames()
+        elif uchoice == 2:
+            gaveInput = True
+            multiOptions()
+            break
+        else:
+            print('\n-> Choose from the options!')
+        '''except ValueError:
+            print('\n-> EXCEPTION AT MATCH TYPES')'''
 
 def multiOptions():
     print('\n[ How many players? Enter a value from 2-5, or TM for Team Mode ]')
@@ -187,17 +212,17 @@ def multiOptions():
             if choice < 2 or choice > 5:
                 print('\n-> Only 2-5 players for multiplayer!')
             else:
+                gaveInput = True
                 for i in range(choice):
                     players.append(slots[i])
-                gaveInput = True
         except ValueError:
             if choice.upper() == 'TM':
+                gaveInput = True
                 for i in range(4):
                     players.append(slots[i])
                 teamMode()
-                gaveInput = True
             else:
-                print('\n-> Enter a valid amount!')
+                print('\n-> EXCEPTION AT PLAYER AMOUNT')
 
     enterNames()
 
@@ -255,18 +280,18 @@ def gameplayPrompt():
         try:
             choice = int(input('1. Beginner  2. Easy  3. Normal  \n'))
             if choice == 1:
+                gaveInput = True
                 cards.gameplay = 3
-                gaveInput = True
             elif choice == 2:
+                gaveInput = True
                 cards.gameplay = 2
-                gaveInput = True
             elif choice == 3:
-                cards.gameplay = 1
                 gaveInput = True
+                cards.gameplay = 1
             else:
                 print('\n-> Choose from the options!')
         except ValueError:
-            print('\n-> Enter a valid input!')
+            print('\n-> EXCEPTION AT GAMEPLAY')
 
     handCards()
 
@@ -530,25 +555,26 @@ def putCardDown(player, deckCard):
             while not gaveInput:
                 try:
                     choice = input('\n-> What card # would you like to play?  \n')
-                    choice = int(choice)
-                    if 0 < choice <= len(player.myCards):
-                        card = player.myCards[choice - 1]
-                        # Checks for a valid card
-                        for i in playCards:
-                            if card == i:
-                                validCard = True  # Chosen card is playable
-                        if not validCard:  # Didn't choose a valid card
-                            print('[ This is not a playable card! ]')
-                        else:  # Chose a valid card
-                            gaveInput = True
-                    else:
-                        print('\n-> Enter a valid input!')
-                except ValueError:
                     if choice.lower() == 'save':
                         gaveInput = True
+                        card = ''
                         saveGame(deckCard)
                     else:
-                        print('\n-> Enter a valid input!')
+                        choice = int(choice)
+                        if 0 < choice <= len(player.myCards):
+                            card = player.myCards[choice - 1]
+                            # Checks for a valid card
+                            for i in playCards:
+                                if card == i:
+                                    validCard = True  # Chosen card is playable
+                            if not validCard:  # Didn't choose a valid card
+                                print('[ This is not a playable card! ]')
+                            else:  # Chose a valid card
+                                gaveInput = True
+                        else:
+                            print('\n-> Enter a valid input!')
+                except ValueError:
+                    print('\n-> Enter a valid input!')
         else:
             card = stackPlayCards[0]
     else:
@@ -637,6 +663,32 @@ def drawCard(player, card):
     reversedTurn.clear()
 
     deck.remove(randCard)  # Removes card from deck
+
+def resetPlayers():
+    global cards, slots, players, playerOne, playerTwo, playerThree, playerFour, playerFive, comp
+
+    cards = Cards()
+
+    playerOne = Player()
+    playerOne.myName = 'Player 1'
+
+    playerTwo = Player()
+    playerTwo.myName = 'Player 2'
+
+    playerThree = Player()
+    playerThree.myName = 'Player 3'
+
+    playerFour = Player()
+    playerFour.myName = 'Player 4'
+
+    playerFive = Player()
+    playerFive.myName = 'Player 5'
+
+    comp = Computer()
+    comp.myName = 'Computer'
+
+    slots = [playerOne, playerTwo, playerThree, playerFour, playerFive]
+    players.clear()
 
 
 cards = Cards()
