@@ -1,25 +1,8 @@
-"""
+'''
 
-    What I added:
-        - All of the basic UNO gameplay mechanics
-        - The ability to play against the computer
-        - UN0's special cards (Wild (card & +4), +2, reverse, skip)
-            - The computer's ability to use special cards
-        - Different modes of gameplay (beginner/easy/normal)
-        - Multiplayer options
-        - Improved reverse mechanics
-        - Menu screen to contain & organize these features
-        - Generalize player functions to adapt to computer plays
-        - Team mode for even numbers (in multiplayer)
-        - The ability to stack special cards to avoid picking up
-            - The prevention of stacking +2 on top of a +4
-        - Save/load game abilities
+    Project by Nora Calif :)
 
-    What I need to add/do:
-        - Unique special cards (that are not in UNO)
-        - Ensure everything is modular & organized before submitting
-
-"""
+'''
 
 import random
 import time
@@ -49,6 +32,7 @@ def menuOptions():
     print('\nMENU:')
     print('1. New game  \n2. Saved games  \n3. Instructions  \n4. Exit Program')
 
+    # Loop for redirecting based on choice
     gaveInput = False
     while not gaveInput:
         try:
@@ -61,7 +45,7 @@ def menuOptions():
                 loadGames()
             elif choice == 3:
                 gaveInput = True
-                print('\nUnder Construction')
+                instructions()
             elif choice == 4:
                 gaveInput = True
                 print('\n----------')
@@ -73,21 +57,25 @@ def menuOptions():
             print('\n-> Enter a valid input!')
 
 
+def instructions():
+    pass
+
+
 def loadGames():
     print('\n----------')
 
-    if len(games) == 0:
+    if len(games) == 0:  # No game info in the games list
         print('\n[ NO SAVED GAMES ]')
         print('\n----------')
         menuOptions()
-    else:
+    else:  # Games are stored
         print('\nSaved Games:')
         print('(ordered from recent -> oldest)')
 
-        games.reverse()
+        games.reverse()  # Reverses the list so 1st entry is the most recent
         counter = 1
         for i in games:
-            print(f'{counter}. {i[0]}')
+            print(f'{counter}. {i[0]}')  # Prints the date & time when saved for identification
             counter += 1
 
         chooseGame(counter)
@@ -100,7 +88,7 @@ def chooseGame(counter):
     while not gaveInput:
         try:
             choice = int(input())
-            if choice > counter or choice < 1:
+            if choice > counter or choice < 1:  # Picked an option not on the list
                 print('\n-> Choose from the options!')
             else:
                 gaveInput = True
@@ -110,16 +98,29 @@ def chooseGame(counter):
 
 
 def resumeGame(choice):
+    # Resets player list and creates new player objects
     players.clear()
     slots = resetPlayers()
 
+    # Collects data from the game selected & removes from saved list
     gameInfo = games[choice - 1]
     games.remove(games[choice - 1])
 
+    # Separates game info into its components
     playerList = gameInfo[1]
     gameStates = gameInfo[2]
     cardStates = gameInfo[3]
 
+    # Sets current states to the ones from the game
+    resumePlayerData(playerList, slots)
+    resumeGameData(gameStates)
+    resumeCardData(cardStates)
+
+    deckCard = cardStates[0]
+    startRound(deckCard)  # Starts game
+
+
+def resumePlayerData(playerList, slots):
     # Adding back player data
     for i in range(len(playerList)):
         players.append(slots[i])
@@ -131,24 +132,28 @@ def resumeGame(choice):
         players[i].myCards = attributes[2]
         players[i].teammate = attributes[3]
 
+
+def resumeGameData(gameStates):
     # Adding back game data
     cards.gameplay = gameStates[0]
+
     skippedTurn.clear()
     for i in gameStates[1]:
         skippedTurn.append(i)
+
     reversedTurn.clear()
     for i in gameStates[2]:
         reversedTurn.append(i)
+
     specialSkip.clear()
     for i in gameStates[3]:
         specialSkip.append(i)
 
+
+def resumeCardData(cardStates):
     # Adding back card data
-    deckCard = cardStates[0]
     cards.deck = cardStates[1]
     cards.specialCards = cardStates[2]
-
-    startRound(deckCard)
 
 
 def getTime():
@@ -177,30 +182,67 @@ def getTime():
 def saveGame(lastCard):
     gameInfo = []
 
+    # Saves data from game
+    playerList = savePlayerData()
+    gameStates = saveGameData()
+    cardStates = saveCardData(lastCard)
+
+    # Gets the current date & time
+    now = getTime()
+    now = now.split(' ')
+
+    # Adds the current time + game data in gameInfo list
+    gameInfo.append(f'{now[0]} at {now[1]}')
+    gameInfo.append(playerList)
+    gameInfo.append(gameStates)
+    gameInfo.append(cardStates)
+
+    games.append(gameInfo)  # Adds game info to games list
+
+    print('\n\n--------------------\n')
+    menuOptions()  # Sends player back to menu
+
+
+def savePlayerData():
     playerList = []
+
     for i in players:
         # Stores info on player attributes
         playerInfo = []
+
         playerInfo.append(i.myName)
         playerInfo.append(i.type)
         playerInfo.append(i.myCards)
         playerInfo.append(i.teammate)
 
-        playerList.append(playerInfo)
+        playerList.append(playerInfo)  # Adds player info to the players list
 
+    return playerList
+
+
+def saveGameData():
     gameplayMode = cards.gameplay
-    # Stores info on the game states
+
+    # Creates lists to mimic the skippedTurn, reversedTurn, and specialSkip ones
     skips = []
     for i in skippedTurn:
         skips.append(i)
+
     reverses = []
     for i in reversedTurn:
         reverses.append(i)
+
     specials = []
     for i in specialSkip:
         specials.append(i)
+
+    # Stores info on the game states
     gameStates = [gameplayMode, skips, reverses, specials]
 
+    return gameStates
+
+
+def saveCardData(lastCard):
     if len(specialSkip) <= 1:
         cardOnDeck = lastCard
     else:
@@ -218,18 +260,7 @@ def saveGame(lastCard):
     # Stores info on cards
     cardStates = [cardOnDeck, gameDeck, gameSpecials]
 
-    now = getTime()
-    now = now.split(' ')
-
-    gameInfo.append(f'{now[0]} at {now[1]}')
-    gameInfo.append(playerList)
-    gameInfo.append(gameStates)
-    gameInfo.append(cardStates)
-
-    games.append(gameInfo)
-
-    print('\n\n--------------------\n')
-    menuOptions()
+    return cardStates
 
 
 def playerOptions():
