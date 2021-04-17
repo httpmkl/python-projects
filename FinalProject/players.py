@@ -6,6 +6,7 @@ class Player:
         self.type = 'Player'
         self.teammate = None
 
+
 class Computer:
 
     def __init__(self):
