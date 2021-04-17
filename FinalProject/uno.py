@@ -526,8 +526,8 @@ def additionalTurnStuff(i):
     for j in players:
         types.append(j.type)
 
-    '''if 'Computer' not in types:
-        buffer(players[0])'''
+    if 'Computer' not in types:
+        buffer(players[0])
 
 
 def buffer(i):
