@@ -439,9 +439,6 @@ def startRound(deckCard):
     controlTurn(i, deckCard)
     additionalTurnStuff(i)
 
-    if i.type == 'Computer':
-        print(len(i.myCards))
-
     startRound(deckCard)  # Loops back up
 
 
