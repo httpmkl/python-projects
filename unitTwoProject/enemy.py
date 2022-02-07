@@ -363,7 +363,6 @@ class Wizard(Enemy):
                 player.setHealth(Wizard.damage * -2)
 
     def weakAttack(self, player):
-        chance = random.randint(1, 10)
         if Wizard.firstMove:  # For the first move, the Wizard will always start with a magic attack
             Wizard.firstMove = False
             self.magicAttack(player)
@@ -407,8 +406,6 @@ class Wizard(Enemy):
 
     # Defense
     def defense(self, player):
-        chance = random.randint(1, 10)
-
         if player.health < 20:
             # Regardless of the player's move, the wizard attacks if they are vulnerable
             self.strongAttack(player)
@@ -447,24 +444,24 @@ class Wizard(Enemy):
         # Sort of an attack, gives the player a chance to land hits
         if player.didKick:
             print('\n-> The Wizard held up his blade and slashed your foot!')
-            print(f'DAMAGE: {Wizard.damage}')
+            print(f'DAMAGE: {Wizard.damage/2}')
             print('[ Your attack damage was cut in half! ]\n')
             Wizard.health += int(player.damage / 2)  # Restores half health
             player.didKick = False
             if player.shield > 0:
-                player.setShield(Wizard.damage * -1)
+                player.setShield(Wizard.damage/2 * -1)
             else:
-                player.setHealth(Wizard.damage * -1)
+                player.setHealth(Wizard.damage/2 * -1)
         elif player.didPunch:
             print('\n-> The Wizard blocked your punch with his blade!')
-            print(f'DAMAGE: {Wizard.damage}')
+            print(f'DAMAGE: {Wizard.damage/2}')
             print('[ Your attack damage was cut in half! ]\n')
             Wizard.health += int(player.damage / 2)
             player.didPunch = False
             if player.shield > 0:
-                player.setShield(Wizard.damage * -1)
+                player.setShield(Wizard.damage/2 * -1)
             else:
-                player.setHealth(Wizard.damage * -1)
+                player.setHealth(Wizard.damage/2 * -1)
 
     def magicDefense(self, player):
         # Sets up a defense that'll protect them for two moves
@@ -498,8 +495,8 @@ class Wizard(Enemy):
         print(f'DAMAGE: 0\n')
 
     def controlDamage(self, player):
-        # So the potion/spell in the first round stops working when the player reaches 30 health
-        if Wizard.gavePoison and player.health < 30:
+        # So the potion/spell in the first round stops working when the player reaches 50 health
+        if Wizard.gavePoison and player.health < 50:
             Wizard.gavePoison = False
-        elif Wizard.gaveSpell and player.energy < 30:
+        elif Wizard.gaveSpell and player.energy < 50:
             Wizard.gaveSpell = False

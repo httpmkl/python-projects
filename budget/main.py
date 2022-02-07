@@ -152,7 +152,7 @@ def menu():
     improperChoice = True
     print("\n\n--------------------")
     print("   BUDGETING APP")
-    print("  coded by Narura")
+    print("  coded by Nora")
     print("--------------------\n")
 
     print("\n| SERVICES \n")
