@@ -401,13 +401,13 @@ def storyIntroPt2():
 
 # Occurs first in the program
 if not startGame:
-    # storyIntroPt1()
+    storyIntroPt1()
 
     name = input('\n[ Player, what is your name? ]\n-> ')
     player = Player()
     player.setName(name)
 
-    # storyIntroPt2()
+    storyIntroPt2()
 
     # Menu
     print('\n\nMENU:')
