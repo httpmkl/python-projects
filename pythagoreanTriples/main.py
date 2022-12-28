@@ -10,7 +10,7 @@ Definitions:
             Preventing multiples creates a graph with defined lines amidst the scattered points
     - Repeat triples; Triples with a & b rearranged
         Ex. Accepting repeats allows for 4, 3, 5, which is 3, 4, 5 rearranged
-            Preventing repeats creates a graph with only points on the top-left half
+            Preventing repeats creates a graph with points north of y = x
 
 """
 
@@ -30,20 +30,20 @@ def py_triples(values, repeats, multiples):
             for i in range(0, int(values)): # Compares every b value against each a value
                 b = int(nums[i])
                 c = math.sqrt(math.pow(a,2) + math.pow(b,2)) # Sqrt of a^2 + b^2
-                if c.is_integer(): # If c ends in .0 (pythagorean triple)
+                if c.is_integer(): # Checks for whether c is an integer (aka, pythagorean triple)
                     if repeats and multiples: # Includes non-primitive & repeated triples
                         triples.append([a, b, int(c)])
                     elif repeats: # Includes repeats, but just primitive triples
                         if gcd(a, b) == 1: # Only appends primitive triples
                             triples.append([a, b, int(c)])
                     elif multiples: # Includes non-primitive triples, but no repeats
-                        if a < b:  # Avoids repeats
+                        if a < b: # Avoids repeats
                             triples.append([a, b, int(c)])
                     else: # Excludes non-primitive and repeated triples
-                        if gcd(a, b) == 1:  # Only appends primitive triples
-                            if a < b:  # Avoids repeats
+                        if gcd(a, b) == 1: # Only appends primitive triples
+                            if a < b: # Avoids repeats
                                 triples.append([a, b, int(c)])
-        break
+        notDone = False
 
     return triples # Returns the list of pythagorean triples
 
@@ -81,8 +81,8 @@ def graph_triples(values, repeats, multiples):
         y.append(triple[1])
 
     # Graphs and displays scatter plot
-    plot.scatter(x, y, s=2)
+    plot.scatter(x, y, s=3)
     plot.show()
 
 
-graph_triples(1000, True, True)
+graph_triples(2000, True, True)
