@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f9dcb725-8476-49e8-b754-5a3591e2d789" name="Default Changelist" comment="" />
+    <list default="true" id="f9dcb725-8476-49e8-b754-5a3591e2d789" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../LangLearn/.idea/LangLearn.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../LangLearn/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../LangLearn/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../LangLearn/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../LangLearn/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../LangLearn/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../LangLearn/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../LangLearn/userbase" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../adventure-game/character.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../adventure-game/story.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../adventure-game/enemies.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../adventure-game/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/../adventure-game/game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../adventure-game/protagonist.py" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
