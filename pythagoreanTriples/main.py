@@ -1,3 +1,12 @@
+"""
+
+Program which finds Pythagorean triples
+
+Made by Nora Calif, 2022
+
+
+"""
+
 import math
 from math import gcd
 
@@ -40,5 +49,6 @@ def print_triples(values):
     triples = py_triples(int(values))
 
     for i in range(0, len(triples)):
-        triple = triples[i]
+        triple = triples[i] # Separates each Pythagorean triple into it's own list
         print(str(triple[0]) + superscript(2) + " + " + str(triple[1]) + superscript(2) + " = " + str(triple[2]) + superscript(2))
+        # Prints the equation for each Pythagorean triple
