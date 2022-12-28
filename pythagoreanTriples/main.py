@@ -4,13 +4,19 @@ Program which finds Pythagorean triples
 
 Made by Nora Calif, 2022
 
+Definitions:
+    - Primitive/non-multiple triples; Triples with a & b coprime
+        Ex. Accepting multiples allows for 6, 8, 10, derived from the primitive triple 3, 4, 5
+            Preventing multiples creates a graph with defined lines amidst the scattered points
+    - Repeat triples; Triples with a & b rearranged
+        Ex. Accepting repeats allows for 4, 3, 5, which is 3, 4, 5 rearranged
+            Preventing repeats creates a graph with only points on the top-left half
 
 """
 
 import math
 from math import gcd
-import matplotlib.pyplot as plt
-import numpy as np
+import matplotlib.pyplot as plot
 
 def py_triples(values, repeats, multiples):
     "Finds all Pythagorean triples under a given range"
@@ -25,22 +31,21 @@ def py_triples(values, repeats, multiples):
                 b = int(nums[i])
                 c = math.sqrt(math.pow(a,2) + math.pow(b,2)) # Sqrt of a^2 + b^2
                 if c.is_integer(): # If c ends in .0 (pythagorean triple)
-                    if repeats and multiples:
-                        triples.append([a, b, int(c)])  # Adds combo to list of triples
-                    elif repeats:
-                        if gcd(a, b) == 1: # To search for primitive triples
-                            triples.append([a, b, int(c)]) # Adds combo to list of triples
-                    elif multiples:
-                        if a < b:  # To avoid repeats, for ex. 3,4,5 & 4,3,5
-                            triples.append([a, b, int(c)])  # Adds combo to list of triples
-                    else:
-                        if gcd(a, b) == 1:  # To search for primitive triples
-                            if a < b:  # To avoid repeats, for ex. 3,4,5 & 4,3,5
-                                triples.append([a, b, int(c)])  # Adds combo to list of triples
+                    if repeats and multiples: # Includes non-primitive & repeated triples
+                        triples.append([a, b, int(c)])
+                    elif repeats: # Includes repeats, but just primitive triples
+                        if gcd(a, b) == 1: # Only appends primitive triples
+                            triples.append([a, b, int(c)])
+                    elif multiples: # Includes non-primitive triples, but no repeats
+                        if a < b:  # Avoids repeats
+                            triples.append([a, b, int(c)])
+                    else: # Excludes non-primitive and repeated triples
+                        if gcd(a, b) == 1:  # Only appends primitive triples
+                            if a < b:  # Avoids repeats
+                                triples.append([a, b, int(c)])
         break
 
     return triples # Returns the list of pythagorean triples
-
 
 def num_of_triples(values, repeats, multiples):
     "Prints the number of pythagorean triples in a given range"
@@ -48,15 +53,13 @@ def num_of_triples(values, repeats, multiples):
     print(len(py_triples(values, repeats, multiples))) # Prints length of triples at given range
     # Decent speed for a range of numbers <1000
 
-
 def superscript(n):
-    "Provides superscript text"
+    "Provides superscript text for the equations"
 
     return "".join(["⁰¹²³⁴⁵⁶⁷⁸⁹"[ord(c)-ord('0')] for c in str(n)])
 
-
 def print_triples(values, repeats, multiples):
-    "Prints the equations for Pythagorean triples under a given range"
+    "Prints the equations for Pythagorean triples in a given range"
     triples = py_triples(values, repeats, multiples)
 
     for i in range(0, len(triples)):
@@ -65,16 +68,21 @@ def print_triples(values, repeats, multiples):
         # Prints the equation for each Pythagorean triple
 
 def graph_triples(values, repeats, multiples):
-    triples = py_triples(values, repeats, multiples)
-    x = []
-    y = []
+    "Graphs the Pythagorean triples in a given range"
+
+    triples = py_triples(values, repeats, multiples) # Gathers the list of triples
+    x = [] # Creates a list of x values
+    y = [] # Creates a list of y values
 
     for i in range(0, len(triples)):
-        triple = triples[i]
+        triple = triples[i] # Accesses individual Pythagorean triple
+        # Adds a to list of x values, and b to y values
         x.append(triple[0])
         y.append(triple[1])
 
-    plt.scatter(x, y, s=2)
-    plt.show()
+    # Graphs and displays scatter plot
+    plot.scatter(x, y, s=2)
+    plot.show()
+
 
 graph_triples(1000, True, True)
